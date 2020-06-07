@@ -1,0 +1,3 @@
+[submodule "deps/open-api-dart"]
+	path = deps/open-api-dart
+	url = ../open-api-dart.git

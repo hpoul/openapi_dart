@@ -5,6 +5,7 @@ import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:open_api/v3.dart';
+import 'package:quiver/check.dart';
 import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
 
@@ -17,10 +18,17 @@ class OpenApiLibraryGenerator {
 
   final jsonSerializable =
       refer('JsonSerializable', 'package:json_annotation/json_annotation.dart');
+  final _openApiRequest =
+      refer('OpenApiRequest', 'package:openapi_base/openapi_base.dart');
+  final _openApiResponse =
+      refer('OpenApiResponse', 'package:openapi_base/openapi_base.dart');
+
+  static const mediaTypeJson = 'application/json';
 
   final createdSchema = <APISchemaObject, Reference>{};
 
   final lb = LibraryBuilder();
+  final routerConfig = <Expression>[];
 
   Library generate() {
     lb.body.add(Directive.part(partFileName));
@@ -31,57 +39,172 @@ class OpenApiLibraryGenerator {
     }
 
     // Create path configs
-    final responseClass = ClassBuilder();
-    responseClass
-      ..name = '${baseName.pascalCase}Response'
-      ..constructors.add(Constructor((cb) => cb
-        ..name = '_'
-        ..requiredParameters.add(Parameter((pb) => pb
-          ..name = 'status'
-          ..toThis = true))))
-      ..fields.add(Field((fb) => fb
-        ..name = 'status'
-        ..modifier = FieldModifier.final$
-        ..type = refer('int')));
 
     final c = Class((cb) {
       cb.name = baseName.pascalCase;
       cb.abstract = true;
       for (final path in api.paths.entries) {
         for (final operation in path.value.operations.entries) {
+          final pathName = path.key
+              .replaceAll(
+                  // language=RegExp
+                  RegExp(r'[{}]'),
+                  '')
+              .camelCase;
+          final operationName = '$pathName'
+              '${operation.key.pascalCase}';
+
+          final responseClass = ClassBuilder();
+          responseClass
+            ..name = '${operationName.pascalCase}Response'
+            ..extend = _openApiResponse
+            ..constructors.add(Constructor((cb) => cb
+              ..name = '_'
+              ..requiredParameters.add(Parameter((pb) => pb
+                ..name = 'status'
+                ..toThis = true))))
+            ..fields.add(Field((fb) => fb
+              ..name = 'status'
+              ..modifier = FieldModifier.final$
+              ..type = refer('int')));
           for (final response in operation.value.responses.entries) {
-            responseClass.constructors.add(Constructor((cb) {
-              cb..name = 'response${response.key}';
-              cb.initializers.add(refer('this')
-                  .property('_')([literalNum(int.parse(response.key))])
-                  .code);
-            }));
+            if (response.key == 'default') {
+              responseClass.constructors.add(Constructor((cb) {
+                cb
+                  ..name = 'response'
+                  ..requiredParameters.add(
+                    Parameter((pb) => pb
+                      ..name = 'status'
+                      ..type = refer('int')),
+                  )
+                  ..docs.add('/// ${response.value.description}')
+                  ..initializers
+                      .add(refer('this').property('_')([refer('status')]).code);
+              }));
+            } else {
+              responseClass.constructors.add(Constructor((cb) {
+                cb
+                  ..name = 'response${response.key}'
+                  ..docs.add('/// ${response.value.description}')
+                  ..initializers.add(refer('this')
+                      .property('_')([literalNum(int.parse(response.key))])
+                      .code);
+              }));
+            }
           }
+          lb.body.add(responseClass.build());
+
           cb.methods.add(Method((mb) {
             mb
-              ..name = '${path.key.camelCase}${operation.key.pascalCase}'
+              ..name = operationName
               ..returns =
                   _referType('Future', generics: [refer(responseClass.name)]);
+
+            final parameters = <Expression>[];
+
+            // ignore: avoid_function_literals_in_foreach_calls
+            operation.value.parameters?.forEach((param) {
+              final paramType = _toDartType(operationName, param.schema);
+              mb.requiredParameters.add(Parameter((pb) => pb
+                ..name = param.name.camelCase
+                ..type = paramType));
+              final convertParameter = (Expression expression) {
+                switch (param.schema.type) {
+                  case APIType.string:
+                    return refer('paramToString')([expression]);
+                  case APIType.number:
+                    break;
+                  case APIType.integer:
+                    return refer('paramToInt')([expression]);
+                  case APIType.boolean:
+                    break;
+                  case APIType.array:
+                    checkState(param.schema.items.type == APIType.string);
+                    return expression;
+                  case APIType.object:
+                    return expression;
+                }
+              };
+              switch (param.location) {
+                case APIParameterLocation.query:
+                  parameters.add(convertParameter(refer('request').property(
+                      'queryParameter')([literalString(param.name)])));
+                  break;
+                case APIParameterLocation.header:
+                  parameters.add(convertParameter(refer('request').property(
+                      'headerParameter')([literalString(param.name)])));
+                  break;
+                case APIParameterLocation.path:
+                  parameters.add(convertParameter(refer('request')
+                      .property('pathParameter')([literalString(param.name)])));
+                  break;
+                case APIParameterLocation.cookie:
+                  parameters.add(convertParameter(refer('request').property(
+                      'cookieParameter')([literalString(param.name)])));
+                  break;
+              }
+            });
+
             final body = operation.value.requestBody;
             if (body != null) {
-              for (final reqBody in body.content.entries) {
-                print('reqBody.schema: ${reqBody.value.schema}');
+              // TODO for now we only support application/json request body.
+              final reqBody = body.content[mediaTypeJson];
+//              for (final reqBody in body.content.entries) {
+              if (reqBody != null) {
+                print('reqBody.schema: ${reqBody.schema}');
                 final reference = _schemaReference(
-                    '${path.key.pascalCase}Schema', reqBody.value.schema);
+                    '${pathName.pascalCase}Schema', reqBody.schema);
                 mb.requiredParameters.add(Parameter((pb) => pb
                   ..name = 'body'
                   ..type = reference));
+                parameters.add(reference.property('fromJson')(
+                    [refer('request').property('readJsonBody')([])]));
               }
             }
+
+            _routerConfig(path.key, operation.key,
+                refer('impl').property(operationName)(parameters));
           }));
         }
       }
     });
     lb.body.add(c);
-    lb.body.add(responseClass.build());
+
+    lb.body.add(Class((cb) {
+      cb.name = '${baseName.pascalCase}Router';
+      cb.constructors.add(Constructor((cb) => cb
+        ..requiredParameters.add(Parameter((pb) => pb
+          ..name = 'impl'
+          ..toThis = true))));
+      cb.extend = refer(
+          'OpenApiServerRouterBase', 'package:openapi_base/openapi_base.dart');
+      cb.fields.add(Field((fb) => fb
+        ..name = 'impl'
+        ..type = refer(c.name)
+        ..modifier = FieldModifier.final$));
+      cb.methods.add(Method((mb) => mb
+        ..name = 'configure'
+        ..returns = refer('void')
+        ..body = Block.of(routerConfig.map((e) => e.statement))));
+    }));
 
 //       api.paths.map((key, value) => MapEntry(key, refer('ApiPathConfig').newInstance([value.])))
     return lb.build();
+  }
+
+  void _routerConfig(String path, String operation, Expression handler) {
+    routerConfig.add(refer('addRoute')([
+      literalString(path),
+      literalString(operation),
+      Method((mb) => mb
+        ..modifier = MethodModifier.async
+        ..requiredParameters.add(Parameter((pb) => pb
+          ..name = 'request'
+          ..type = _openApiRequest))
+        ..body = Block.of([
+          handler.awaited.returned.statement,
+        ])).closure,
+    ]));
   }
 
   Reference _schemaReference(String key, APISchemaObject schemaObject) {
@@ -95,11 +218,12 @@ class OpenApiLibraryGenerator {
   }
 
   Class _createSchemaClass(String key, APISchemaObject obj) {
-    final fields = obj.properties.entries.map((e) => Field((fb) => fb
+    final properties = obj.properties?.entries ?? [];
+    final fields = properties.map((e) => Field((fb) => fb
       ..docs.add('/// ${e.value.description}')
       ..name = e.key
       ..modifier = FieldModifier.final$
-      ..type = _toDartType(e.value.type)));
+      ..type = _toDartType('$key${e.key.pascalCase}', e.value)));
 
     final c = Class(
       (cb) => cb
@@ -108,7 +232,7 @@ class OpenApiLibraryGenerator {
         ..docs.add('/// ${obj.description ?? ''}')
         ..constructors.add(Constructor((cb) => cb
           ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb
-            ..docs.addAll(f.docs)
+//            ..docs.addAll(f.docs)
             ..name = f.name
             ..named = true
             ..toThis = true)))))
@@ -161,8 +285,8 @@ class OpenApiLibraryGenerator {
     return c;
   }
 
-  Reference _toDartType(APIType type) {
-    switch (type) {
+  Reference _toDartType(String parent, APISchemaObject schema) {
+    switch (schema.type) {
       case APIType.string:
         return refer('String');
       case APIType.number:
@@ -172,11 +296,13 @@ class OpenApiLibraryGenerator {
       case APIType.boolean:
         return refer('bool');
       case APIType.array:
-        return refer('List');
+        final type = _toDartType(parent, schema.items);
+        return _referType('List', generics: [type]);
       case APIType.object:
-        return refer('dynamic');
+        return _schemaReference(parent, schema);
+//        return refer('dynamic');
     }
-    throw StateError('Invalid type $type');
+    throw StateError('Invalid type ${schema.type}');
   }
 }
 
@@ -189,9 +315,9 @@ class OpenApiCodeBuilder extends Builder {
 //        .changeExtension('.dart');
     final outputId = inputId.changeExtension('.dart');
     final source = await buildStep.readAsString(inputId);
-    assert(inputId.pathSegments.last.endsWith('.openapi.dart'));
+    checkArgument(inputId.pathSegments.last.endsWith('.openapi.yaml'));
     final inputIdBasename =
-        inputId.pathSegments.last.replaceAll('.openapi.dart', '');
+        inputId.pathSegments.last.replaceAll('.openapi.yaml', '');
     final decoded = _loadYaml(source);
 //    final decoded = loadYaml(source) as Map<dynamic, dynamic>;
     final api = APIDocument.fromMap(
@@ -210,7 +336,9 @@ class OpenApiCodeBuilder extends Builder {
     print(DartFormatter().format('${l.accept(emitter)}'));
     print('inputId: $inputId / outputId: $outputId');
     await buildStep.writeAsString(
-        outputId, DartFormatter().format('${l.accept(emitter)}'));
+        outputId,
+        DartFormatter().format('// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
+            '${l.accept(emitter)}'));
   }
 
   @override

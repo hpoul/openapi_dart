@@ -8,6 +8,8 @@ environment:
 
 dependencies:
 #  path: ^1.7.0
+  openapi_base:
+    path: ../openapi_base
   path: ^1.7.0
   dart_style: ^1.3.6
   code_builder: ^3.3.0
@@ -17,6 +19,11 @@ dependencies:
   yaml: ^2.2.1
   json_annotation: ^3.0.1
   recase: ^3.0.0
+  quiver: ^2.1.3
 
 dev_dependencies:
   pedantic: ^1.9.0
+
+dependency_overrides:
+  open_api:
+    path: ../../deps/open-api-dart
