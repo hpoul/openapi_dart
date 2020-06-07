@@ -1,0 +1,22 @@
+name: openapi_code_builder
+description: Generate Dtos, client and server scaffolds for openapi specs.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.9.0-13.0.dev <3.0.0'
+
+dependencies:
+#  path: ^1.7.0
+  path: ^1.7.0
+  dart_style: ^1.3.6
+  code_builder: ^3.3.0
+  build: ^1.3.0
+  source_gen: ^0.9.5
+  open_api: ^2.0.1
+  yaml: ^2.2.1
+  json_annotation: ^3.0.1
+  recase: ^3.0.0
+
+dev_dependencies:
+  pedantic: ^1.9.0

@@ -1,0 +1,31 @@
+openapi: 3.0.0
+
+info:
+  version: 0.1.0
+  title: AuthPass Cloud Backend
+
+
+paths:
+  /user/register:
+    post:
+      summary: Create new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: OK
+
+components:
+  schemas:
+    RegisterRequest:
+      properties:
+        email:
+          type: string
+          description: 'Email address for the current user.'
+      required:
+        - email
+
