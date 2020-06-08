@@ -1,5 +1,8 @@
 openapi: 3.0.0
-
+# Added by API Auto Mocking Plugin
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/hpoul/Testapi/1.0.0
 info:
   version: 0.1.0
   title: AuthPass Cloud Backend
@@ -18,6 +21,22 @@ paths:
       responses:
         '200':
           description: OK
+  /hello/{name}:
+    get:
+      summary: Say Hello World to {name}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloResponse'
+    parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
 
 components:
   schemas:
@@ -28,4 +47,8 @@ components:
           description: 'Email address for the current user.'
       required:
         - email
-
+    HelloResponse:
+      properties:
+        message:
+          type: string
+          description: 'lorem ipsum'

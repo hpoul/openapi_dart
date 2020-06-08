@@ -9,6 +9,10 @@ import 'package:quiver/check.dart';
 import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
 
+import 'package:logging/logging.dart';
+
+final _logger = Logger('openapi_code_builder');
+
 class OpenApiLibraryGenerator {
   OpenApiLibraryGenerator(this.api, this.baseName, this.partFileName);
 
@@ -65,6 +69,7 @@ class OpenApiLibraryGenerator {
                 ..toThis = true))))
             ..fields.add(Field((fb) => fb
               ..name = 'status'
+              ..annotations.add(refer('override'))
               ..modifier = FieldModifier.final$
               ..type = refer('int')));
           for (final response in operation.value.responses.entries) {
@@ -86,9 +91,22 @@ class OpenApiLibraryGenerator {
                 cb
                   ..name = 'response${response.key}'
                   ..docs.add('/// ${response.value.description}')
-                  ..initializers.add(refer('this')
-                      .property('_')([literalNum(int.parse(response.key))])
+                  ..initializers.add(refer('status')
+                      .assign(literalNum(int.parse(response.key)))
                       .code);
+                final content = (response.value.content ?? {})[mediaTypeJson];
+                if (content != null) {
+                  cb.requiredParameters.add(Parameter((pb) => pb
+                    ..name = 'body'
+                    ..type = _schemaReference(
+                        '${responseClass.name}${response.key}',
+                        content.schema)));
+                  cb.body = Block.of([
+                    refer('bodyJson')
+                        .assign(refer('body').property('toJson')([]))
+                        .statement
+                  ]);
+                }
               }));
             }
           }
@@ -97,13 +115,23 @@ class OpenApiLibraryGenerator {
           cb.methods.add(Method((mb) {
             mb
               ..name = operationName
+              ..docs.add('/// ${operation.value.description}')
               ..returns =
                   _referType('Future', generics: [refer(responseClass.name)]);
 
             final parameters = <Expression>[];
 
+            mb.requiredParameters.add(Parameter((pb) => pb
+              ..name = 'request'
+              ..type = _openApiRequest));
+            parameters.add(refer('request'));
+
             // ignore: avoid_function_literals_in_foreach_calls
-            operation.value.parameters?.forEach((param) {
+            final allParameters = [
+              ...?path.value.parameters,
+              ...?operation.value.parameters
+            ];
+            for (final param in allParameters) {
               final paramType = _toDartType(operationName, param.schema);
               mb.requiredParameters.add(Parameter((pb) => pb
                 ..name = param.name.camelCase
@@ -143,7 +171,7 @@ class OpenApiLibraryGenerator {
                       'cookieParameter')([literalString(param.name)])));
                   break;
               }
-            });
+            }
 
             final body = operation.value.requestBody;
             if (body != null) {
@@ -151,14 +179,17 @@ class OpenApiLibraryGenerator {
               final reqBody = body.content[mediaTypeJson];
 //              for (final reqBody in body.content.entries) {
               if (reqBody != null) {
-                print('reqBody.schema: ${reqBody.schema}');
+                _logger.finer('reqBody.schema: ${reqBody.schema}');
                 final reference = _schemaReference(
                     '${pathName.pascalCase}Schema', reqBody.schema);
                 mb.requiredParameters.add(Parameter((pb) => pb
                   ..name = 'body'
                   ..type = reference));
                 parameters.add(reference.property('fromJson')(
-                    [refer('request').property('readJsonBody')([])]));
+                  [
+                    refer('request').property('readJsonBody')([]).awaited,
+                  ],
+                ));
               }
             }
 
@@ -208,7 +239,23 @@ class OpenApiLibraryGenerator {
   }
 
   Reference _schemaReference(String key, APISchemaObject schemaObject) {
+    _logger.finer('Looking up ${schemaObject.referenceURI}');
+    final uri = schemaObject.referenceURI;
+    if (uri != null) {
+      final segments = uri.pathSegments;
+      if (segments[0] == 'components' && segments[1] == 'schemas') {
+        final found = createdSchema.values.firstWhere(
+            (element) => element.symbol == segments[2],
+            orElse: () => null);
+        if (found != null) {
+          _logger.finest('We found it.');
+          return found;
+        }
+      }
+    }
     final reference = createdSchema.putIfAbsent(schemaObject, () {
+      _logger.finer(
+          'Creating schema class. for ${schemaObject.referenceURI} / $key');
       final c = _createSchemaClass(key, schemaObject);
       lb.body.add(c);
 
@@ -333,8 +380,8 @@ class OpenApiCodeBuilder extends Builder {
       Allocator.simplePrefixing(),
       true, /*true*/
     );
-    print(DartFormatter().format('${l.accept(emitter)}'));
-    print('inputId: $inputId / outputId: $outputId');
+//    print(DartFormatter().format('${l.accept(emitter)}'));
+//    print('inputId: $inputId / outputId: $outputId');
     await buildStep.writeAsString(
         outputId,
         DartFormatter().format('// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'

@@ -8,6 +8,10 @@ environment:
 
 dependencies:
   json_annotation: ^3.0.1
+  logging: ^0.11.4
+  logging_appenders: ^0.4.2+2
+  openapi_base:
+    path: ../../openapi_base
 
 dev_dependencies:
   openapi_code_builder:

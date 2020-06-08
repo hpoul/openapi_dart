@@ -18,31 +18,50 @@ class RegisterRequest {
   Map<String, dynamic> toJson() => _$RegisterRequestToJson(this);
 }
 
+///
+@_i1.JsonSerializable()
+class HelloResponse {
+  HelloResponse({this.message});
+
+  factory HelloResponse.fromJson(Map<String, dynamic> map) =>
+      _$HelloResponseFromJson(map);
+
+  /// lorem ipsum
+  final String message;
+
+  Map<String, dynamic> toJson() => _$HelloResponseToJson(this);
+}
+
 class UserRegisterPostResponse extends _i2.OpenApiResponse {
   UserRegisterPostResponse._(this.status);
 
   /// OK
-  UserRegisterPostResponse.response200() : this._(200);
+  UserRegisterPostResponse.response200() : status = 200;
 
+  @override
   final int status;
 }
 
-///
-@_i1.JsonSerializable()
-class UserRegisterSchema {
-  UserRegisterSchema({this.email});
+class HelloNameGetResponse extends _i2.OpenApiResponse {
+  HelloNameGetResponse._(this.status);
 
-  factory UserRegisterSchema.fromJson(Map<String, dynamic> map) =>
-      _$UserRegisterSchemaFromJson(map);
+  /// OK
+  HelloNameGetResponse.response200(HelloResponse body) : status = 200 {
+    bodyJson = body.toJson();
+  }
 
-  /// Email address for the current user.
-  final String email;
-
-  Map<String, dynamic> toJson() => _$UserRegisterSchemaToJson(this);
+  @override
+  final int status;
 }
 
 abstract class Testapi {
-  Future<UserRegisterPostResponse> userRegisterPost(UserRegisterSchema body);
+  /// null
+  Future<UserRegisterPostResponse> userRegisterPost(
+      _i2.OpenApiRequest request, RegisterRequest body);
+
+  /// null
+  Future<HelloNameGetResponse> helloNameGet(
+      _i2.OpenApiRequest request, String name);
 }
 
 class TestapiRouter extends _i2.OpenApiServerRouterBase {
@@ -53,7 +72,11 @@ class TestapiRouter extends _i2.OpenApiServerRouterBase {
   void configure() {
     addRoute('/user/register', 'post', (_i2.OpenApiRequest request) async {
       return await impl.userRegisterPost(
-          UserRegisterSchema.fromJson(request.readJsonBody()));
+          request, RegisterRequest.fromJson(await request.readJsonBody()));
+    });
+    addRoute('/hello/{name}', 'get', (_i2.OpenApiRequest request) async {
+      return await impl.helloNameGet(
+          request, paramToString(request.pathParameter('name')));
     });
   }
 }

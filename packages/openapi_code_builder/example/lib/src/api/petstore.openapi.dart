@@ -115,39 +115,6 @@ class Tag {
 
 ///
 @_i1.JsonSerializable()
-class PetCategory {
-  PetCategory({this.id, this.name});
-
-  factory PetCategory.fromJson(Map<String, dynamic> map) =>
-      _$PetCategoryFromJson(map);
-
-  /// null
-  final int id;
-
-  /// null
-  final String name;
-
-  Map<String, dynamic> toJson() => _$PetCategoryToJson(this);
-}
-
-///
-@_i1.JsonSerializable()
-class PetTags {
-  PetTags({this.id, this.name});
-
-  factory PetTags.fromJson(Map<String, dynamic> map) => _$PetTagsFromJson(map);
-
-  /// null
-  final int id;
-
-  /// null
-  final String name;
-
-  Map<String, dynamic> toJson() => _$PetTagsToJson(this);
-}
-
-///
-@_i1.JsonSerializable()
 class Pet {
   Pet(
       {this.id,
@@ -163,7 +130,7 @@ class Pet {
   final int id;
 
   /// null
-  final PetCategory category;
+  final Category category;
 
   /// null
   final String name;
@@ -172,7 +139,7 @@ class Pet {
   final List<String> photoUrls;
 
   /// null
-  final List<PetTags> tags;
+  final List<Tag> tags;
 
   /// pet status in the store
   final String status;
@@ -204,82 +171,79 @@ class PetPutResponse extends _i2.OpenApiResponse {
   PetPutResponse._(this.status);
 
   /// Invalid ID supplied
-  PetPutResponse.response400() : this._(400);
+  PetPutResponse.response400() : status = 400;
 
   /// Pet not found
-  PetPutResponse.response404() : this._(404);
+  PetPutResponse.response404() : status = 404;
 
   /// Validation exception
-  PetPutResponse.response405() : this._(405);
+  PetPutResponse.response405() : status = 405;
 
+  @override
   final int status;
-}
-
-///
-@_i1.JsonSerializable()
-class PetSchema {
-  PetSchema(
-      {this.id,
-      this.category,
-      this.name,
-      this.photoUrls,
-      this.tags,
-      this.status});
-
-  factory PetSchema.fromJson(Map<String, dynamic> map) =>
-      _$PetSchemaFromJson(map);
-
-  /// null
-  final int id;
-
-  /// null
-  final PetCategory category;
-
-  /// null
-  final String name;
-
-  /// null
-  final List<String> photoUrls;
-
-  /// null
-  final List<PetTags> tags;
-
-  /// pet status in the store
-  final String status;
-
-  Map<String, dynamic> toJson() => _$PetSchemaToJson(this);
 }
 
 class PetPostResponse extends _i2.OpenApiResponse {
   PetPostResponse._(this.status);
 
   /// Invalid input
-  PetPostResponse.response405() : this._(405);
+  PetPostResponse.response405() : status = 405;
 
+  @override
   final int status;
+}
+
+///
+@_i1.JsonSerializable()
+class PetFindByStatusGetResponse200 {
+  PetFindByStatusGetResponse200();
+
+  factory PetFindByStatusGetResponse200.fromJson(Map<String, dynamic> map) =>
+      _$PetFindByStatusGetResponse200FromJson(map);
+
+  Map<String, dynamic> toJson() => _$PetFindByStatusGetResponse200ToJson(this);
 }
 
 class PetFindByStatusGetResponse extends _i2.OpenApiResponse {
   PetFindByStatusGetResponse._(this.status);
 
   /// successful operation
-  PetFindByStatusGetResponse.response200() : this._(200);
+  PetFindByStatusGetResponse.response200(PetFindByStatusGetResponse200 body)
+      : status = 200 {
+    bodyJson = body.toJson();
+  }
 
   /// Invalid status value
-  PetFindByStatusGetResponse.response400() : this._(400);
+  PetFindByStatusGetResponse.response400() : status = 400;
 
+  @override
   final int status;
+}
+
+///
+@_i1.JsonSerializable()
+class PetFindByTagsGetResponse200 {
+  PetFindByTagsGetResponse200();
+
+  factory PetFindByTagsGetResponse200.fromJson(Map<String, dynamic> map) =>
+      _$PetFindByTagsGetResponse200FromJson(map);
+
+  Map<String, dynamic> toJson() => _$PetFindByTagsGetResponse200ToJson(this);
 }
 
 class PetFindByTagsGetResponse extends _i2.OpenApiResponse {
   PetFindByTagsGetResponse._(this.status);
 
   /// successful operation
-  PetFindByTagsGetResponse.response200() : this._(200);
+  PetFindByTagsGetResponse.response200(PetFindByTagsGetResponse200 body)
+      : status = 200 {
+    bodyJson = body.toJson();
+  }
 
   /// Invalid tag value
-  PetFindByTagsGetResponse.response400() : this._(400);
+  PetFindByTagsGetResponse.response400() : status = 400;
 
+  @override
   final int status;
 }
 
@@ -287,14 +251,17 @@ class PetPetIdGetResponse extends _i2.OpenApiResponse {
   PetPetIdGetResponse._(this.status);
 
   /// successful operation
-  PetPetIdGetResponse.response200() : this._(200);
+  PetPetIdGetResponse.response200(Pet body) : status = 200 {
+    bodyJson = body.toJson();
+  }
 
   /// Invalid ID supplied
-  PetPetIdGetResponse.response400() : this._(400);
+  PetPetIdGetResponse.response400() : status = 400;
 
   /// Pet not found
-  PetPetIdGetResponse.response404() : this._(404);
+  PetPetIdGetResponse.response404() : status = 404;
 
+  @override
   final int status;
 }
 
@@ -302,8 +269,9 @@ class PetPetIdPostResponse extends _i2.OpenApiResponse {
   PetPetIdPostResponse._(this.status);
 
   /// Invalid input
-  PetPetIdPostResponse.response405() : this._(405);
+  PetPetIdPostResponse.response405() : status = 405;
 
+  @override
   final int status;
 }
 
@@ -311,11 +279,12 @@ class PetPetIdDeleteResponse extends _i2.OpenApiResponse {
   PetPetIdDeleteResponse._(this.status);
 
   /// Invalid ID supplied
-  PetPetIdDeleteResponse.response400() : this._(400);
+  PetPetIdDeleteResponse.response400() : status = 400;
 
   /// Pet not found
-  PetPetIdDeleteResponse.response404() : this._(404);
+  PetPetIdDeleteResponse.response404() : status = 404;
 
+  @override
   final int status;
 }
 
@@ -323,17 +292,35 @@ class PetPetIdUploadImagePostResponse extends _i2.OpenApiResponse {
   PetPetIdUploadImagePostResponse._(this.status);
 
   /// successful operation
-  PetPetIdUploadImagePostResponse.response200() : this._(200);
+  PetPetIdUploadImagePostResponse.response200(ApiResponse body) : status = 200 {
+    bodyJson = body.toJson();
+  }
 
+  @override
   final int status;
+}
+
+///
+@_i1.JsonSerializable()
+class StoreInventoryGetResponse200 {
+  StoreInventoryGetResponse200();
+
+  factory StoreInventoryGetResponse200.fromJson(Map<String, dynamic> map) =>
+      _$StoreInventoryGetResponse200FromJson(map);
+
+  Map<String, dynamic> toJson() => _$StoreInventoryGetResponse200ToJson(this);
 }
 
 class StoreInventoryGetResponse extends _i2.OpenApiResponse {
   StoreInventoryGetResponse._(this.status);
 
   /// successful operation
-  StoreInventoryGetResponse.response200() : this._(200);
+  StoreInventoryGetResponse.response200(StoreInventoryGetResponse200 body)
+      : status = 200 {
+    bodyJson = body.toJson();
+  }
 
+  @override
   final int status;
 }
 
@@ -341,61 +328,32 @@ class StoreOrderPostResponse extends _i2.OpenApiResponse {
   StoreOrderPostResponse._(this.status);
 
   /// successful operation
-  StoreOrderPostResponse.response200() : this._(200);
+  StoreOrderPostResponse.response200(Order body) : status = 200 {
+    bodyJson = body.toJson();
+  }
 
   /// Invalid Order
-  StoreOrderPostResponse.response400() : this._(400);
+  StoreOrderPostResponse.response400() : status = 400;
 
+  @override
   final int status;
-}
-
-///
-@_i1.JsonSerializable()
-class StoreOrderSchema {
-  StoreOrderSchema(
-      {this.id,
-      this.petId,
-      this.quantity,
-      this.shipDate,
-      this.status,
-      this.complete});
-
-  factory StoreOrderSchema.fromJson(Map<String, dynamic> map) =>
-      _$StoreOrderSchemaFromJson(map);
-
-  /// null
-  final int id;
-
-  /// null
-  final int petId;
-
-  /// null
-  final int quantity;
-
-  /// null
-  final String shipDate;
-
-  /// Order Status
-  final String status;
-
-  /// null
-  final bool complete;
-
-  Map<String, dynamic> toJson() => _$StoreOrderSchemaToJson(this);
 }
 
 class StoreOrderOrderIdGetResponse extends _i2.OpenApiResponse {
   StoreOrderOrderIdGetResponse._(this.status);
 
   /// successful operation
-  StoreOrderOrderIdGetResponse.response200() : this._(200);
+  StoreOrderOrderIdGetResponse.response200(Order body) : status = 200 {
+    bodyJson = body.toJson();
+  }
 
   /// Invalid ID supplied
-  StoreOrderOrderIdGetResponse.response400() : this._(400);
+  StoreOrderOrderIdGetResponse.response400() : status = 400;
 
   /// Order not found
-  StoreOrderOrderIdGetResponse.response404() : this._(404);
+  StoreOrderOrderIdGetResponse.response404() : status = 404;
 
+  @override
   final int status;
 }
 
@@ -403,11 +361,12 @@ class StoreOrderOrderIdDeleteResponse extends _i2.OpenApiResponse {
   StoreOrderOrderIdDeleteResponse._(this.status);
 
   /// Invalid ID supplied
-  StoreOrderOrderIdDeleteResponse.response400() : this._(400);
+  StoreOrderOrderIdDeleteResponse.response400() : status = 400;
 
   /// Order not found
-  StoreOrderOrderIdDeleteResponse.response404() : this._(404);
+  StoreOrderOrderIdDeleteResponse.response404() : status = 404;
 
+  @override
   final int status;
 }
 
@@ -417,50 +376,8 @@ class UserPostResponse extends _i2.OpenApiResponse {
   /// successful operation
   UserPostResponse.response(int status) : this._(status);
 
+  @override
   final int status;
-}
-
-///
-@_i1.JsonSerializable()
-class UserSchema {
-  UserSchema(
-      {this.id,
-      this.username,
-      this.firstName,
-      this.lastName,
-      this.email,
-      this.password,
-      this.phone,
-      this.userStatus});
-
-  factory UserSchema.fromJson(Map<String, dynamic> map) =>
-      _$UserSchemaFromJson(map);
-
-  /// null
-  final int id;
-
-  /// null
-  final String username;
-
-  /// null
-  final String firstName;
-
-  /// null
-  final String lastName;
-
-  /// null
-  final String email;
-
-  /// null
-  final String password;
-
-  /// null
-  final String phone;
-
-  /// User Status
-  final int userStatus;
-
-  Map<String, dynamic> toJson() => _$UserSchemaToJson(this);
 }
 
 class UserCreateWithArrayPostResponse extends _i2.OpenApiResponse {
@@ -469,6 +386,7 @@ class UserCreateWithArrayPostResponse extends _i2.OpenApiResponse {
   /// successful operation
   UserCreateWithArrayPostResponse.response(int status) : this._(status);
 
+  @override
   final int status;
 }
 
@@ -489,18 +407,34 @@ class UserCreateWithListPostResponse extends _i2.OpenApiResponse {
   /// successful operation
   UserCreateWithListPostResponse.response(int status) : this._(status);
 
+  @override
   final int status;
+}
+
+///
+@_i1.JsonSerializable()
+class UserLoginGetResponse200 {
+  UserLoginGetResponse200();
+
+  factory UserLoginGetResponse200.fromJson(Map<String, dynamic> map) =>
+      _$UserLoginGetResponse200FromJson(map);
+
+  Map<String, dynamic> toJson() => _$UserLoginGetResponse200ToJson(this);
 }
 
 class UserLoginGetResponse extends _i2.OpenApiResponse {
   UserLoginGetResponse._(this.status);
 
   /// successful operation
-  UserLoginGetResponse.response200() : this._(200);
+  UserLoginGetResponse.response200(UserLoginGetResponse200 body)
+      : status = 200 {
+    bodyJson = body.toJson();
+  }
 
   /// Invalid username/password supplied
-  UserLoginGetResponse.response400() : this._(400);
+  UserLoginGetResponse.response400() : status = 400;
 
+  @override
   final int status;
 }
 
@@ -510,6 +444,7 @@ class UserLogoutGetResponse extends _i2.OpenApiResponse {
   /// successful operation
   UserLogoutGetResponse.response(int status) : this._(status);
 
+  @override
   final int status;
 }
 
@@ -517,14 +452,17 @@ class UserUsernameGetResponse extends _i2.OpenApiResponse {
   UserUsernameGetResponse._(this.status);
 
   /// successful operation
-  UserUsernameGetResponse.response200() : this._(200);
+  UserUsernameGetResponse.response200(User body) : status = 200 {
+    bodyJson = body.toJson();
+  }
 
   /// Invalid username supplied
-  UserUsernameGetResponse.response400() : this._(400);
+  UserUsernameGetResponse.response400() : status = 400;
 
   /// User not found
-  UserUsernameGetResponse.response404() : this._(404);
+  UserUsernameGetResponse.response404() : status = 404;
 
+  @override
   final int status;
 }
 
@@ -532,93 +470,104 @@ class UserUsernamePutResponse extends _i2.OpenApiResponse {
   UserUsernamePutResponse._(this.status);
 
   /// Invalid user supplied
-  UserUsernamePutResponse.response400() : this._(400);
+  UserUsernamePutResponse.response400() : status = 400;
 
   /// User not found
-  UserUsernamePutResponse.response404() : this._(404);
+  UserUsernamePutResponse.response404() : status = 404;
 
+  @override
   final int status;
-}
-
-///
-@_i1.JsonSerializable()
-class UserUsernameSchema {
-  UserUsernameSchema(
-      {this.id,
-      this.username,
-      this.firstName,
-      this.lastName,
-      this.email,
-      this.password,
-      this.phone,
-      this.userStatus});
-
-  factory UserUsernameSchema.fromJson(Map<String, dynamic> map) =>
-      _$UserUsernameSchemaFromJson(map);
-
-  /// null
-  final int id;
-
-  /// null
-  final String username;
-
-  /// null
-  final String firstName;
-
-  /// null
-  final String lastName;
-
-  /// null
-  final String email;
-
-  /// null
-  final String password;
-
-  /// null
-  final String phone;
-
-  /// User Status
-  final int userStatus;
-
-  Map<String, dynamic> toJson() => _$UserUsernameSchemaToJson(this);
 }
 
 class UserUsernameDeleteResponse extends _i2.OpenApiResponse {
   UserUsernameDeleteResponse._(this.status);
 
   /// Invalid username supplied
-  UserUsernameDeleteResponse.response400() : this._(400);
+  UserUsernameDeleteResponse.response400() : status = 400;
 
   /// User not found
-  UserUsernameDeleteResponse.response404() : this._(404);
+  UserUsernameDeleteResponse.response404() : status = 404;
 
+  @override
   final int status;
 }
 
 abstract class Petstore {
-  Future<PetPutResponse> petPut(PetSchema body);
-  Future<PetPostResponse> petPost(PetSchema body);
-  Future<PetFindByStatusGetResponse> petFindByStatusGet(List<String> status);
-  Future<PetFindByTagsGetResponse> petFindByTagsGet(List<String> tags);
-  Future<PetPetIdGetResponse> petPetIdGet(int petId);
-  Future<PetPetIdPostResponse> petPetIdPost(int petId);
-  Future<PetPetIdDeleteResponse> petPetIdDelete(String apiKey, int petId);
-  Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(int petId);
-  Future<StoreInventoryGetResponse> storeInventoryGet();
-  Future<StoreOrderPostResponse> storeOrderPost(StoreOrderSchema body);
-  Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(int orderId);
-  Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(int orderId);
-  Future<UserPostResponse> userPost(UserSchema body);
+  /// null
+  Future<PetPutResponse> petPut(_i2.OpenApiRequest request, Pet body);
+
+  /// null
+  Future<PetPostResponse> petPost(_i2.OpenApiRequest request, Pet body);
+
+  /// Multiple status values can be provided with comma separated strings
+  Future<PetFindByStatusGetResponse> petFindByStatusGet(
+      _i2.OpenApiRequest request, List<String> status);
+
+  /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
+  Future<PetFindByTagsGetResponse> petFindByTagsGet(
+      _i2.OpenApiRequest request, List<String> tags);
+
+  /// Returns a single pet
+  Future<PetPetIdGetResponse> petPetIdGet(
+      _i2.OpenApiRequest request, int petId);
+
+  /// null
+  Future<PetPetIdPostResponse> petPetIdPost(
+      _i2.OpenApiRequest request, int petId);
+
+  /// null
+  Future<PetPetIdDeleteResponse> petPetIdDelete(
+      _i2.OpenApiRequest request, String apiKey, int petId);
+
+  /// null
+  Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(
+      _i2.OpenApiRequest request, int petId);
+
+  /// Returns a map of status codes to quantities
+  Future<StoreInventoryGetResponse> storeInventoryGet(
+      _i2.OpenApiRequest request);
+
+  /// null
+  Future<StoreOrderPostResponse> storeOrderPost(
+      _i2.OpenApiRequest request, Order body);
+
+  /// For valid response try integer IDs with value >= 1 and <= 10.\ \ Other values will generated exceptions
+  Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(
+      _i2.OpenApiRequest request, int orderId);
+
+  /// For valid response try integer IDs with positive integer value.\ \ Negative or non-integer values will generate API errors
+  Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(
+      _i2.OpenApiRequest request, int orderId);
+
+  /// This can only be done by the logged in user.
+  Future<UserPostResponse> userPost(_i2.OpenApiRequest request, User body);
+
+  /// null
   Future<UserCreateWithArrayPostResponse> userCreateWithArrayPost(
-      UserCreateWithArraySchema body);
+      _i2.OpenApiRequest request, UserCreateWithArraySchema body);
+
+  /// null
   Future<UserCreateWithListPostResponse> userCreateWithListPost(
-      UserCreateWithArraySchema body);
-  Future<UserLoginGetResponse> userLoginGet(String username, String password);
-  Future<UserLogoutGetResponse> userLogoutGet();
-  Future<UserUsernameGetResponse> userUsernameGet(String username);
+      _i2.OpenApiRequest request, UserCreateWithArraySchema body);
+
+  /// null
+  Future<UserLoginGetResponse> userLoginGet(
+      _i2.OpenApiRequest request, String username, String password);
+
+  /// null
+  Future<UserLogoutGetResponse> userLogoutGet(_i2.OpenApiRequest request);
+
+  /// null
+  Future<UserUsernameGetResponse> userUsernameGet(
+      _i2.OpenApiRequest request, String username);
+
+  /// This can only be done by the logged in user.
   Future<UserUsernamePutResponse> userUsernamePut(
-      String username, UserUsernameSchema body);
-  Future<UserUsernameDeleteResponse> userUsernameDelete(String username);
+      _i2.OpenApiRequest request, String username, User body);
+
+  /// This can only be done by the logged in user.
+  Future<UserUsernameDeleteResponse> userUsernameDelete(
+      _i2.OpenApiRequest request, String username);
 }
 
 class PetstoreRouter extends _i2.OpenApiServerRouterBase {
@@ -628,84 +577,93 @@ class PetstoreRouter extends _i2.OpenApiServerRouterBase {
 
   void configure() {
     addRoute('/pet', 'put', (_i2.OpenApiRequest request) async {
-      return await impl.petPut(PetSchema.fromJson(request.readJsonBody()));
+      return await impl.petPut(
+          request, Pet.fromJson(await request.readJsonBody()));
     });
     addRoute('/pet', 'post', (_i2.OpenApiRequest request) async {
-      return await impl.petPost(PetSchema.fromJson(request.readJsonBody()));
+      return await impl.petPost(
+          request, Pet.fromJson(await request.readJsonBody()));
     });
     addRoute('/pet/findByStatus', 'get', (_i2.OpenApiRequest request) async {
-      return await impl.petFindByStatusGet(request.queryParameter('status'));
+      return await impl.petFindByStatusGet(
+          request, request.queryParameter('status'));
     });
     addRoute('/pet/findByTags', 'get', (_i2.OpenApiRequest request) async {
-      return await impl.petFindByTagsGet(request.queryParameter('tags'));
+      return await impl.petFindByTagsGet(
+          request, request.queryParameter('tags'));
     });
     addRoute('/pet/{petId}', 'get', (_i2.OpenApiRequest request) async {
-      return await impl.petPetIdGet(paramToInt(request.pathParameter('petId')));
+      return await impl.petPetIdGet(
+          request, paramToInt(request.pathParameter('petId')));
     });
     addRoute('/pet/{petId}', 'post', (_i2.OpenApiRequest request) async {
-      return await impl
-          .petPetIdPost(paramToInt(request.pathParameter('petId')));
+      return await impl.petPetIdPost(
+          request, paramToInt(request.pathParameter('petId')));
     });
     addRoute('/pet/{petId}', 'delete', (_i2.OpenApiRequest request) async {
       return await impl.petPetIdDelete(
+          request,
           paramToString(request.headerParameter('api_key')),
           paramToInt(request.pathParameter('petId')));
     });
     addRoute('/pet/{petId}/uploadImage', 'post',
         (_i2.OpenApiRequest request) async {
-      return await impl
-          .petPetIdUploadImagePost(paramToInt(request.pathParameter('petId')));
+      return await impl.petPetIdUploadImagePost(
+          request, paramToInt(request.pathParameter('petId')));
     });
     addRoute('/store/inventory', 'get', (_i2.OpenApiRequest request) async {
-      return await impl.storeInventoryGet();
+      return await impl.storeInventoryGet(request);
     });
     addRoute('/store/order', 'post', (_i2.OpenApiRequest request) async {
-      return await impl
-          .storeOrderPost(StoreOrderSchema.fromJson(request.readJsonBody()));
+      return await impl.storeOrderPost(
+          request, Order.fromJson(await request.readJsonBody()));
     });
     addRoute('/store/order/{orderId}', 'get',
         (_i2.OpenApiRequest request) async {
-      return await impl
-          .storeOrderOrderIdGet(paramToInt(request.pathParameter('orderId')));
+      return await impl.storeOrderOrderIdGet(
+          request, paramToInt(request.pathParameter('orderId')));
     });
     addRoute('/store/order/{orderId}', 'delete',
         (_i2.OpenApiRequest request) async {
       return await impl.storeOrderOrderIdDelete(
-          paramToInt(request.pathParameter('orderId')));
+          request, paramToInt(request.pathParameter('orderId')));
     });
     addRoute('/user', 'post', (_i2.OpenApiRequest request) async {
-      return await impl.userPost(UserSchema.fromJson(request.readJsonBody()));
+      return await impl.userPost(
+          request, User.fromJson(await request.readJsonBody()));
     });
     addRoute('/user/createWithArray', 'post',
         (_i2.OpenApiRequest request) async {
-      return await impl.userCreateWithArrayPost(
-          UserCreateWithArraySchema.fromJson(request.readJsonBody()));
+      return await impl.userCreateWithArrayPost(request,
+          UserCreateWithArraySchema.fromJson(await request.readJsonBody()));
     });
     addRoute('/user/createWithList', 'post',
         (_i2.OpenApiRequest request) async {
-      return await impl.userCreateWithListPost(
-          UserCreateWithArraySchema.fromJson(request.readJsonBody()));
+      return await impl.userCreateWithListPost(request,
+          UserCreateWithArraySchema.fromJson(await request.readJsonBody()));
     });
     addRoute('/user/login', 'get', (_i2.OpenApiRequest request) async {
       return await impl.userLoginGet(
+          request,
           paramToString(request.queryParameter('username')),
           paramToString(request.queryParameter('password')));
     });
     addRoute('/user/logout', 'get', (_i2.OpenApiRequest request) async {
-      return await impl.userLogoutGet();
+      return await impl.userLogoutGet(request);
     });
     addRoute('/user/{username}', 'get', (_i2.OpenApiRequest request) async {
-      return await impl
-          .userUsernameGet(paramToString(request.pathParameter('username')));
+      return await impl.userUsernameGet(
+          request, paramToString(request.pathParameter('username')));
     });
     addRoute('/user/{username}', 'put', (_i2.OpenApiRequest request) async {
       return await impl.userUsernamePut(
+          request,
           paramToString(request.pathParameter('username')),
-          UserUsernameSchema.fromJson(request.readJsonBody()));
+          User.fromJson(await request.readJsonBody()));
     });
     addRoute('/user/{username}', 'delete', (_i2.OpenApiRequest request) async {
-      return await impl
-          .userUsernameDelete(paramToString(request.pathParameter('username')));
+      return await impl.userUsernameDelete(
+          request, paramToString(request.pathParameter('username')));
     });
   }
 }

@@ -17,13 +17,13 @@ Map<String, dynamic> _$RegisterRequestToJson(RegisterRequest instance) =>
       'email': instance.email,
     };
 
-UserRegisterSchema _$UserRegisterSchemaFromJson(Map<String, dynamic> json) {
-  return UserRegisterSchema(
-    email: json['email'] as String,
+HelloResponse _$HelloResponseFromJson(Map<String, dynamic> json) {
+  return HelloResponse(
+    message: json['message'] as String,
   );
 }
 
-Map<String, dynamic> _$UserRegisterSchemaToJson(UserRegisterSchema instance) =>
+Map<String, dynamic> _$HelloResponseToJson(HelloResponse instance) =>
     <String, dynamic>{
-      'email': instance.email,
+      'message': instance.message,
     };
