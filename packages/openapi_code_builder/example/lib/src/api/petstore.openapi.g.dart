@@ -113,31 +113,31 @@ Map<String, dynamic> _$ApiResponseToJson(ApiResponse instance) =>
       'message': instance.message,
     };
 
-PetFindByStatusGetResponse200 _$PetFindByStatusGetResponse200FromJson(
+PetFindByStatusGetResponseBody200 _$PetFindByStatusGetResponseBody200FromJson(
     Map<String, dynamic> json) {
-  return PetFindByStatusGetResponse200();
+  return PetFindByStatusGetResponseBody200();
 }
 
-Map<String, dynamic> _$PetFindByStatusGetResponse200ToJson(
-        PetFindByStatusGetResponse200 instance) =>
+Map<String, dynamic> _$PetFindByStatusGetResponseBody200ToJson(
+        PetFindByStatusGetResponseBody200 instance) =>
     <String, dynamic>{};
 
-PetFindByTagsGetResponse200 _$PetFindByTagsGetResponse200FromJson(
+PetFindByTagsGetResponseBody200 _$PetFindByTagsGetResponseBody200FromJson(
     Map<String, dynamic> json) {
-  return PetFindByTagsGetResponse200();
+  return PetFindByTagsGetResponseBody200();
 }
 
-Map<String, dynamic> _$PetFindByTagsGetResponse200ToJson(
-        PetFindByTagsGetResponse200 instance) =>
+Map<String, dynamic> _$PetFindByTagsGetResponseBody200ToJson(
+        PetFindByTagsGetResponseBody200 instance) =>
     <String, dynamic>{};
 
-StoreInventoryGetResponse200 _$StoreInventoryGetResponse200FromJson(
+StoreInventoryGetResponseBody200 _$StoreInventoryGetResponseBody200FromJson(
     Map<String, dynamic> json) {
-  return StoreInventoryGetResponse200();
+  return StoreInventoryGetResponseBody200();
 }
 
-Map<String, dynamic> _$StoreInventoryGetResponse200ToJson(
-        StoreInventoryGetResponse200 instance) =>
+Map<String, dynamic> _$StoreInventoryGetResponseBody200ToJson(
+        StoreInventoryGetResponseBody200 instance) =>
     <String, dynamic>{};
 
 UserCreateWithArraySchema _$UserCreateWithArraySchemaFromJson(
@@ -149,11 +149,11 @@ Map<String, dynamic> _$UserCreateWithArraySchemaToJson(
         UserCreateWithArraySchema instance) =>
     <String, dynamic>{};
 
-UserLoginGetResponse200 _$UserLoginGetResponse200FromJson(
+UserLoginGetResponseBody200 _$UserLoginGetResponseBody200FromJson(
     Map<String, dynamic> json) {
-  return UserLoginGetResponse200();
+  return UserLoginGetResponseBody200();
 }
 
-Map<String, dynamic> _$UserLoginGetResponse200ToJson(
-        UserLoginGetResponse200 instance) =>
+Map<String, dynamic> _$UserLoginGetResponseBody200ToJson(
+        UserLoginGetResponseBody200 instance) =>
     <String, dynamic>{};

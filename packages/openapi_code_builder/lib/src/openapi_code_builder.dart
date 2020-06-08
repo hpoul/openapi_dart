@@ -26,6 +26,18 @@ class OpenApiLibraryGenerator {
       refer('OpenApiRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiResponse =
       refer('OpenApiResponse', 'package:openapi_base/openapi_base.dart');
+  final _openApiClientBase =
+      refer('OpenApiClientBase', 'package:openapi_base/openapi_base.dart');
+  final _openApiClientRequest =
+      refer('OpenApiClientRequest', 'package:openapi_base/openapi_base.dart');
+  final _openApiClientResponse =
+      refer('OpenApiClientResponse', 'package:openapi_base/openapi_base.dart');
+  final _openApiRequestSender =
+      refer('OpenApiRequestSender', 'package:openapi_base/openapi_base.dart');
+  final _responseMapType =
+      refer('ResponseMap', 'package:openapi_base/openapi_base.dart');
+  final _required = refer('required', 'package:meta/meta.dart');
+  final _override = refer('override');
 
   static const mediaTypeJson = 'application/json';
 
@@ -43,7 +55,37 @@ class OpenApiLibraryGenerator {
     }
 
     // Create path configs
-
+    final clientInterface = ClassBuilder()
+      ..name = '${baseName.pascalCase}Client'
+      ..abstract = true;
+    final fields = [
+      MapEntry('baseUri', refer('Uri')),
+      MapEntry('requestSender', _openApiRequestSender),
+    ];
+    final clientClass = ClassBuilder()
+      ..name = '_${baseName.pascalCase}ClientImpl'
+      ..extend = _openApiClientBase
+      ..implements.add(refer(clientInterface.name))
+      ..constructors.add(Constructor(
+        (cb) => cb
+          ..name = '_'
+          ..requiredParameters.addAll(fields.map((f) => Parameter((pb) => pb
+            ..name = f.key
+            ..toThis = true))),
+      ))
+      ..fields.addAll(fields.map((f) => Field((fb) => fb
+        ..name = f.key
+        ..type = f.value
+        ..annotations.add(_override)
+        ..modifier = FieldModifier.final$)));
+    clientInterface.constructors.add(Constructor((cb) => cb
+      ..factory = true
+      ..requiredParameters.addAll(fields.map((f) => Parameter((pb) => pb
+        ..name = f.key
+        ..type = f.value)))
+      ..body = refer(clientClass.name)
+          .newInstanceNamed('_', fields.map((f) => refer(f.key)))
+          .code));
     final c = Class((cb) {
       cb.name = baseName.pascalCase;
       cb.abstract = true;
@@ -61,61 +103,160 @@ class OpenApiLibraryGenerator {
           final responseClass = ClassBuilder();
           responseClass
             ..name = '${operationName.pascalCase}Response'
+            ..abstract = true
             ..extend = _openApiResponse
-            ..constructors.add(Constructor((cb) => cb
-              ..name = '_'
-              ..requiredParameters.add(Parameter((pb) => pb
-                ..name = 'status'
-                ..toThis = true))))
-            ..fields.add(Field((fb) => fb
-              ..name = 'status'
-              ..annotations.add(refer('override'))
-              ..modifier = FieldModifier.final$
-              ..type = refer('int')));
+            ..constructors.add(Constructor());
+//            ..constructors.add(Constructor((cb) => cb
+//              ..name = '_'
+//              ..requiredParameters.add(Parameter((pb) => pb
+//                ..name = 'status'
+//                ..toThis = true))))
+          final mapMethod = MethodBuilder()
+            ..name = 'map'
+            ..returns = refer('void');
+          final mapCode = <Code>[];
+          Reference successResponseType;
+          final clientResponseParse = <String, Expression>{};
           for (final response in operation.value.responses.entries) {
-            if (response.key == 'default') {
-              responseClass.constructors.add(Constructor((cb) {
+            final statusAsParameter = response.key == 'default';
+            final codeName = response.key.pascalCase;
+            final responseCodeClass = ClassBuilder()
+              ..extend = refer(responseClass.name)
+              ..name = '${responseClass.name}$codeName'
+              ..fields.add(Field((fb) => fb
+                ..name = 'status'
+                ..annotations.add(_override)
+                ..modifier = FieldModifier.final$
+                ..type = refer('int')));
+            mapMethod.optionalParameters.add(Parameter((pb) => pb
+              ..name = 'on$codeName'
+              ..annotations.add(_required)
+              ..named = true
+              ..type =
+                  _responseMapType.addGenerics(refer(responseCodeClass.name))));
+            if (mapCode.isNotEmpty) {
+              mapCode.add(const Code(' else '));
+            }
+            mapCode.add(const Code('if (this is '));
+            mapCode.add(refer(responseCodeClass.name).code);
+            mapCode.add(const Code(') {'));
+            mapCode.add(refer('on$codeName')(
+                [refer('this').asA(refer(responseCodeClass.name))]).statement);
+            mapCode.add(const Code('}'));
+            final clientResponseParseParams = <Expression>[];
+            final constructor = Constructor((cb) {
+              cb
+                ..name = 'response$codeName'
+                ..docs.add('/// ${response.value.description}');
+
+              refer(cb.name);
+              if (statusAsParameter) {
                 cb
-                  ..name = 'response'
                   ..requiredParameters.add(
                     Parameter((pb) => pb
                       ..name = 'status'
                       ..type = refer('int')),
                   )
-                  ..docs.add('/// ${response.value.description}')
                   ..initializers
-                      .add(refer('this').property('_')([refer('status')]).code);
-              }));
-            } else {
-              responseClass.constructors.add(Constructor((cb) {
-                cb
-                  ..name = 'response${response.key}'
-                  ..docs.add('/// ${response.value.description}')
-                  ..initializers.add(refer('status')
-                      .assign(literalNum(int.parse(response.key)))
-                      .code);
-                final content = (response.value.content ?? {})[mediaTypeJson];
-                if (content != null) {
-                  cb.requiredParameters.add(Parameter((pb) => pb
-                    ..name = 'body'
-                    ..type = _schemaReference(
-                        '${responseClass.name}${response.key}',
-                        content.schema)));
-                  cb.body = Block.of([
-                    refer('bodyJson')
-                        .assign(refer('body').property('toJson')([]))
-                        .statement
-                  ]);
+                      .add(refer('status').assign(refer('status')).code);
+                clientResponseParseParams
+                    .add(refer('response').property('status'));
+              } else {
+                cb.initializers.add(refer('status')
+                    .assign(literalNum(int.parse(response.key)))
+                    .code);
+              }
+              final content = (response.value.content ?? {})[mediaTypeJson];
+              if (content != null) {
+                final bodyType = _schemaReference(
+                    '${responseClass.name}Body$codeName', content.schema);
+                if (response.key.startsWith('2') ||
+                    (response.key == 'default' &&
+                        successResponseType == null)) {
+                  successResponseType = bodyType;
                 }
-              }));
-            }
+                responseCodeClass.fields.add(Field((fb) => fb
+                  ..name = 'body'
+                  ..type = bodyType
+                  ..modifier = FieldModifier.final$));
+                cb.requiredParameters.add(Parameter((pb) => pb
+                  ..name = 'body'
+                  ..type = bodyType
+                  ..toThis = true));
+                cb.body = Block.of([
+                  refer('bodyJson')
+                      .assign(refer('body').property('toJson')([]))
+                      .statement
+                ]);
+                clientResponseParseParams.add(bodyType.newInstanceNamed(
+                    'fromJson', [
+                  refer('response').property('responseBodyJson')([]).awaited
+                ]));
+              }
+            });
+
+            responseCodeClass.constructors.add((constructor.toBuilder()
+                  ..requiredParameters.map((pb) => (pb.toBuilder()
+                        ..type = pb.toThis ? null : pb.type)
+                      .build()))
+                .build());
+            responseClass.constructors.add((constructor.toBuilder()
+                  ..factory = true
+                  ..initializers.clear()
+                  ..requiredParameters
+                      .map((pb) => (pb.toBuilder()..toThis = false).build())
+                  ..body = refer(responseCodeClass.name)
+                      .newInstanceNamed(
+                          constructor.name,
+                          constructor.requiredParameters
+                              .map((e) => refer(e.name))
+                              .toList())
+                      .code)
+                .build());
+            clientResponseParse[response.key] = Method((mb) => mb
+              ..modifier = MethodModifier.async
+              ..requiredParameters.add(Parameter((pb) => pb
+                ..name = 'response'
+                ..type = _openApiClientResponse))
+              ..body = refer(responseCodeClass.name)
+                  .newInstanceNamed(constructor.name, clientResponseParseParams)
+                  .code).closure;
+            lb.body.add(responseCodeClass.build());
           }
+          if (mapCode.isNotEmpty) {
+            mapCode.add(const Code('else {'));
+            mapCode.add(const Code(
+                r'''  throw StateError('Invalid instance type $this');'''));
+            mapCode.add(const Code('}'));
+          }
+          mapMethod.body = Block.of(mapCode);
+          responseClass.methods.add(mapMethod.build());
           lb.body.add(responseClass.build());
+
+          final clientMethod = MethodBuilder()
+            ..name = operationName
+            ..addDartDoc(operation.value.summary)
+            ..addDartDoc(operation.value.description)
+            ..docs.add('/// ${operation.key}: ${path.key}')
+            ..returns =
+                _referType('Future', generics: [refer(responseClass.name)])
+            ..modifier = MethodModifier.async;
+          final clientCode = <Code>[
+            _openApiClientRequest
+                .newInstance([
+                  literalString(operation.key),
+                  literalString(path.key),
+                ])
+                .assignFinal('request')
+                .statement,
+          ];
 
           cb.methods.add(Method((mb) {
             mb
               ..name = operationName
-              ..docs.add('/// ${operation.value.description}')
+              ..addDartDoc(operation.value.summary)
+              ..addDartDoc(operation.value.description)
+              ..docs.add('/// ${operation.key}: ${path.key}')
               ..returns =
                   _referType('Future', generics: [refer(responseClass.name)]);
 
@@ -133,10 +274,14 @@ class OpenApiLibraryGenerator {
             ];
             for (final param in allParameters) {
               final paramType = _toDartType(operationName, param.schema);
+              final paramName = param.name.camelCase;
               mb.requiredParameters.add(Parameter((pb) => pb
-                ..name = param.name.camelCase
+                ..name = paramName
                 ..type = paramType));
-              final convertParameter = (Expression expression) {
+              clientMethod.requiredParameters.add(Parameter((pb) => pb
+                ..name = paramName
+                ..type = paramType));
+              final decodeParameter = (Expression expression) {
                 switch (param.schema.type) {
                   case APIType.string:
                     return refer('paramToString')([expression]);
@@ -153,22 +298,63 @@ class OpenApiLibraryGenerator {
                     return expression;
                 }
               };
+              final encodeParameter = (Expression expression) {
+                switch (param.schema.type) {
+                  case APIType.string:
+                    return refer('encodeString')([expression]);
+                  case APIType.number:
+                    break;
+                  case APIType.integer:
+                    return refer('encodeInt')([expression]);
+                  case APIType.boolean:
+                    return refer('encodeBool')([expression]);
+                  case APIType.array:
+                    checkState(param.schema.items.type == APIType.string);
+                    return expression;
+                  case APIType.object:
+                    return expression;
+                }
+              };
               switch (param.location) {
                 case APIParameterLocation.query:
-                  parameters.add(convertParameter(refer('request').property(
+                  parameters.add(decodeParameter(refer('request').property(
                       'queryParameter')([literalString(param.name)])));
+                  clientCode.add(refer('request')
+                      .property('addQueryParameter')([
+                        literalString(param.name),
+                        encodeParameter(refer(paramName)),
+                      ])
+                      .statement);
                   break;
                 case APIParameterLocation.header:
-                  parameters.add(convertParameter(refer('request').property(
+                  parameters.add(decodeParameter(refer('request').property(
                       'headerParameter')([literalString(param.name)])));
+                  clientCode.add(refer('request')
+                      .property('addHeaderParameter')([
+                        literalString(param.name),
+                        encodeParameter(refer(paramName)),
+                      ])
+                      .statement);
                   break;
                 case APIParameterLocation.path:
-                  parameters.add(convertParameter(refer('request')
+                  parameters.add(decodeParameter(refer('request')
                       .property('pathParameter')([literalString(param.name)])));
+                  clientCode.add(refer('request')
+                      .property('addPathParameter')([
+                        literalString(param.name),
+                        encodeParameter(refer(paramName)),
+                      ])
+                      .statement);
                   break;
                 case APIParameterLocation.cookie:
-                  parameters.add(convertParameter(refer('request').property(
+                  parameters.add(decodeParameter(refer('request').property(
                       'cookieParameter')([literalString(param.name)])));
+                  clientCode.add(refer('req')
+                      .property('addCookieParameter')([
+                        literalString(param.name),
+                        encodeParameter(refer(paramName)),
+                      ])
+                      .statement);
                   break;
               }
             }
@@ -182,6 +368,7 @@ class OpenApiLibraryGenerator {
                 _logger.finer('reqBody.schema: ${reqBody.schema}');
                 final reference = _schemaReference(
                     '${pathName.pascalCase}Schema', reqBody.schema);
+
                 mb.requiredParameters.add(Parameter((pb) => pb
                   ..name = 'body'
                   ..type = reference));
@@ -190,16 +377,42 @@ class OpenApiLibraryGenerator {
                     refer('request').property('readJsonBody')([]).awaited,
                   ],
                 ));
+                clientMethod.requiredParameters.add(Parameter((pb) => pb
+                  ..name = 'body'
+                  ..type = reference));
+                clientCode.add(refer('request')
+                    .property('setJsonBody')([
+                      refer('body').property('toJson')(
+                          []) /*.asA(_referType('Map',
+                          generics: [refer('String'), refer('dynamic')]))*/
+                    ])
+                    .statement);
               }
             }
 
             _routerConfig(path.key, operation.key,
                 refer('impl').property(operationName)(parameters));
           }));
+
+          clientCode.add(refer('sendRequest')(
+                  [refer('request'), literalMap(clientResponseParse)])
+              .awaited
+              .returned
+              .statement);
+
+          clientMethod.body = Block.of(clientCode);
+          clientClass.methods
+              .add((clientMethod..annotations.add(_override)).build());
+          clientInterface.methods.add((clientMethod.build().toBuilder()
+                ..annotations.clear()
+                ..body = null)
+              .build());
         }
       }
     });
     lb.body.add(c);
+    lb.body.add(clientInterface.build());
+    lb.body.add(clientClass.build());
 
     lb.body.add(Class((cb) {
       cb.name = '${baseName.pascalCase}Router';
@@ -287,10 +500,10 @@ class OpenApiLibraryGenerator {
               ..name = 'fromJson'
               ..factory = true
               ..requiredParameters.add(Parameter((pb) => pb
-                ..name = 'map'
+                ..name = 'jsonMap'
                 ..type = refer('Map<String, dynamic>')))
               ..lambda = true
-              ..body = refer('_\$${key}FromJson').call([refer('map')]).code
+              ..body = refer('_\$${key}FromJson').call([refer('jsonMap')]).code
 //              ..body = Block.of([
 //                InvokeExpression.newOf(
 //                  refer(schemaEntry.key),
@@ -385,6 +598,7 @@ class OpenApiCodeBuilder extends Builder {
     await buildStep.writeAsString(
         outputId,
         DartFormatter().format('// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
+            '// ignore_for_file: prefer_initializing_formals\n\n'
             '${l.accept(emitter)}'));
   }
 
@@ -404,3 +618,23 @@ TypeReference _referType(String name, {String url, List<Reference> generics}) =>
       ..symbol = name
       ..url = url
       ..types.addAll(generics));
+
+extension on Reference {
+  Reference addGenerics(Reference type) {
+    final baseTypes =
+        this is TypeReference ? (this as TypeReference).types : null;
+    return TypeReference((trb) => trb
+      ..symbol = symbol
+      ..url = url
+      ..types.addAll([...?baseTypes, type]));
+  }
+}
+
+extension on MethodBuilder {
+  /// adds the given helpText as `docs` if it is not null.
+  void addDartDoc(String helpText) {
+    if (helpText != null) {
+      docs.add('/// $helpText');
+    }
+  }
+}

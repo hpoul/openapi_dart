@@ -10,11 +10,16 @@ dependencies:
 #  path: ^1.7.0
   meta: ^1.1.8
   open_api: ^2.0.1
-  shelf: ^0.7.5
-  shelf_cookie: ^1.1.1
   uri: ^0.11.3+1
   logging: ^0.11.4
   logging_appenders: ^0.4.2+2
+
+  # server
+  shelf: ^0.7.5
+  shelf_cookie: ^1.1.1
+
+  # for the client:
+  http: ^0.12.1
 
 dev_dependencies:
   pedantic: ^1.9.0
