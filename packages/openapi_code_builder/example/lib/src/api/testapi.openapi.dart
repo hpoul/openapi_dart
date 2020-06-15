@@ -105,10 +105,12 @@ abstract class TestapiClient {
 
   /// Create new user
   /// post: /user/register
+  ///
   Future<UserRegisterPostResponse> userRegisterPost(RegisterRequest body);
 
   /// Say Hello World to {name}
   /// get: /hello/{name}
+  ///
   Future<HelloNameGetResponse> helloNameGet(String name);
 }
 
@@ -124,6 +126,7 @@ class _TestapiClientImpl extends _i2.OpenApiClientBase
 
   /// Create new user
   /// post: /user/register
+  ///
   @override
   Future<UserRegisterPostResponse> userRegisterPost(
       RegisterRequest body) async {
@@ -137,6 +140,7 @@ class _TestapiClientImpl extends _i2.OpenApiClientBase
 
   /// Say Hello World to {name}
   /// get: /hello/{name}
+  ///
   @override
   Future<HelloNameGetResponse> helloNameGet(String name) async {
     final request = _i2.OpenApiClientRequest('get', '/hello/{name}');

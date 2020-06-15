@@ -238,6 +238,7 @@ class OpenApiLibraryGenerator {
             ..addDartDoc(operation.value.summary)
             ..addDartDoc(operation.value.description)
             ..docs.add('/// ${operation.key}: ${path.key}')
+            ..docs.add('///')
             ..returns =
                 _referType('Future', generics: [refer(responseClass.name)])
             ..modifier = MethodModifier.async;
@@ -275,12 +276,20 @@ class OpenApiLibraryGenerator {
             for (final param in allParameters) {
               final paramType = _toDartType(operationName, param.schema);
               final paramName = param.name.camelCase;
-              mb.requiredParameters.add(Parameter((pb) => pb
+              if (param.description != null) {
+                clientMethod.docs
+                    .add('/// * [$paramName]: ${param.description}');
+              }
+              final p = Parameter((pb) => pb
                 ..name = paramName
-                ..type = paramType));
-              clientMethod.requiredParameters.add(Parameter((pb) => pb
-                ..name = paramName
-                ..type = paramType));
+                ..type = paramType
+                ..named = true);
+              mb.requiredParameters.add(p);
+              if (param.isRequired) {
+                clientMethod.requiredParameters.add(p);
+              } else {
+                clientMethod.optionalParameters.add(p);
+              }
               final decodeParameter = (Expression expression) {
                 switch (param.schema.type) {
                   case APIType.string:
@@ -290,13 +299,14 @@ class OpenApiLibraryGenerator {
                   case APIType.integer:
                     return refer('paramToInt')([expression]);
                   case APIType.boolean:
-                    break;
+                    return refer('paramToBool')([expression]);
                   case APIType.array:
                     checkState(param.schema.items.type == APIType.string);
                     return expression;
                   case APIType.object:
                     return expression;
                 }
+                throw StateError('Invalid schema type ${param.schema.type}}');
               };
               final encodeParameter = (Expression expression) {
                 switch (param.schema.type) {
@@ -314,6 +324,7 @@ class OpenApiLibraryGenerator {
                   case APIType.object:
                     return expression;
                 }
+                throw StateError('Invalid schema type ${param.schema.type}}');
               };
               switch (param.location) {
                 case APIParameterLocation.query:
@@ -451,14 +462,19 @@ class OpenApiLibraryGenerator {
     ]));
   }
 
+  String _classNameForComponent(String componentName) {
+    return componentName.pascalCase;
+  }
+
   Reference _schemaReference(String key, APISchemaObject schemaObject) {
     _logger.finer('Looking up ${schemaObject.referenceURI}');
     final uri = schemaObject.referenceURI;
     if (uri != null) {
       final segments = uri.pathSegments;
       if (segments[0] == 'components' && segments[1] == 'schemas') {
+        final name = _classNameForComponent(segments[2]);
         final found = createdSchema.values.firstWhere(
-            (element) => element.symbol == segments[2],
+            (element) => element.symbol == name,
             orElse: () => null);
         if (found != null) {
           _logger.finest('We found it.');
@@ -469,7 +485,7 @@ class OpenApiLibraryGenerator {
     final reference = createdSchema.putIfAbsent(schemaObject, () {
       _logger.finer(
           'Creating schema class. for ${schemaObject.referenceURI} / $key');
-      final c = _createSchemaClass(key, schemaObject);
+      final c = _createSchemaClass(_classNameForComponent(key), schemaObject);
       lb.body.add(c);
 
       return refer(c.name);
@@ -477,18 +493,18 @@ class OpenApiLibraryGenerator {
     return reference;
   }
 
-  Class _createSchemaClass(String key, APISchemaObject obj) {
+  Class _createSchemaClass(String className, APISchemaObject obj) {
     final properties = obj.properties?.entries ?? [];
     final fields = properties.map((e) => Field((fb) => fb
       ..docs.add('/// ${e.value.description}')
       ..name = e.key
       ..modifier = FieldModifier.final$
-      ..type = _toDartType('$key${e.key.pascalCase}', e.value)));
+      ..type = _toDartType('$className${e.key.pascalCase}', e.value)));
 
     final c = Class(
       (cb) => cb
         ..annotations.add(jsonSerializable([]))
-        ..name = key
+        ..name = className
         ..docs.add('/// ${obj.description ?? ''}')
         ..constructors.add(Constructor((cb) => cb
           ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb
@@ -503,7 +519,8 @@ class OpenApiLibraryGenerator {
                 ..name = 'jsonMap'
                 ..type = refer('Map<String, dynamic>')))
               ..lambda = true
-              ..body = refer('_\$${key}FromJson').call([refer('jsonMap')]).code
+              ..body =
+                  refer('_\$${className}FromJson').call([refer('jsonMap')]).code
 //              ..body = Block.of([
 //                InvokeExpression.newOf(
 //                  refer(schemaEntry.key),
@@ -525,7 +542,7 @@ class OpenApiLibraryGenerator {
               ..name = 'toJson'
               ..returns = refer('Map<String, dynamic>')
               ..lambda = true
-              ..body = refer('_\$${key}ToJson')([refer('this')]).code,
+              ..body = refer('_\$${className}ToJson')([refer('this')]).code,
           ),
 //                ..methods.add(
 //                Method(
@@ -546,7 +563,7 @@ class OpenApiLibraryGenerator {
   }
 
   Reference _toDartType(String parent, APISchemaObject schema) {
-    switch (schema.type) {
+    switch (schema.type ?? APIType.object) {
       case APIType.string:
         return refer('String');
       case APIType.number:
@@ -562,7 +579,8 @@ class OpenApiLibraryGenerator {
         return _schemaReference(parent, schema);
 //        return refer('dynamic');
     }
-    throw StateError('Invalid type ${schema.type}');
+    throw StateError(
+        'Invalid type ${schema.type} - $schema - ${schema.referenceURI}');
   }
 }
 
@@ -589,10 +607,7 @@ class OpenApiCodeBuilder extends Builder {
       outputId.changeExtension('.g.dart').pathSegments.last,
     ).generate();
 
-    final emitter = DartEmitter(
-      Allocator.simplePrefixing(),
-      true, /*true*/
-    );
+    final emitter = DartEmitter(Allocator.simplePrefixing(), true, true);
 //    print(DartFormatter().format('${l.accept(emitter)}'));
 //    print('inputId: $inputId / outputId: $outputId');
     await buildStep.writeAsString(

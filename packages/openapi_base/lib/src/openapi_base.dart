@@ -43,6 +43,12 @@ class OpenApiServerRouterBase {
   String paramToString(List<String> value) {
     return value.first;
   }
+
+  @protected
+  bool paramToBool(List<String> value) {
+    final str = paramToString(value)?.toLowerCase();
+    return str == 'true' || str == '1';
+  }
 }
 
 enum Operation {

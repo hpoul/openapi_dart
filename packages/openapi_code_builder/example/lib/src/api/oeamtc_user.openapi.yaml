@@ -1,0 +1,2585 @@
+openapi: 3.0.0
+info:
+  description: User Trips API
+  version: "1.0"
+  title: UserTripsAPI
+tags:
+  - name: TripLog
+  - name: Trip
+  - name: Pilot
+  - name: Tag
+  - name: Zone
+  - name: Export
+paths:
+  "/users/{identityKey}/tripLogs":
+    get:
+      tags:
+        - TripLog
+      summary: Returns a list af all vehicles trip logs
+      description: Get trip logs overview of all vehicles owned by the user. If a vehicle
+        does not belong to the user the log is treated as archived and may not
+        be modified
+      operationId: getTripLogs
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      responses:
+        "200":
+          description: List of trip logs
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TripLog"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/vehicles/{vehicleId}/trips":
+    get:
+      tags:
+        - Trip
+      summary: Returns paginated trips owned by the user and done by the vehicle
+      description: Get user trips for a particular vehicle, filterable by various criteria
+        as well as sorting and pagination
+      operationId: getTrips
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: vehicleId
+          in: path
+          description: The OEAMTC KFZ Vehicle Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: filter.from
+          in: query
+          description: "do not return trips before the specified date-time. Format:
+            rfc3339. Default: ``1970-01-01T00:00:00Z``"
+          required: false
+          schema:
+            type: string
+            default: 1970-01-01T00:00:00Z
+        - name: filter.until
+          in: query
+          description: "do not return trips after the specified date-time. Format: rfc3339.
+            Default: ``now``"
+          required: false
+          schema:
+            type: string
+            default: 2999-01-01T00:00:00Z
+        - name: filter.tagIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of tag
+            ids. Then, returned trips must have at least one of the listed tags
+            set.
+          required: false
+          schema:
+            type: string
+        - name: filter.pilotIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of
+            pilot ids. Then, returned trips must have at least one of the listed
+            pilots set.
+          required: false
+          schema:
+            type: string
+        - name: filter.zoneIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of
+            zone ids. Then, returned trips must have at least one of the listed
+            zones set either at their start or end.
+          required: false
+          schema:
+            type: string
+        - name: filter.fsl
+          in: query
+          description: trips with the fsl property with the according value.
+          required: false
+          schema:
+            type: boolean
+        - name: filter.work
+          in: query
+          description: trips with the work property with the according value.
+          required: false
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          description: Field to sort on. Default is ``startTimestamp`` sorting. Acceptable
+            values = ``["startTimestamp", "endTimestamp"]``
+          required: false
+          schema:
+            type: string
+            enum:
+              - startTimestamp
+              - endTimestamp
+            default: startTimestamp
+        - name: order
+          in: query
+          description: Sort either ascending (asc) or descending (desc)
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: desc
+        - name: page.offset
+          in: query
+          description: "do skip as many result items from the beginning; Default: ``0``."
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: page.limit
+          in: query
+          description: "do only return at most as many result items; Default: ``20``.
+            Minimum: 1"
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+      responses:
+        "200":
+          description: Page of trips done by user with the given vehicle
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/TripsPage"
+        "400":
+          description: Query filters are invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Trip
+      summary: Create a trip
+      description: create a trip for the given user corresponding to the given vehicle
+      operationId: createTrip
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: vehicleId
+          in: path
+          description: The OEAMTC KFZ Vehicle Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: validateConflict
+          in: query
+          description: validate for overlaps or gaps in time/odometer
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: creation_id
+          in: header
+          description: optional parameter to prevent multiple creations of the same trip
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/Trip.Mutation"
+      responses:
+        "201":
+          description: Trip successfully created
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Trip"
+        "400":
+          description: Request data is invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Creation id is not unique
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/trips":
+    get:
+      tags:
+        - Trip
+      summary: Returns paginated trips owned by the user and done by the vehicle
+      description: Get user trips for a particular vehicle, filterable by various criteria
+        as well as sorting and pagination
+      operationId: getTripsSkipVehicleId
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: filter.vehicleId
+          in: query
+          description: return trips belonging to given vehicle
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: filter.from
+          in: query
+          description: "do not return trips before the specified date-time. Format:
+            rfc3339. Default: ``1970-01-01T00:00:00Z``"
+          required: false
+          schema:
+            type: string
+            default: 1970-01-01T00:00:00Z
+        - name: filter.until
+          in: query
+          description: "do not return trips after the specified date-time. Format: rfc3339.
+            Default: ``now``"
+          required: false
+          schema:
+            type: string
+            default: 2999-01-01T00:00:00Z
+        - name: filter.tagIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of tag
+            ids. Then, returned trips must have at least one of the listed tags
+            set.
+          required: false
+          schema:
+            type: string
+        - name: filter.pilotIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of
+            pilot ids. Then, returned trips must have at least one of the listed
+            pilots set.
+          required: false
+          schema:
+            type: string
+        - name: filter.zoneIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of
+            zone ids. Then, returned trips must have at least one of the listed
+            zones set either at their start or end.
+          required: false
+          schema:
+            type: string
+        - name: filter.fsl
+          in: query
+          description: trips with the fsl property with the according value.
+          required: false
+          schema:
+            type: boolean
+        - name: filter.work
+          in: query
+          description: trips with the work property with the according value.
+          required: false
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          description: Field to sort on. Default is ``startTimestamp`` sorting. Acceptable
+            values = ``["startTimestamp", "endTimestamp"]``
+          required: false
+          schema:
+            type: string
+            enum:
+              - startTimestamp
+              - endTimestamp
+            default: startTimestamp
+        - name: order
+          in: query
+          description: Sort either ascending (asc) or descending (desc)
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: desc
+        - name: page.offset
+          in: query
+          description: "do skip as many result items from the beginning; Default: ``0``."
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: page.limit
+          in: query
+          description: "do only return at most as many result items; Default: ``20``.
+            Minimum: 1"
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 20
+      responses:
+        "200":
+          description: Page of trips done by user with the given vehicle
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/TripsPage"
+        "400":
+          description: Query filters are invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Trip
+      summary: Create a trip
+      description: create a trip for the given user
+      operationId: createTripSkipVehicleId
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: validateConflict
+          in: query
+          description: validate for overlaps or gaps in time/odometer
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: creation_id
+          in: header
+          description: optional parameter to prevent multiple creations of the same trip
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/Trip.Mutation"
+      responses:
+        "201":
+          description: Trip successfully created
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Trip"
+        "400":
+          description: Request data is invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Non unique creation id header
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/vehicles/{vehicleId}/trips/summary":
+    get:
+      tags:
+        - Trip
+      summary: Returns summarized information of trips
+      description: Get summarized information regarding all trips such as total trip count,
+        total distance and total trips duration
+      operationId: getTripSummarized
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: vehicleId
+          in: path
+          description: The OEAMTC KFZ Vehicle Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: filter.from
+          in: query
+          description: "do not return trips before the specified date-time. Format:
+            rfc3339. Default: ``1970-01-01T00:00:00Z``"
+          required: false
+          schema:
+            type: string
+            default: 1970-01-01T00:00:00Z
+        - name: filter.until
+          in: query
+          description: "do not return trips after the specified date-time. Format: rfc3339.
+            Default: ``now``"
+          required: false
+          schema:
+            type: string
+            default: 2999-01-01T00:00:00Z
+        - name: filter.tagIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of tag
+            ids. Then, returned trips must have at least one of the listed tags
+            set.
+          required: false
+          schema:
+            type: string
+        - name: filter.pilotIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of
+            pilot ids. Then, returned trips must have at least one of the listed
+            pilots set.
+          required: false
+          schema:
+            type: string
+        - name: filter.zoneIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of
+            zone ids. Then, returned trips must have at least one of the listed
+            zones set either at their start or end.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Summarized trip information
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/TripsSummary"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/trips/summary":
+    get:
+      tags:
+        - Trip
+      summary: Returns summarized information of trips
+      description: Get summarized information regarding all trips such as total trip count,
+        total distance and total trips duration
+      operationId: getTripSummarizedSkipVehicleId
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: filter.vehicleId
+          in: query
+          description: return trips belonging to given vehicle
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: filter.from
+          in: query
+          description: "do not return trips before the specified date-time. Format:
+            rfc3339. Default: ``1970-01-01T00:00:00Z``"
+          required: false
+          schema:
+            type: string
+            default: 1970-01-01T00:00:00Z
+        - name: filter.until
+          in: query
+          description: "do not return trips after the specified date-time. Format: rfc3339.
+            Default: ``now``"
+          required: false
+          schema:
+            type: string
+            default: 2999-01-01T00:00:00Z
+        - name: filter.tagIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of tag
+            ids. Then, returned trips must have at least one of the listed tags
+            set.
+          required: false
+          schema:
+            type: string
+        - name: filter.pilotIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of
+            pilot ids. Then, returned trips must have at least one of the listed
+            pilots set.
+          required: false
+          schema:
+            type: string
+        - name: filter.zoneIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of
+            zone ids. Then, returned trips must have at least one of the listed
+            zones set either at their start or end.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Summarized trip information
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/TripsSummary"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/vehicles/{vehicleId}/trips/{id}":
+    get:
+      tags:
+        - Trip
+      summary: Get a trip
+      description: Get a single trip by id owned by the given user
+      operationId: getTrip
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: vehicleId
+          in: path
+          description: The OEAMTC KFZ Vehicle Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A single trip
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Trip"
+        "403":
+          description: Trip found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Trip with given id and vehicle id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - Trip
+      summary: Update a trip
+      description: Update a trip by id owned by the given user
+      operationId: updateTrip
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: vehicleId
+          in: path
+          description: The OEAMTC KFZ Vehicle Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: validateConflict
+          in: query
+          description: validate for overlaps or gaps in time/odometer
+          required: false
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        $ref: "#/components/requestBodies/Trip.Mutation2"
+      responses:
+        "200":
+          description: Trip successfully updated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Trip"
+        "400":
+          description: Request data is invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Trip found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Trip with given id and vehicle id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - Trip
+      summary: Delete a trip
+      description: Delete a single trip by id owned by the given user
+      operationId: deleteTrip
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: vehicleId
+          in: path
+          description: The OEAMTC KFZ Vehicle Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Trip deleted
+        "403":
+          description: Trip found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Trip with given id or vehicle id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/trips/{id}":
+    get:
+      tags:
+        - Trip
+      summary: Get a trip
+      description: Get a single trip by id owned by the given user
+      operationId: getTripSkipVehicleId
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A single trip
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Trip"
+        "403":
+          description: Trip found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Trip with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - Trip
+      summary: Update a trip
+      description: Update a trip by id owned by the given user
+      operationId: updateTripSkipVehicleId
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: validateConflict
+          in: query
+          description: validate for overlaps or gaps in time/odometer
+          required: false
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        $ref: "#/components/requestBodies/Trip.Mutation2"
+      responses:
+        "200":
+          description: Trip successfully updated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Trip"
+        "400":
+          description: Request data is invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Trip found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Trip with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - Trip
+      summary: Delete a trip
+      description: Delete a single trip by id owned by the given user
+      operationId: deleteTripSkipVehicleId
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Trip deleted
+        "403":
+          description: Trip found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Trip with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/vehicles/{vehicleId}/tripErrors":
+    get:
+      tags:
+        - Trip
+      summary: Returns errors in the given tripLog
+      description: Get error in a triplog for a particular vehicle, filterable by start and
+        end time
+      operationId: getTripErrors
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: vehicleId
+          in: path
+          description: The OEAMTC KFZ Vehicle Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: filter.from
+          in: query
+          description: "do not return trip errors before the specified date-time. Format:
+            rfc3339. Default: ``1970-01-01T00:00:00Z``"
+          required: false
+          schema:
+            type: string
+            default: 1970-01-01T00:00:00Z
+        - name: filter.until
+          in: query
+          description: "do not return trip errors after the specified date-time. Format:
+            rfc3339. Default: ``now``"
+          required: false
+          schema:
+            type: string
+            default: 2999-01-01T00:00:00Z
+      responses:
+        "200":
+          description: List of trip errors in the given date range
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TripError"
+        "400":
+          description: Query filters are invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/vehicles/{vehicleId}/trips/export":
+    get:
+      tags:
+        - Export
+      summary: get trips formatted for being exported
+      description: get all trips formatted for being exported in the given date ranges
+      operationId: getExportTrips
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: vehicleId
+          in: path
+          description: The OEAMTC KFZ Vehicle Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: filter.from
+          in: query
+          description: "do not return trips before the specified date-time. Format:
+            rfc3339. Default: ``1970-01-01T00:00:00Z``"
+          required: false
+          schema:
+            type: string
+            default: 1970-01-01T00:00:00Z
+        - name: filter.until
+          in: query
+          description: "do not return trips after the specified date-time. Format: rfc3339.
+            Default: ``now``"
+          required: false
+          schema:
+            type: string
+            default: 2999-01-01T00:00:00Z
+        - name: filter.tagIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of tag
+            ids. Then, returned trips must have at least one of the listed tags
+            set.
+          required: false
+          schema:
+            type: string
+        - name: filter.pilotIds
+          in: query
+          description: If this parameter is given, it must be a comma separated list of
+            pilot ids. Then, returned trips must have at least one of the listed
+            pilots set.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of trips formatted for export in the given date range
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExportTrip"
+        "400":
+          description: Query filters are invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Export
+      summary: send email with exported trips in the desired format
+      description: send email to the abonnement user with the trips exported in the desired
+        format and date ranges. Filters for tags and pilots supported.
+      operationId: exportTrips
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: vehicleId
+          in: path
+          description: The OEAMTC KFZ Vehicle Id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: "#/components/requestBodies/ExportBody"
+      responses:
+        "204":
+          description: Export email successfully sent
+        "400":
+          description: Email missing or invalid filter, email or file format, i.e. invalid
+            date or unsupported file format
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Active abonnement not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/trips/export":
+    post:
+      tags:
+        - Export
+      summary: send email with exported trips in the desired format
+      description: send email to the abonnement user with the trips exported in the desired
+        format and date ranges. Filters for tags and pilots supported.
+      operationId: exportTripsSkipVehicleId
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      requestBody:
+        $ref: "#/components/requestBodies/ExportBody"
+      responses:
+        "204":
+          description: Export email successfully sent
+        "400":
+          description: Email missing or invalid filter, email or file format, i.e. invalid
+            date or unsupported file format
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Active abonnement not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/pilots":
+    get:
+      tags:
+        - Pilot
+      summary: Returns the pilots owned by the user
+      operationId: getPilots
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      responses:
+        "200":
+          description: List of pilots owned by the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                title: Pilots
+                items:
+                  $ref: "#/components/schemas/Pilot"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Pilot
+      summary: Create a pilot
+      operationId: createPilot
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: creation_id
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Pilot.Mutation"
+        description: The pilot to be created
+        required: true
+      responses:
+        "201":
+          description: Pilot successfully created
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Pilot"
+        "400":
+          description: Request data is invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Non unique creation id header
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/pilots/{id}":
+    get:
+      tags:
+        - Pilot
+      summary: Get a pilot
+      description: Get a single pilot by id owned by the given user
+      operationId: getPilot
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A single pilot
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Pilot"
+        "403":
+          description: Pilot found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Pilot with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - Pilot
+      summary: Update a pilot
+      description: Update a pilot by id owned by the given user
+      operationId: updatePilot
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Pilot.Mutation"
+        description: The pilot properties to update
+        required: true
+      responses:
+        "200":
+          description: Pilot successfully updated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Pilot"
+        "400":
+          description: Request data is invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Pilot found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Pilot with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - Pilot
+      summary: Delete a pilot
+      description: Delete a single pilot by id owned by the given user
+      operationId: deletePilot
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Pilot deleted
+        "403":
+          description: Pilot found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Pilot with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/tags":
+    get:
+      tags:
+        - Tag
+      summary: Returns the tags owned by the user
+      operationId: getTags
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      responses:
+        "200":
+          description: List of tags owned by the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                title: Tags
+                items:
+                  $ref: "#/components/schemas/Tag"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Tag
+      summary: Create a tag
+      operationId: createTag
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: creation_id
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tag.Mutation"
+        required: true
+      responses:
+        "201":
+          description: the created tag
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        "400":
+          description: some request parameters are not valid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Non unique creation id header
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/tags/{id}":
+    get:
+      tags:
+        - Tag
+      summary: Get a tag
+      description: Get a single tag by id owned by the given user
+      operationId: getTag
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A single Tag
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        "403":
+          description: Tag found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Tag with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - Tag
+      summary: Update a tag
+      description: Update a tag by id owned by the given user
+      operationId: updateTag
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tag.Mutation"
+        description: The tag's properties to update
+        required: true
+      responses:
+        "200":
+          description: Tag successfully updated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        "400":
+          description: Request data is invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Tag found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Tag with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - Tag
+      summary: Delete a tag
+      description: Delete a single tag by id owned by the given user
+      operationId: deleteTag
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Tag deleted
+        "403":
+          description: Tag found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Tag with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/zones":
+    get:
+      tags:
+        - Zone
+      summary: Returns the zones owned by the user
+      operationId: getZones
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      responses:
+        "200":
+          description: List of zones owned by the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                title: Zones
+                items:
+                  $ref: "#/components/schemas/Zone"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+        - Zone
+      summary: Create a zone
+      operationId: createZone
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: creation_id
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Zone.Mutation"
+        description: The zone to be created
+        required: true
+      responses:
+        "201":
+          description: Zone successfully created
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Zone"
+        "400":
+          description: Request data is invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Non unique creation id header
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  "/users/{identityKey}/zones/{id}":
+    get:
+      tags:
+        - Zone
+      summary: Get a zone
+      description: Get a single zone by id owned by the given user
+      operationId: getZone
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A single zone
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Zone"
+        "403":
+          description: Zone found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Zone with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+        - Zone
+      summary: Update a zone
+      description: Update a zone by id owned by the given user
+      operationId: updateZone
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Zone.Mutation"
+        description: The zone properties to update
+        required: true
+      responses:
+        "200":
+          description: Zone successfully updated
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Zone"
+        "400":
+          description: Request data is invalid
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Zone found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Zone with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+        - Zone
+      summary: Delete a zone
+      description: Delete a single zone by id owned by the given user
+      operationId: deleteZone
+      parameters:
+        - name: identityKey
+          in: path
+          description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+        - name: id
+          in: path
+          description: The entity's primary id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Zone deleted
+        "403":
+          description: Zone found but does not belong to the user
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Zone with given id not found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+x-wso2-security:
+  apim:
+    x-wso2-scopes: []
+servers:
+  - url: https://apiint.oeamtc.at/user/trips/1.0
+  - url: http://apiint.oeamtc.at/user/trips/1.0
+components:
+  parameters:
+    IdentityKey:
+      name: identityKey
+      in: path
+      description: The user's identityKey - needs to be a valid UUID (RFC 4122)
+      required: true
+      schema:
+        type: string
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+    VehicleId:
+      name: vehicleId
+      in: path
+      description: The OEAMTC KFZ Vehicle Id
+      required: true
+      schema:
+        type: integer
+        format: int64
+    PrimaryId:
+      name: id
+      in: path
+      description: The entity's primary id
+      required: true
+      schema:
+        type: integer
+        format: int64
+    FilterFrom:
+      name: filter.from
+      in: query
+      description: "do not return trips before the specified date-time. Format: rfc3339.
+        Default: ``1970-01-01T00:00:00Z``"
+      required: false
+      schema:
+        type: string
+        default: 1970-01-01T00:00:00Z
+    FilterUntil:
+      name: filter.until
+      in: query
+      description: "do not return trips after the specified date-time. Format: rfc3339.
+        Default: ``now``"
+      required: false
+      schema:
+        type: string
+        default: 2999-01-01T00:00:00Z
+    FilterVehicleId:
+      name: filter.vehicleId
+      in: query
+      description: return trips belonging to given vehicle
+      required: false
+      schema:
+        type: integer
+        format: int64
+    FilterTagIds:
+      name: filter.tagIds
+      in: query
+      description: If this parameter is given, it must be a comma separated list of tag
+        ids. Then, returned trips must have at least one of the listed tags set.
+      required: false
+      schema:
+        type: string
+    FilterPilotIds:
+      name: filter.pilotIds
+      in: query
+      description: If this parameter is given, it must be a comma separated list of pilot
+        ids. Then, returned trips must have at least one of the listed pilots
+        set.
+      required: false
+      schema:
+        type: string
+    FilterZoneIds:
+      name: filter.zoneIds
+      in: query
+      description: If this parameter is given, it must be a comma separated list of zone
+        ids. Then, returned trips must have at least one of the listed zones set
+        either at their start or end.
+      required: false
+      schema:
+        type: string
+    FilterFsl:
+      name: filter.fsl
+      in: query
+      description: trips with the fsl property with the according value.
+      required: false
+      schema:
+        type: boolean
+    FilterWork:
+      name: filter.work
+      in: query
+      description: trips with the work property with the according value.
+      required: false
+      schema:
+        type: boolean
+    TripsSort:
+      name: sort
+      in: query
+      description: Field to sort on. Default is ``startTimestamp`` sorting. Acceptable
+        values = ``["startTimestamp", "endTimestamp"]``
+      required: false
+      schema:
+        type: string
+        enum:
+          - startTimestamp
+          - endTimestamp
+        default: startTimestamp
+    Order:
+      name: order
+      in: query
+      description: Sort either ascending (asc) or descending (desc)
+      required: false
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: desc
+    PageOffset:
+      name: page.offset
+      in: query
+      description: "do skip as many result items from the beginning; Default: ``0``."
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    PageLimit:
+      name: page.limit
+      in: query
+      description: "do only return at most as many result items; Default: ``20``. Minimum:
+        1"
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+  requestBodies:
+    Trip.Mutation:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Trip.Mutation"
+      description: trip to be created. Relationships are via id reference
+      required: true
+    ExportBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ExportBody"
+      description: The user email and export filters
+      required: true
+    Trip.Mutation2:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Trip.Mutation"
+      description: The trip properties to update
+      required: true
+  securitySchemes:
+    default:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://apiint.oeamtc.at/authorize
+          scopes: {}
+  schemas:
+    Trip:
+      allOf:
+        - type: object
+          required:
+            - id
+            - startInfo
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Trip id
+            pilot:
+              $ref: "#/components/schemas/Pilot"
+            tag:
+              $ref: "#/components/schemas/Tag"
+            startInfo:
+              $ref: "#/components/schemas/TripInfo"
+            endInfo:
+              $ref: "#/components/schemas/TripInfo"
+            parkingTimeBefore:
+              type: integer
+              format: int64
+              description: Duration in milliseconds the car was parked before starting this
+                trip
+            parkingTimeAfter:
+              type: integer
+              format: int64
+              description: Duration in milliseconds the car was parked after finishing this
+                trip
+            distance:
+              type: integer
+              format: int64
+              description: Distance travelled in metres
+            duration:
+              type: integer
+              format: int64
+              description: Duration of trip in milliseconds. This may be null if trip is
+                still in progress.
+            changes:
+              type: array
+              items:
+                $ref: "#/components/schemas/TripChange"
+          description: OEAMTC Trip representation
+        - $ref: "#/components/schemas/Trip.Base"
+        - $ref: "#/components/schemas/Modifiable"
+    Trip.Base:
+      type: object
+      required:
+        - source
+      properties:
+        vehicleId:
+          type: integer
+          format: int64
+          description: OEAMTC KFZ Vehicle Id
+        stops:
+          type: array
+          items:
+            $ref: "#/components/schemas/TripStop"
+        note:
+          type: string
+          description: "Note for a trip, for example: Pick up kids from soccer"
+        routeGeometry:
+          type: string
+          description: Trip route geometry (polyline). If creating trip and polyline is
+            null, polyline will be calculated
+          pattern: ^LINESTRING\(.*\)$
+        source:
+          type: string
+          description: Source app where the trip was created
+          enum:
+            - CCS
+            - MOE
+            - FSL
+        fsl:
+          type: boolean
+          description: Trip is a fsl (fahrschule) trip
+          default: false
+        work:
+          type: boolean
+          description: Trip is a work trip
+          default: false
+        extraData:
+          $ref: "#/components/schemas/ExtraData"
+      description: OEAMTC Trip representation which can be read and modified
+    Trip.Mutation:
+      allOf:
+        - type: object
+          required:
+            - startInfo
+          properties:
+            pilotId:
+              type: integer
+              format: int64
+              description: Pilot id of pilot who drove this trip
+            tagId:
+              type: integer
+              format: int64
+              description: Tag id of tag associated with this trip
+            startInfo:
+              $ref: "#/components/schemas/TripInfo.Mutation"
+            endInfo:
+              $ref: "#/components/schemas/TripInfo.Mutation"
+            adjustRouteGeometry:
+              type: boolean
+              description: Indicates whether route geometry should be adjusted (improved)
+              default: false
+          description: OEAMTC Trips relationships references
+        - $ref: "#/components/schemas/Trip.Base"
+      description: OEAMTC Trip representation which can be modified
+    TripChange:
+      properties:
+        date:
+          type: string
+          format: date-time
+          description: the date and time the change occured
+        doneBy:
+          type: string
+          description: who the change had been done by e.g. Smart Connect or the user
+        descriptions:
+          type: array
+          description: the date and time the change occured
+          items:
+            type: string
+      description: Single change of a trip
+    Pilot:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Pilot id
+        - $ref: "#/components/schemas/Pilot.Mutation"
+        - $ref: "#/components/schemas/Modifiable"
+      description: Pilot representation
+    Pilot.Mutation:
+      type: object
+      required:
+        - color
+        - firstname
+        - lastname
+      properties:
+        firstname:
+          type: string
+          description: First name of the pilot
+        lastname:
+          type: string
+          description: Last name of the pilot
+        initial:
+          type: string
+          description: "Initial of the pilot - default: first letter of firstname"
+          minLength: 1
+          maxLength: 1
+        color:
+          type: string
+          description: "RGB hex pilot color, including leading #"
+          pattern: ^#[0-9a-fA-F]{6}$
+      description: Pilot mutation properties representation
+    Tag:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Tag id
+            specialTag:
+              $ref: "#/components/schemas/SpecialTag"
+        - $ref: "#/components/schemas/Tag.Mutation"
+        - $ref: "#/components/schemas/Modifiable"
+      description: Tag representation. They act as a category for a trip
+    Tag.Mutation:
+      type: object
+      required:
+        - color
+        - iconName
+        - name
+      properties:
+        name:
+          type: string
+          description: The user assigned tag name
+        color:
+          type: string
+          description: "RGB hex tag color, including leading #"
+          pattern: ^#[0-9a-fA-F]{6}$
+        iconName:
+          $ref: "#/components/schemas/IconNameTag"
+      description: Tag mutation properties representation
+    Zone:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Tag id
+        - $ref: "#/components/schemas/Zone.Mutation"
+        - $ref: "#/components/schemas/Modifiable"
+      description: Zone representation. Trips start or end at particular, user defined
+        zones.
+    Zone.Mutation:
+      type: object
+      required:
+        - latitude
+        - longitude
+        - name
+        - radius
+      properties:
+        name:
+          type: string
+          description: Zone name
+        latitude:
+          type: number
+          format: double
+          description: Latitude of the location
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          format: double
+          description: Longitude of the location
+          minimum: -180
+          maximum: 180
+        radius:
+          type: number
+          format: double
+          description: Radius around the cooridnates of the UserPOI
+          minimum: 0
+      description: Zone mutation properties representation
+    TripLog:
+      type: object
+      required:
+        - archived
+        - vehicleId
+      properties:
+        vehicleId:
+          type: integer
+          format: int64
+          description: OEAMTC KFZ Vehicle Id which this log corresponds to
+        archived:
+          type: boolean
+          description: True if this log is archived and therefore unmodifiable, false
+            otherwise
+          default: false
+      description: Trip log representation. Shows whether a trip log is archived or not.
+    TripInfo:
+      allOf:
+        - $ref: "#/components/schemas/TripInfo.Mutation"
+        - type: object
+          properties:
+            zone:
+              $ref: "#/components/schemas/Zone"
+      description: Trip info regarding start or end of trip such as address, timestamp, etc.
+    TripInfo.Mutation:
+      type: object
+      required:
+        - odometer
+        - timestamp
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of trip
+        address:
+          $ref: "#/components/schemas/Address"
+        location:
+          $ref: "#/components/schemas/Location"
+        odometer:
+          type: integer
+          format: int64
+          description: Odometer reading in metres
+          minimum: 0
+      description: Trip info which can be modified
+    TripStop:
+      properties:
+        address:
+          $ref: "#/components/schemas/Address"
+        location:
+          $ref: "#/components/schemas/Location"
+      description: Information regarding a trip intermediate stop. At least one of address
+        or location required on creation
+    Address:
+      type: object
+      required:
+        - country
+      properties:
+        moniker:
+          type: string
+          description: Moniker
+        streetLine:
+          type: string
+          description: Street line 1
+        locality:
+          type: string
+          description: Suburb or locality
+        areaCode:
+          type: string
+          description: Area code
+        stateRegion:
+          type: string
+          description: State or region
+        country:
+          type: string
+          description: Country
+      description: Address representation
+    Location:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+          description: Latitude of the location
+          minimum: -180
+          maximum: 180
+        longitude:
+          type: number
+          format: double
+          description: Longitude of the location
+          minimum: -360
+          maximum: 360
+      description: Geo-location representation
+    TripsSummary:
+      type: object
+      required:
+        - totalDistance
+        - totalDuration
+        - totalTrips
+      properties:
+        totalTrips:
+          type: integer
+          format: int64
+          description: Total amount of trips
+        totalDistance:
+          type: integer
+          format: int64
+          description: Total trips distance in metres
+        totalDuration:
+          type: integer
+          format: int64
+          description: Total trips duration in milliseconds
+      description: Represents summarized information recorded from multiple trips
+    IconNameTag:
+      type: string
+      enum:
+        - tag_work_icon
+        - tag_party_icon
+        - tag_restaurant_icon
+        - tag_shopping_icon
+        - tag_play_icon
+        - tag_wellness_icon
+        - tag_gym_icon
+        - tag_festival_icon
+        - tag_picture_icon
+        - tag_free_ride_icon
+        - tag_sleep_icon
+        - tag_home_icon
+        - tag_family_icon
+        - tag_airport_icon
+        - tag_l17_icon
+        - tag_work_briefcase_1_icon
+        - tag_weights_icon
+        - tag_sportwatch_icon
+        - tag_shopping_basket_icon
+        - tag_vacation_icon
+        - tag_transportation_water_icon
+        - tag_transportation_railway_icon
+        - tag_transportation_bus_icon
+        - tag_transportation_taxi_icon
+        - tag_road_icon
+        - tag_education_icon
+        - tag_visit_doorbell_icon
+        - tag_car_service_icon
+        - tag_health_pill_icon
+        - tag_health_heart_rate_icon
+        - tag_bible_icon
+        - tag_person_icon
+    SpecialTag:
+      type: string
+      enum:
+        - work
+        - private
+        - l17
+        - none
+      default: none
+    TripError:
+      type: object
+      properties:
+        first:
+          $ref: "#/components/schemas/Trip"
+        second:
+          $ref: "#/components/schemas/Trip"
+        type:
+          $ref: "#/components/schemas/ErrorType"
+    ErrorType:
+      type: string
+      enum:
+        - overlapTime
+        - overlapOdometer
+        - gapOdometer
+    ExportTrip:
+      type: object
+      required:
+        - originalTrip
+        - trip
+      properties:
+        trip:
+          $ref: "#/components/schemas/Trip"
+        originalTrip:
+          $ref: "#/components/schemas/Trip"
+        modified:
+          type: boolean
+          description: true if attributes other than tags and pilots have been modified,
+            false otherwise
+        deleted:
+          type: boolean
+          description: true if the trip has been deleted, false otherwise
+    ExportFormat:
+      type: string
+      enum:
+        - csv
+        - pdf
+        - xlsx
+    ExtraData:
+      type: object
+      properties:
+        smartConnectData:
+          $ref: "#/components/schemas/SmartConnectData"
+        fslData:
+          $ref: "#/components/schemas/FslData"
+      description: Extra flexible data supplied by apps dependent on this api
+    SmartConnectData:
+      type: object
+      properties:
+        tshTripUuid:
+          type: string
+          description: Tsh trip unique identifier
+        tshDriverUuid:
+          type: string
+          description: Tsh driver unique identifier
+        tshVehicleUuid:
+          type: string
+          description: Tsh vehicle unique identifier
+        averageSpeed:
+          type: number
+          description: trip average speed in km/h
+        maximumSpeed:
+          type: number
+          description: trip maximum speed in km/h
+        averageRpm:
+          type: number
+          description: trip average rpm
+        maximumRpm:
+          type: number
+          description: trip maximum rpm
+        fuelConsumption:
+          type: number
+          description: total trip fuel consumption
+        startFuelLevel:
+          type: number
+          description: trip fuel level at the start of the trip
+        endFuelLevel:
+          type: number
+          description: trip fuel level at the end of the trip
+        emissions:
+          type: number
+          description: trip CO2 emissions
+        score:
+          $ref: "#/components/schemas/SmartConnectData_score"
+      description: Smart connect related extra data
+    FslData:
+      type: object
+      properties:
+        signaturePilot:
+          type: string
+          format: uri
+          description: 'Signature of the pilot confirming the trip data, e.g. the student
+            signature during L license trips, syntax: a data url with base64
+            coded PNG: "data:image/png;base64..."'
+        signatureCoPilot:
+          type: string
+          format: uri
+          description: "Signature of co-pilot confirming the trip data, e.g. the parent
+            signature during L license trips. syntax: see signaturePilot."
+        roadCondition:
+          type: string
+          description: A summary of the road condition of this trip, e.g. wet.
+        routeSummary:
+          type: string
+          description: Summary of the route, useful when startInfo and endInfo is not
+            given. e.g. Wien Graz.
+        licensePlate:
+          type: string
+          description: The license plate number of the used vehicle, useful when no
+            vehicleid is given, e.g. W-123, no syntax, free format.
+    ExportBody:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          description: email to which the exports will be sent
+        exportFormats:
+          type: array
+          description: "export formats desired. Supported values: 'pdf', 'csv', 'xlsx'.
+            Default value: 'pdf'"
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/ExportFormat"
+        from:
+          type: string
+          format: date-time
+          description: "export trips from the specified date-time. Format: rfc3339. Example
+            2019-09-27T15:00:30.000Z"
+        until:
+          type: string
+          format: date-time
+          description: "export trips until the specified date-time. Format: rfc3339.
+            Example 2019-09-27T20:00:30.000Z"
+        vehicleId:
+          type: integer
+          format: int64
+          description: export trips only for the given vehicle
+        tagIds:
+          type: array
+          description: exported trips must have one of the tags in the list
+          items:
+            type: integer
+            format: int64
+        pilotIds:
+          type: array
+          description: exported trips must have one of the pilots in the list
+          items:
+            type: integer
+            format: int64
+      description: filters for the exports. All parameters are optional meaning no
+        filtering would be done for missing parameters
+    Error:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    Errors:
+      type: array
+      items:
+        $ref: "#/components/schemas/Error"
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: number
+        code:
+          type: string
+        message:
+          type: string
+        errors:
+          $ref: "#/components/schemas/Errors"
+    Modifiable:
+      type: object
+      required:
+        - createdAt
+        - updatedAt
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when this resource was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when this resource was last updated
+    TripsPage:
+      properties:
+        count:
+          type: integer
+          description: Amount of trips in this page. Between 0 and page.limit.
+        offset:
+          type: integer
+          description: Page offset
+        trips:
+          type: array
+          items:
+            $ref: "#/components/schemas/Trip"
+    SmartConnectData_score:
+      properties:
+        idlingScore:
+          type: integer
+          description: Calculated score for idling based on the idling histogram
+        speedingScore:
+          type: integer
+          description: Calculated score for speeding based on the speed histogram
+        brakingScore:
+          type: integer
+          description: Calculated score for deceleration based on the braking histogram
+        accelerationScore:
+          type: integer
+          description: Calculated core for acceleration based on the acceleration histogram
+        totalEcoScore:
+          type: integer
+          description: Calculated score that represents the degree of eco-friendly driving
+            behaviour of the driver based on idlingScore, speedingScore,
+            brakingScore, and accelarationScore
+      description: trip multiple scores

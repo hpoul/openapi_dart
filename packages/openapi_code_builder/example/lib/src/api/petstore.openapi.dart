@@ -1130,93 +1130,126 @@ abstract class PetstoreClient {
 
   /// Update an existing pet
   /// put: /pet
+  ///
   Future<PetPutResponse> petPut(Pet body);
 
   /// Add a new pet to the store
   /// post: /pet
+  ///
   Future<PetPostResponse> petPost(Pet body);
 
   /// Finds Pets by status
   /// Multiple status values can be provided with comma separated strings
   /// get: /pet/findByStatus
+  ///
+  /// * [status]: Status values that need to be considered for filter
   Future<PetFindByStatusGetResponse> petFindByStatusGet(List<String> status);
 
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
   /// get: /pet/findByTags
+  ///
+  /// * [tags]: Tags to filter by
   Future<PetFindByTagsGetResponse> petFindByTagsGet(List<String> tags);
 
   /// Find pet by ID
   /// Returns a single pet
   /// get: /pet/{petId}
+  ///
+  /// * [petId]: ID of pet to return
   Future<PetPetIdGetResponse> petPetIdGet(int petId);
 
   /// Updates a pet in the store with form data
   /// post: /pet/{petId}
+  ///
+  /// * [petId]: ID of pet that needs to be updated
   Future<PetPetIdPostResponse> petPetIdPost(int petId);
 
   /// Deletes a pet
   /// delete: /pet/{petId}
-  Future<PetPetIdDeleteResponse> petPetIdDelete(String apiKey, int petId);
+  ///
+  /// * [petId]: Pet id to delete
+  Future<PetPetIdDeleteResponse> petPetIdDelete(int petId, {String apiKey});
 
   /// uploads an image
   /// post: /pet/{petId}/uploadImage
+  ///
+  /// * [petId]: ID of pet to update
   Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(int petId);
 
   /// Returns pet inventories by status
   /// Returns a map of status codes to quantities
   /// get: /store/inventory
+  ///
   Future<StoreInventoryGetResponse> storeInventoryGet();
 
   /// Place an order for a pet
   /// post: /store/order
+  ///
   Future<StoreOrderPostResponse> storeOrderPost(Order body);
 
   /// Find purchase order by ID
   /// For valid response try integer IDs with value >= 1 and <= 10.\ \ Other values will generated exceptions
   /// get: /store/order/{orderId}
+  ///
+  /// * [orderId]: ID of pet that needs to be fetched
   Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(int orderId);
 
   /// Delete purchase order by ID
   /// For valid response try integer IDs with positive integer value.\ \ Negative or non-integer values will generate API errors
   /// delete: /store/order/{orderId}
+  ///
+  /// * [orderId]: ID of the order that needs to be deleted
   Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(int orderId);
 
   /// Create user
   /// This can only be done by the logged in user.
   /// post: /user
+  ///
   Future<UserPostResponse> userPost(User body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithArray
+  ///
   Future<UserCreateWithArrayPostResponse> userCreateWithArrayPost(
       UserCreateWithArraySchema body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
+  ///
   Future<UserCreateWithListPostResponse> userCreateWithListPost(
       UserCreateWithArraySchema body);
 
   /// Logs user into the system
   /// get: /user/login
+  ///
+  /// * [username]: The user name for login
+  /// * [password]: The password for login in clear text
   Future<UserLoginGetResponse> userLoginGet(String username, String password);
 
   /// Logs out current logged in user session
   /// get: /user/logout
+  ///
   Future<UserLogoutGetResponse> userLogoutGet();
 
   /// Get user by user name
   /// get: /user/{username}
+  ///
+  /// * [username]: The name that needs to be fetched. Use user1 for testing.
   Future<UserUsernameGetResponse> userUsernameGet(String username);
 
   /// Updated user
   /// This can only be done by the logged in user.
   /// put: /user/{username}
+  ///
+  /// * [username]: name that need to be updated
   Future<UserUsernamePutResponse> userUsernamePut(String username, User body);
 
   /// Delete user
   /// This can only be done by the logged in user.
   /// delete: /user/{username}
+  ///
+  /// * [username]: The name that needs to be deleted
   Future<UserUsernameDeleteResponse> userUsernameDelete(String username);
 }
 
@@ -1232,6 +1265,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Update an existing pet
   /// put: /pet
+  ///
   @override
   Future<PetPutResponse> petPut(Pet body) async {
     final request = _i2.OpenApiClientRequest('put', '/pet');
@@ -1248,6 +1282,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Add a new pet to the store
   /// post: /pet
+  ///
   @override
   Future<PetPostResponse> petPost(Pet body) async {
     final request = _i2.OpenApiClientRequest('post', '/pet');
@@ -1261,6 +1296,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// Finds Pets by status
   /// Multiple status values can be provided with comma separated strings
   /// get: /pet/findByStatus
+  ///
+  /// * [status]: Status values that need to be considered for filter
   @override
   Future<PetFindByStatusGetResponse> petFindByStatusGet(
       List<String> status) async {
@@ -1279,6 +1316,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
   /// get: /pet/findByTags
+  ///
+  /// * [tags]: Tags to filter by
   @override
   Future<PetFindByTagsGetResponse> petFindByTagsGet(List<String> tags) async {
     final request = _i2.OpenApiClientRequest('get', '/pet/findByTags');
@@ -1296,6 +1335,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// Find pet by ID
   /// Returns a single pet
   /// get: /pet/{petId}
+  ///
+  /// * [petId]: ID of pet to return
   @override
   Future<PetPetIdGetResponse> petPetIdGet(int petId) async {
     final request = _i2.OpenApiClientRequest('get', '/pet/{petId}');
@@ -1313,6 +1354,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Updates a pet in the store with form data
   /// post: /pet/{petId}
+  ///
+  /// * [petId]: ID of pet that needs to be updated
   @override
   Future<PetPetIdPostResponse> petPetIdPost(int petId) async {
     final request = _i2.OpenApiClientRequest('post', '/pet/{petId}');
@@ -1325,9 +1368,11 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Deletes a pet
   /// delete: /pet/{petId}
+  ///
+  /// * [petId]: Pet id to delete
   @override
-  Future<PetPetIdDeleteResponse> petPetIdDelete(
-      String apiKey, int petId) async {
+  Future<PetPetIdDeleteResponse> petPetIdDelete(int petId,
+      {String apiKey}) async {
     final request = _i2.OpenApiClientRequest('delete', '/pet/{petId}');
     request.addHeaderParameter('api_key', encodeString(apiKey));
     request.addPathParameter('petId', encodeInt(petId));
@@ -1341,6 +1386,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// uploads an image
   /// post: /pet/{petId}/uploadImage
+  ///
+  /// * [petId]: ID of pet to update
   @override
   Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(
       int petId) async {
@@ -1357,6 +1404,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// Returns pet inventories by status
   /// Returns a map of status codes to quantities
   /// get: /store/inventory
+  ///
   @override
   Future<StoreInventoryGetResponse> storeInventoryGet() async {
     final request = _i2.OpenApiClientRequest('get', '/store/inventory');
@@ -1370,6 +1418,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Place an order for a pet
   /// post: /store/order
+  ///
   @override
   Future<StoreOrderPostResponse> storeOrderPost(Order body) async {
     final request = _i2.OpenApiClientRequest('post', '/store/order');
@@ -1386,6 +1435,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// Find purchase order by ID
   /// For valid response try integer IDs with value >= 1 and <= 10.\ \ Other values will generated exceptions
   /// get: /store/order/{orderId}
+  ///
+  /// * [orderId]: ID of pet that needs to be fetched
   @override
   Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(int orderId) async {
     final request = _i2.OpenApiClientRequest('get', '/store/order/{orderId}');
@@ -1404,6 +1455,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// Delete purchase order by ID
   /// For valid response try integer IDs with positive integer value.\ \ Negative or non-integer values will generate API errors
   /// delete: /store/order/{orderId}
+  ///
+  /// * [orderId]: ID of the order that needs to be deleted
   @override
   Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(
       int orderId) async {
@@ -1421,6 +1474,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// Create user
   /// This can only be done by the logged in user.
   /// post: /user
+  ///
   @override
   Future<UserPostResponse> userPost(User body) async {
     final request = _i2.OpenApiClientRequest('post', '/user');
@@ -1433,6 +1487,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Creates list of users with given input array
   /// post: /user/createWithArray
+  ///
   @override
   Future<UserCreateWithArrayPostResponse> userCreateWithArrayPost(
       UserCreateWithArraySchema body) async {
@@ -1447,6 +1502,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
+  ///
   @override
   Future<UserCreateWithListPostResponse> userCreateWithListPost(
       UserCreateWithArraySchema body) async {
@@ -1460,6 +1516,9 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Logs user into the system
   /// get: /user/login
+  ///
+  /// * [username]: The user name for login
+  /// * [password]: The password for login in clear text
   @override
   Future<UserLoginGetResponse> userLoginGet(
       String username, String password) async {
@@ -1478,6 +1537,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Logs out current logged in user session
   /// get: /user/logout
+  ///
   @override
   Future<UserLogoutGetResponse> userLogoutGet() async {
     final request = _i2.OpenApiClientRequest('get', '/user/logout');
@@ -1489,6 +1549,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
 
   /// Get user by user name
   /// get: /user/{username}
+  ///
+  /// * [username]: The name that needs to be fetched. Use user1 for testing.
   @override
   Future<UserUsernameGetResponse> userUsernameGet(String username) async {
     final request = _i2.OpenApiClientRequest('get', '/user/{username}');
@@ -1507,6 +1569,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// Updated user
   /// This can only be done by the logged in user.
   /// put: /user/{username}
+  ///
+  /// * [username]: name that need to be updated
   @override
   Future<UserUsernamePutResponse> userUsernamePut(
       String username, User body) async {
@@ -1524,6 +1588,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// Delete user
   /// This can only be done by the logged in user.
   /// delete: /user/{username}
+  ///
+  /// * [username]: The name that needs to be deleted
   @override
   Future<UserUsernameDeleteResponse> userUsernameDelete(String username) async {
     final request = _i2.OpenApiClientRequest('delete', '/user/{username}');
