@@ -15,22 +15,34 @@ abstract class OpenApiRequest {
 
 abstract class OpenApiResponse {
   int get status;
+
   Map<String, dynamic> bodyJson;
+
 //  Map<String, dynamic> bodyJson;
   final Map<String, List<String>> headers = {};
 }
 
+abstract class Service {}
+
 typedef RouteHandler = Future<OpenApiResponse> Function(OpenApiRequest request);
+
+//typedef ServiceProvider<T extends Service> = FutureOr<U> Function<U>(Future<U> callback(T));
+typedef ServiceProviderCallback<T extends Service, U> = Future<
+    U> Function(T impl);
+
+abstract class ServiceProvider<T extends Service> {
+  Future<U> invoke<U>(ServiceProviderCallback<T, U> callback);
+}
+//typedef ServiceProvider<T extends Service> = FutureOr<
+//    U> Function<U>(ServiceProviderCallback<T, U> impl);
 
 class OpenApiServerRouterBase {
   final List<_RouteConfig> configs = [];
 
   @protected
-  void addRoute(
-    String path,
-    String operation,
-    RouteHandler handle,
-  ) {
+  void addRoute(String path,
+      String operation,
+      RouteHandler handle,) {
     configs.add(_RouteConfig(path, operationFromString(operation), handle));
   }
 

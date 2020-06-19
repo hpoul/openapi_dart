@@ -17,6 +17,8 @@ class OpenApiLibraryGenerator {
   OpenApiLibraryGenerator(this.api, this.baseName, this.partFileName);
 
   final APIDocument api;
+
+  /// base name for this API. Should be in `PascalCase`
   final String baseName;
   final String partFileName;
 
@@ -26,6 +28,10 @@ class OpenApiLibraryGenerator {
       refer('OpenApiRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiResponse =
       refer('OpenApiResponse', 'package:openapi_base/openapi_base.dart');
+  final _openApiService =
+      refer('Service', 'package:openapi_base/openapi_base.dart');
+  final _serviceProvider =
+      refer('ServiceProvider', 'package:openapi_base/openapi_base.dart');
   final _openApiClientBase =
       refer('OpenApiClientBase', 'package:openapi_base/openapi_base.dart');
   final _openApiClientRequest =
@@ -56,14 +62,14 @@ class OpenApiLibraryGenerator {
 
     // Create path configs
     final clientInterface = ClassBuilder()
-      ..name = '${baseName.pascalCase}Client'
+      ..name = '${baseName}Client'
       ..abstract = true;
     final fields = [
       MapEntry('baseUri', refer('Uri')),
       MapEntry('requestSender', _openApiRequestSender),
     ];
     final clientClass = ClassBuilder()
-      ..name = '_${baseName.pascalCase}ClientImpl'
+      ..name = '_${baseName}ClientImpl'
       ..extend = _openApiClientBase
       ..implements.add(refer(clientInterface.name))
       ..constructors.add(Constructor(
@@ -87,7 +93,11 @@ class OpenApiLibraryGenerator {
           .newInstanceNamed('_', fields.map((f) => refer(f.key)))
           .code));
     final c = Class((cb) {
-      cb.name = baseName.pascalCase;
+      cb.name = baseName;
+      cb.implements.add(_openApiService);
+//      cb.types.add(TypeReference((b) => b
+//        ..symbol = 'T'
+//        ..bound = _openApiRequest));
       cb.abstract = true;
       for (final path in api.paths.entries) {
         for (final operation in path.value.operations.entries) {
@@ -115,7 +125,7 @@ class OpenApiLibraryGenerator {
             ..name = 'map'
             ..returns = refer('void');
           final mapCode = <Code>[];
-          Reference successResponseType;
+          Reference /*?*/ successResponseType;
           final clientResponseParse = <String, Expression>{};
           for (final response in operation.value.responses.entries) {
             final statusAsParameter = response.key == 'default';
@@ -401,8 +411,21 @@ class OpenApiLibraryGenerator {
               }
             }
 
-            _routerConfig(path.key, operation.key,
-                refer('impl').property(operationName)(parameters));
+            _routerConfig(
+                path.key,
+                operation.key,
+                refer('impl').property('invoke')([
+                  Method((m) => m
+                    ..requiredParameters.add(Parameter((pb) => pb
+                      ..type = refer(baseName)
+                      ..name = 'impl'))
+                    ..lambda = true
+                    ..body = refer('impl')
+                        .property(operationName)(parameters)
+//                        .returned
+                        .code
+                    ..modifier = MethodModifier.async).closure
+                ])); //.property(operationName)(parameters));
           }));
 
           clientCode.add(refer('sendRequest')(
@@ -426,7 +449,7 @@ class OpenApiLibraryGenerator {
     lb.body.add(clientClass.build());
 
     lb.body.add(Class((cb) {
-      cb.name = '${baseName.pascalCase}Router';
+      cb.name = '${baseName}Router';
       cb.constructors.add(Constructor((cb) => cb
         ..requiredParameters.add(Parameter((pb) => pb
           ..name = 'impl'
@@ -435,7 +458,7 @@ class OpenApiLibraryGenerator {
           'OpenApiServerRouterBase', 'package:openapi_base/openapi_base.dart');
       cb.fields.add(Field((fb) => fb
         ..name = 'impl'
-        ..type = refer(c.name)
+        ..type = _serviceProvider.addGenerics(refer(c.name))
         ..modifier = FieldModifier.final$));
       cb.methods.add(Method((mb) => mb
         ..name = 'configure'
@@ -601,9 +624,12 @@ class OpenApiCodeBuilder extends Builder {
     final api = APIDocument.fromMap(
         Map<String, dynamic>.from(decoded.cast<String, dynamic>()));
 
+    final baseName = api.info.extensions['x-dart-name'] as String ??
+        inputIdBasename.pascalCase;
+
     final l = OpenApiLibraryGenerator(
       api,
-      inputIdBasename,
+      baseName,
       outputId.changeExtension('.g.dart').pathSegments.last,
     ).generate();
 
