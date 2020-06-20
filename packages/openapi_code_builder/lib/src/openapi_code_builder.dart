@@ -4,23 +4,29 @@ import 'dart:convert';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:logging/logging.dart';
+import 'package:meta/meta.dart';
 import 'package:open_api/v3.dart';
 import 'package:quiver/check.dart';
 import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
 
-import 'package:logging/logging.dart';
-
 final _logger = Logger('openapi_code_builder');
 
 class OpenApiLibraryGenerator {
-  OpenApiLibraryGenerator(this.api, this.baseName, this.partFileName);
+  OpenApiLibraryGenerator(
+    this.api,
+    this.baseName,
+    this.partFileName, {
+    this.useNullSafetySyntax = false,
+  });
 
   final APIDocument api;
 
   /// base name for this API. Should be in `PascalCase`
   final String baseName;
   final String partFileName;
+  final bool useNullSafetySyntax;
 
   final jsonSerializable =
       refer('JsonSerializable', 'package:json_annotation/json_annotation.dart');
@@ -132,7 +138,7 @@ class OpenApiLibraryGenerator {
             final codeName = response.key.pascalCase;
             final responseCodeClass = ClassBuilder()
               ..extend = refer(responseClass.name)
-              ..name = '${responseClass.name}$codeName'
+              ..name = '_${responseClass.name}$codeName'
               ..fields.add(Field((fb) => fb
                 ..name = 'status'
                 ..annotations.add(_override)
@@ -533,6 +539,9 @@ class OpenApiLibraryGenerator {
           ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb
 //            ..docs.addAll(f.docs)
             ..name = f.name
+            ..required = useNullSafetySyntax && obj.required.contains(f.name)
+            ..annotations
+                .addAll(obj.required.contains(f.name) ? [_required] : [])
             ..named = true
             ..toThis = true)))))
         ..constructors.add(Constructor((cb) => cb
@@ -608,6 +617,13 @@ class OpenApiLibraryGenerator {
 }
 
 class OpenApiCodeBuilder extends Builder {
+  OpenApiCodeBuilder(
+      {this.orderDirectives = false, @required this.useNullSafetySyntax})
+      : assert(useNullSafetySyntax != null);
+
+  final bool orderDirectives;
+  final bool useNullSafetySyntax;
+
   @override
   FutureOr<void> build(BuildStep buildStep) async {
     final inputId = buildStep.inputId;
@@ -633,7 +649,8 @@ class OpenApiCodeBuilder extends Builder {
       outputId.changeExtension('.g.dart').pathSegments.last,
     ).generate();
 
-    final emitter = DartEmitter(Allocator.simplePrefixing(), true, true);
+    final emitter = DartEmitter(
+        Allocator.simplePrefixing(), orderDirectives, useNullSafetySyntax);
 //    print(DartFormatter().format('${l.accept(emitter)}'));
 //    print('inputId: $inputId / outputId: $outputId');
     await buildStep.writeAsString(
