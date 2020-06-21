@@ -65,7 +65,7 @@ class OpenApiClientRequest {
   }
 
   void setJsonBody(Map<String, dynamic> json) {
-    this.jsonBody = json;
+    jsonBody = json;
   }
 }
 

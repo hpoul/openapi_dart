@@ -19,6 +19,7 @@ class OpenApiLibraryGenerator {
     this.baseName,
     this.partFileName, {
     this.useNullSafetySyntax = false,
+    this.apiMethodsWithRequest = false,
   });
 
   final APIDocument api;
@@ -27,6 +28,7 @@ class OpenApiLibraryGenerator {
   final String baseName;
   final String partFileName;
   final bool useNullSafetySyntax;
+  final bool apiMethodsWithRequest;
 
   final jsonSerializable =
       refer('JsonSerializable', 'package:json_annotation/json_annotation.dart');
@@ -34,10 +36,10 @@ class OpenApiLibraryGenerator {
       refer('OpenApiRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiResponse =
       refer('OpenApiResponse', 'package:openapi_base/openapi_base.dart');
-  final _openApiService =
-      refer('Service', 'package:openapi_base/openapi_base.dart');
-  final _serviceProvider =
-      refer('ServiceProvider', 'package:openapi_base/openapi_base.dart');
+  final _openApiEndpoint =
+      refer('ApiEndpoint', 'package:openapi_base/openapi_base.dart');
+  final _endpointProvider =
+      refer('ApiEndpointProvider', 'package:openapi_base/openapi_base.dart');
   final _openApiClientBase =
       refer('OpenApiClientBase', 'package:openapi_base/openapi_base.dart');
   final _openApiClientRequest =
@@ -100,7 +102,7 @@ class OpenApiLibraryGenerator {
           .code));
     final c = Class((cb) {
       cb.name = baseName;
-      cb.implements.add(_openApiService);
+      cb.implements.add(_openApiEndpoint);
 //      cb.types.add(TypeReference((b) => b
 //        ..symbol = 'T'
 //        ..bound = _openApiRequest));
@@ -279,10 +281,12 @@ class OpenApiLibraryGenerator {
 
             final parameters = <Expression>[];
 
-            mb.requiredParameters.add(Parameter((pb) => pb
-              ..name = 'request'
-              ..type = _openApiRequest));
-            parameters.add(refer('request'));
+            if (apiMethodsWithRequest) {
+              mb.requiredParameters.add(Parameter((pb) => pb
+                ..name = 'request'
+                ..type = _openApiRequest));
+              parameters.add(refer('request'));
+            }
 
             // ignore: avoid_function_literals_in_foreach_calls
             final allParameters = [
@@ -464,7 +468,7 @@ class OpenApiLibraryGenerator {
           'OpenApiServerRouterBase', 'package:openapi_base/openapi_base.dart');
       cb.fields.add(Field((fb) => fb
         ..name = 'impl'
-        ..type = _serviceProvider.addGenerics(refer(c.name))
+        ..type = _endpointProvider.addGenerics(refer(c.name))
         ..modifier = FieldModifier.final$));
       cb.methods.add(Method((mb) => mb
         ..name = 'configure'

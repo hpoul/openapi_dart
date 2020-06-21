@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:openapi_base/openapi_base.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
@@ -16,13 +17,17 @@ class OpenApiShelfServer {
 
   final OpenApiServerRouterBase router;
 
-  void startServer({int port = 8080}) {
-    var handler = const shelf.Pipeline()
-        .addMiddleware(cookieParser())
-        .addMiddleware(shelf.logRequests())
-        .addHandler(_handleRequest);
+  @protected
+  shelf.Handler preparePipeline() => const shelf.Pipeline()
+      .addMiddleware(cookieParser())
+      .addMiddleware(shelf.logRequests())
+      .addHandler(_handleRequest);
 
-    io.serve(handler, 'localhost', port).then((server) {
+  void startServer({
+    String address = 'localhost',
+    int port = 8080,
+  }) {
+    io.serve(preparePipeline(), address, port).then((server) {
       _logger.info('Serving at http://${server.address.host}:${server.port}');
     });
   }
