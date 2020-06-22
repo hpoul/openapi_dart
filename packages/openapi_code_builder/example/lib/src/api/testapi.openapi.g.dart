@@ -17,6 +17,17 @@ Map<String, dynamic> _$RegisterRequestToJson(RegisterRequest instance) =>
       'email': instance.email,
     };
 
+HelloRequest _$HelloRequestFromJson(Map<String, dynamic> json) {
+  return HelloRequest(
+    salutation: json['salutation'] as String,
+  );
+}
+
+Map<String, dynamic> _$HelloRequestToJson(HelloRequest instance) =>
+    <String, dynamic>{
+      'salutation': instance.salutation,
+    };
+
 HelloResponse _$HelloResponseFromJson(Map<String, dynamic> json) {
   return HelloResponse(
     message: json['message'] as String,

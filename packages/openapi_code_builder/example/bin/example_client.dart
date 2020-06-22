@@ -9,10 +9,11 @@ Future<void> main() async {
   PrintAppender.setupLogging();
   _logger.fine('Starting Client ...');
   final requestSender = HttpRequestSender();
-  final client = TestapiClient(
-      Uri.parse('https://virtserver.swaggerhub.com/hpoul/Testapi/1.0.0'),
+  final client = TestApiClient(
+//      Uri.parse('https://virtserver.swaggerhub.com/hpoul/Testapi/1.0.0'),
+      Uri.parse('http://localhost:8080'),
       requestSender);
-  final blubb = await client.helloNameGet('Blubb');
+  final blubb = await client.helloNameGet(name: 'Blubb');
   blubb.map(
     on200: (response) => _logger.info('Success! ${response.body.message}'),
   );
