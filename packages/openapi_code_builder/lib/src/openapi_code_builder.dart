@@ -552,7 +552,7 @@ class OpenApiLibraryGenerator {
           ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb
 //            ..docs.addAll(f.docs)
             ..name = f.name
-            ..asRequired(this, obj.required.contains(f.name))
+            ..asRequired(this, obj.required?.contains(f.name) ?? false)
             ..named = true
             ..toThis = true)))))
         ..constructors.add(Constructor((cb) => cb
@@ -627,6 +627,31 @@ class OpenApiLibraryGenerator {
   }
 }
 
+class OpenApiCodeBuilderUtils {
+  static Map<String, dynamic> _loadYaml(String source) {
+    final dynamic tmp = loadYaml(source) as dynamic;
+    return json.decode(json.encode(tmp)) as Map<String, dynamic>;
+  }
+
+  static APIDocument loadApiFromYaml(String yamlSource) {
+    final decoded = _loadYaml(yamlSource);
+    final api = APIDocument.fromMap(
+        Map<String, dynamic>.from(decoded.cast<String, dynamic>()));
+    return api;
+  }
+
+  static String formatLibrary(Library library,
+      {bool orderDirectives = false, bool useNullSafetySyntax}) {
+    final emitter = DartEmitter(
+        Allocator.simplePrefixing(), orderDirectives, useNullSafetySyntax);
+    final libraryOutput =
+        DartFormatter().format('// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
+            '// ignore_for_file: prefer_initializing_formals\n\n'
+            '${library.accept(emitter)}');
+    return libraryOutput;
+  }
+}
+
 class OpenApiCodeBuilder extends Builder {
   OpenApiCodeBuilder(
       {this.orderDirectives = false, @required this.useNullSafetySyntax})
@@ -646,10 +671,8 @@ class OpenApiCodeBuilder extends Builder {
     checkArgument(inputId.pathSegments.last.endsWith('.openapi.yaml'));
     final inputIdBasename =
         inputId.pathSegments.last.replaceAll('.openapi.yaml', '');
-    final decoded = _loadYaml(source);
-//    final decoded = loadYaml(source) as Map<dynamic, dynamic>;
-    final api = APIDocument.fromMap(
-        Map<String, dynamic>.from(decoded.cast<String, dynamic>()));
+    OpenApiCodeBuilderUtils.loadApiFromYaml(source);
+    final api = OpenApiCodeBuilderUtils.loadApiFromYaml(source);
 
     final baseName = api.info.extensions['x-dart-name'] as String ??
         inputIdBasename.pascalCase;
@@ -660,26 +683,16 @@ class OpenApiCodeBuilder extends Builder {
       outputId.changeExtension('.g.dart').pathSegments.last,
     ).generate();
 
-    final emitter = DartEmitter(
-        Allocator.simplePrefixing(), orderDirectives, useNullSafetySyntax);
+    final libraryOutput = OpenApiCodeBuilderUtils.formatLibrary(l);
 //    print(DartFormatter().format('${l.accept(emitter)}'));
 //    print('inputId: $inputId / outputId: $outputId');
-    await buildStep.writeAsString(
-        outputId,
-        DartFormatter().format('// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
-            '// ignore_for_file: prefer_initializing_formals\n\n'
-            '${l.accept(emitter)}'));
+    await buildStep.writeAsString(outputId, libraryOutput);
   }
 
   @override
   Map<String, List<String>> get buildExtensions => {
         '.openapi.yaml': ['.openapi.dart']
       };
-
-  Map<String, dynamic> _loadYaml(String source) {
-    final dynamic tmp = loadYaml(source) as dynamic;
-    return json.decode(json.encode(tmp)) as Map<String, dynamic>;
-  }
 }
 
 TypeReference _referType(String name, {String url, List<Reference> generics}) =>
