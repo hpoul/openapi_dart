@@ -1,7 +1,7 @@
 name: openapi_base
-description: Open API base implementation for client/server.
+description: Open API base implementation for client/server to be used with openapi_code_builder.
 version: 0.0.1
-# homepage: https://www.example.com
+homepage: https://github.com/hpoul/openapi_dart/tree/master/packages/openapi_base
 
 environment:
   sdk: '>=2.9.0-13.0.dev <3.0.0'
