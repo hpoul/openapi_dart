@@ -25,6 +25,8 @@ dependencies:
     sdk: flutter
   openapi_code_builder:
     path: ../openapi_code_builder
+  flutter_markdown: ^0.4.2
+  url_launcher: ^5.4.11
   google_fonts: ^1.1.0
   logging: ^0.11.4
   logging_appenders: ^0.4.2+2
