@@ -40,6 +40,8 @@ class OpenApiLibraryGenerator {
       refer('ApiEndpoint', 'package:openapi_base/openapi_base.dart');
   final _endpointProvider =
       refer('ApiEndpointProvider', 'package:openapi_base/openapi_base.dart');
+  final _openApiUrlEncodeMixin =
+      refer('OpenApiUrlEncodeMixin', 'package:openapi_base/openapi_base.dart');
   final _openApiClientBase =
       refer('OpenApiClientBase', 'package:openapi_base/openapi_base.dart');
   final _openApiClientRequest =
@@ -76,6 +78,9 @@ class OpenApiLibraryGenerator {
       MapEntry('baseUri', refer('Uri')),
       MapEntry('requestSender', _openApiRequestSender),
     ];
+    final urlResolveClass = ClassBuilder()
+      ..name = '${baseName}UrlResolve'
+      ..mixins.add(_openApiUrlEncodeMixin);
     final clientClass = ClassBuilder()
       ..name = '_${baseName}ClientImpl'
       ..extend = _openApiClientBase
@@ -389,6 +394,12 @@ class OpenApiLibraryGenerator {
                   break;
               }
             }
+            final urlResolverMethod = clientMethod.build().toBuilder()
+              ..returns = _openApiClientRequest
+              ..modifier = null
+              ..body =
+                  Block.of(clientCode + [refer('request').returned.statement]);
+            urlResolveClass.methods.add(urlResolverMethod.build());
 
             final body = operation.value.requestBody;
             if (body != null) {
@@ -457,6 +468,7 @@ class OpenApiLibraryGenerator {
     lb.body.add(c);
     lb.body.add(clientInterface.build());
     lb.body.add(clientClass.build());
+    lb.body.add(urlResolveClass.build());
 
     lb.body.add(Class((cb) {
       cb.name = '${baseName}Router';

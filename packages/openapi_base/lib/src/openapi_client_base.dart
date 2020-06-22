@@ -18,7 +18,13 @@ abstract class OpenApiRequestSender {
       Uri baseUri, OpenApiClientRequest request);
 }
 
-abstract class OpenApiClientBase {
+mixin OpenApiUrlEncodeMixin {
+  List<String> encodeString(String value) => [value];
+  List<String> encodeInt(int value) => ['$value'];
+  List<String> encodeBool(bool value) => ['$value'];
+}
+
+abstract class OpenApiClientBase with OpenApiUrlEncodeMixin {
   Uri get baseUri;
   OpenApiRequestSender get requestSender;
 
@@ -32,10 +38,6 @@ abstract class OpenApiClientBase {
     }
     return await parser(response);
   }
-
-  List<String> encodeString(String value) => [value];
-  List<String> encodeInt(int value) => ['$value'];
-  List<String> encodeBool(bool value) => ['$value'];
 }
 
 class OpenApiClientRequest {
@@ -67,6 +69,18 @@ class OpenApiClientRequest {
   void setJsonBody(Map<String, dynamic> json) {
     jsonBody = json;
   }
+
+  Uri resolveUri(Uri baseUri) {
+    if (!baseUri.path.endsWith('/')) {
+      baseUri = baseUri.resolve(baseUri.pathSegments.last + '/');
+    }
+
+    final uriTemplate = UriTemplate(path);
+    final expanded = uriTemplate.expand(paramPath);
+    final expandedUri = Uri.parse(expanded.replaceFirst(RegExp(r'^/+'), ''));
+
+    return baseUri.resolveUri(expandedUri);
+  }
 }
 
 abstract class OpenApiClientResponse {
@@ -83,16 +97,8 @@ class HttpRequestSender extends OpenApiRequestSender {
       Uri baseUri, OpenApiClientRequest request) async {
     _client ??= Client();
 
-    if (!baseUri.path.endsWith('/')) {
-      baseUri = baseUri.resolve(baseUri.pathSegments.last + '/');
-    }
-
-    final uriTemplate = UriTemplate(request.path);
-    final expanded = uriTemplate.expand(request.paramPath);
-    final expandedUri = Uri.parse(expanded.replaceFirst(RegExp(r'^/+'), ''));
-    final uri = baseUri.resolveUri(expandedUri);
-
-    _logger.finest('Expanded Uri: $expandedUri resolved: $uri'
+    final uri = request.resolveUri(baseUri);
+    _logger.finest('Expanded Uri for request to $uri '
         ' (baseUri: $baseUri)');
 
     final req = Request(request.operation, uri);
