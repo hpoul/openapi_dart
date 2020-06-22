@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:meta/meta.dart';
 import 'package:openapi_base/openapi_base.dart';
 import 'package:uri/uri.dart';
 
@@ -19,8 +20,13 @@ abstract class OpenApiRequestSender {
 }
 
 mixin OpenApiUrlEncodeMixin {
+  @protected
   List<String> encodeString(String value) => [value];
+
+  @protected
   List<String> encodeInt(int value) => ['$value'];
+
+  @protected
   List<String> encodeBool(bool value) => ['$value'];
 }
 

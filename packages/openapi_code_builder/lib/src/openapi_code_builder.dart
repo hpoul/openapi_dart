@@ -308,13 +308,10 @@ class OpenApiLibraryGenerator {
               final p = Parameter((pb) => pb
                 ..name = paramName
                 ..type = paramType
+                ..asRequired(this, param.isRequired)
                 ..named = true);
               mb.requiredParameters.add(p);
-              if (param.isRequired) {
-                clientMethod.requiredParameters.add(p);
-              } else {
-                clientMethod.optionalParameters.add(p);
-              }
+              clientMethod.optionalParameters.add(p);
               final decodeParameter = (Expression expression) {
                 switch (param.schema.type) {
                   case APIType.string:
@@ -555,9 +552,7 @@ class OpenApiLibraryGenerator {
           ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb
 //            ..docs.addAll(f.docs)
             ..name = f.name
-            ..required = useNullSafetySyntax && obj.required.contains(f.name)
-            ..annotations
-                .addAll(obj.required.contains(f.name) ? [_required] : [])
+            ..asRequired(this, obj.required.contains(f.name))
             ..named = true
             ..toThis = true)))))
         ..constructors.add(Constructor((cb) => cb
@@ -709,6 +704,16 @@ extension on MethodBuilder {
   void addDartDoc(String helpText) {
     if (helpText != null) {
       docs.add('/// $helpText');
+    }
+  }
+}
+
+extension on ParameterBuilder {
+  void asRequired(OpenApiLibraryGenerator generator, [bool isRequired = true]) {
+    if (generator.useNullSafetySyntax) {
+      this.required = isRequired;
+    } else if (isRequired) {
+      annotations.add(generator._required);
     }
   }
 }
