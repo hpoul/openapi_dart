@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:code_builder/src/visitors.dart'; // ignore: implementation_imports
 import 'package:dart_style/dart_style.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
@@ -32,6 +33,8 @@ class OpenApiLibraryGenerator {
 
   final jsonSerializable =
       refer('JsonSerializable', 'package:json_annotation/json_annotation.dart');
+  final jsonValue =
+      refer('JsonValue', 'package:json_annotation/json_annotation.dart');
   final _openApiRequest =
       refer('OpenApiRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiResponse =
@@ -58,6 +61,7 @@ class OpenApiLibraryGenerator {
   static const mediaTypeJson = 'application/json';
 
   final createdSchema = <APISchemaObject, Reference>{};
+  final createdEnums = <String, Reference>{};
 
   final lb = LibraryBuilder();
   final routerConfig = <Expression>[];
@@ -605,9 +609,31 @@ class OpenApiLibraryGenerator {
     return c;
   }
 
+  Reference _createEnum(String name, List<dynamic> values) {
+    return createdEnums.putIfAbsent(name, () {
+      lb.body.add(EnumSpec(
+        name: name,
+        values: values
+            .map(
+              (dynamic e) => EnumValueSpec(
+                annotations: [
+                  jsonValue([literalString(e.toString())])
+                ],
+                name: e.toString(),
+              ),
+            )
+            .toList(),
+      ));
+      return refer(name);
+    });
+  }
+
   Reference _toDartType(String parent, APISchemaObject schema) {
     switch (schema.type ?? APIType.object) {
       case APIType.string:
+        if (schema.enumerated != null && schema.enumerated.isNotEmpty) {
+          return _createEnum(parent, schema.enumerated);
+        }
         return refer('String');
       case APIType.number:
         return refer('num');
@@ -624,6 +650,44 @@ class OpenApiLibraryGenerator {
     }
     throw StateError(
         'Invalid type ${schema.type} - $schema - ${schema.referenceURI}');
+  }
+}
+
+class EnumSpec extends Spec {
+  EnumSpec({this.name, this.values});
+
+  final String name;
+  final List<EnumValueSpec> values;
+
+  @override
+  R accept<R>(SpecVisitor<R> visitor, [R context]) {
+    assert(context is StringSink);
+    final ctx = context as StringSink;
+    ctx.write('enum $name {');
+    for (final value in values) {
+      visitor.visitSpec(value, context);
+      ctx.write(',');
+    }
+    ctx.writeln('}');
+    return context;
+  }
+}
+
+class EnumValueSpec extends Spec {
+  EnumValueSpec({this.annotations, this.name});
+
+  final List<Expression> annotations;
+  final String name;
+
+  @override
+  R accept<R>(SpecVisitor<R> visitor, [R context]) {
+    assert(context is StringSink);
+    final ctx = context as StringSink;
+    for (final annotation in annotations) {
+      visitor.visitAnnotation(annotation, context);
+    }
+    ctx.write(name);
+    return context;
   }
 }
 
