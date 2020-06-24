@@ -12,6 +12,11 @@ abstract class OpenApiRequest {
   List<String> queryParameter(String name);
 
   Future<Map<String, dynamic>> readJsonBody();
+
+  Future<Map<String, List<String>>> readUrlEncodedBody();
+  Future<Map<String, String>> readUrlEncodedBodyFlat() async =>
+      (await readUrlEncodedBody())
+          .map((key, value) => MapEntry(key, value.first));
 }
 
 abstract class OpenApiResponseBodyJson {
@@ -122,7 +127,7 @@ enum Operation {
 }
 
 Map<String, Operation> _operationsMap() {
-  final index = Operation.get.toString().indexOf('.');
+  final index = Operation.get.toString().indexOf('.') + 1;
   return Map.fromEntries(
       Operation.values.map((e) => MapEntry(e.toString().substring(index), e)));
 }
@@ -130,7 +135,8 @@ Map<String, Operation> _operationsMap() {
 final Map<String, Operation> _operations = _operationsMap();
 
 Operation operationFromString(String operation) =>
-    _operations[operation.toLowerCase()];
+    _operations[operation.toLowerCase()] ??
+    (() => throw StateError('Invalid operation $operation'))();
 
 class _RouteConfig {
   _RouteConfig(this.path, this.operation, this.handler, {this.security})

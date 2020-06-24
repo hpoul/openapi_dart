@@ -37,7 +37,8 @@ class OpenApiShelfServer {
     _logger.info('handling request.');
     final url = request.url.replace(path: '/${request.url.path}');
     for (final config in router.configs) {
-      _logger.finest('Matching $operation to $config');
+      _logger.finest(
+          'Matching $operation to $config (${config.operation} vs. $operation)');
       if (config.operation != operation) {
         continue;
       }
@@ -73,6 +74,9 @@ class OpenApiShelfServer {
             HttpHeaders.contentTypeHeader: response.contentType.toString(),
           },
         );
+      } else {
+        return shelf.Response(response.status);
+        throw StateError('Invalid response $response');
       }
 
 //      return shelf.Response.ok('Ok found. $response');
@@ -112,12 +116,18 @@ class ShelfRequest extends OpenApiRequest {
 
   @override
   List<String> queryParameter(String name) {
-    // TODO: implement queryParameter
-    throw UnimplementedError();
+    return _request.url.queryParametersAll[name];
   }
 
   @override
   Future<Map<String, dynamic>> readJsonBody() async {
     return json.decode(await _request.readAsString()) as Map<String, dynamic>;
+  }
+
+  @override
+  Future<Map<String, List<String>>> readUrlEncodedBody() async {
+    final query = await _request.readAsString();
+    final map = Uri.splitQueryString(query);
+    return map.map((key, value) => MapEntry(key, [value]));
   }
 }

@@ -83,7 +83,8 @@ class OpenApiClientRequest {
 
     final uriTemplate = UriTemplate(path);
     final expanded = uriTemplate.expand(paramPath);
-    final expandedUri = Uri.parse(expanded.replaceFirst(RegExp(r'^/+'), ''));
+    final expandedUri = Uri.parse(expanded.replaceFirst(RegExp(r'^/+'), ''))
+        .replace(queryParameters: paramQuery.isEmpty ? null : paramQuery);
 
     return baseUri.resolveUri(expandedUri);
   }
@@ -109,6 +110,9 @@ class HttpRequestSender extends OpenApiRequestSender {
         ' (baseUri: $baseUri)');
 
     final req = Request(request.operation, uri);
+    if (request.jsonBody != null) {
+      req.body = json.encode(request.jsonBody);
+    }
     final response = await _client.send(req);
     return HttpClientResponse(await Response.fromStream(response));
   }

@@ -36,6 +36,8 @@ class OpenApiLibraryGenerator {
       refer('JsonSerializable', 'package:json_annotation/json_annotation.dart');
   final jsonValue =
       refer('JsonValue', 'package:json_annotation/json_annotation.dart');
+  final jsonKey =
+      refer('JsonKey', 'package:json_annotation/json_annotation.dart');
   final _openApiRequest =
       refer('OpenApiRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiResponse =
@@ -513,33 +515,23 @@ class OpenApiLibraryGenerator {
 
             final body = operation.value.requestBody;
             if (body != null) {
-              // TODO for now we only support application/json request body.
+              body.content.forEach((key, reqBody) {
+                final contentType = OpenApiContentType.parse(key);
+//                final ct = OpenApiContentType.allKnown
+//                    .firstWhere((element) => element.matches(contentType));
+                _createRequestBody(
+                  contentType,
+                  reqBody,
+                  pathName,
+                  mb,
+                  routerParams,
+                  clientMethod,
+                  clientCode,
+                );
+              });
               final reqBody = body.content[mediaTypeJson.contentType];
 //              for (final reqBody in body.content.entries) {
-              if (reqBody != null) {
-                _logger.finer('reqBody.schema: ${reqBody.schema}');
-                final reference = _schemaReference(
-                    '${pathName.pascalCase}Schema', reqBody.schema);
-
-                mb.requiredParameters.add(Parameter((pb) => pb
-                  ..name = 'body'
-                  ..type = reference));
-                routerParams.add(reference.property('fromJson')(
-                  [
-                    refer('request').property('readJsonBody')([]).awaited,
-                  ],
-                ));
-                clientMethod.requiredParameters.add(Parameter((pb) => pb
-                  ..name = 'body'
-                  ..type = reference));
-                clientCode.add(refer('request')
-                    .property('setJsonBody')([
-                      refer('body').property('toJson')(
-                          []) /*.asA(_referType('Map',
-                          generics: [refer('String'), refer('dynamic')]))*/
-                    ])
-                    .statement);
-              }
+              if (reqBody != null) {}
             }
 
             _routerConfig(
@@ -604,6 +596,40 @@ class OpenApiLibraryGenerator {
 
 //       api.paths.map((key, value) => MapEntry(key, refer('ApiPathConfig').newInstance([value.])))
     return lb.build();
+  }
+
+  void _createRequestBody(
+      OpenApiContentType contentType,
+      APIMediaType reqBody,
+      String pathName,
+      MethodBuilder mb,
+      List<Expression> routerParams,
+      MethodBuilder clientMethod,
+      List<Code> clientCode) {
+    _logger.finer('reqBody.schema: ${reqBody.schema}');
+    final reference =
+        _schemaReference('${pathName.pascalCase}Schema', reqBody.schema);
+
+    mb.requiredParameters.add(Parameter((pb) => pb
+      ..name = 'body'
+      ..type = reference));
+    routerParams.add(reference.property('fromJson')(
+      [
+        contentType.matches(OpenApiContentType.json)
+            ? refer('request').property('readJsonBody')([]).awaited
+            : (contentType.matches(OpenApiContentType.urlencoded)
+                ? refer('request')
+                    .property('readUrlEncodedBodyFlat')([])
+                    .awaited
+                : literalNull.expression),
+      ],
+    ));
+    clientMethod.requiredParameters.add(Parameter((pb) => pb
+      ..name = 'body'
+      ..type = reference));
+    clientCode.add(refer('request')
+        .property('setJsonBody')([refer('body').property('toJson')([])])
+        .statement);
   }
 
   void _routerConfig(String path, String operation, Expression handler,
@@ -678,7 +704,8 @@ class OpenApiLibraryGenerator {
     final properties = obj.properties?.entries ?? [];
     final fields = properties.map((e) => Field((fb) => fb
       ..docs.add('/// ${e.value.description}')
-      ..name = e.key
+      ..annotations.add(jsonKey([], {'name': literalString(e.key)}))
+      ..name = e.key.camelCase
       ..modifier = FieldModifier.final$
       ..type = _toDartType('$className${e.key.pascalCase}', e.value)));
 
