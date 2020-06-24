@@ -55,6 +55,14 @@ class OpenApiLibraryGenerator {
       refer('OpenApiRequestSender', 'package:openapi_base/openapi_base.dart');
   final _responseMapType =
       refer('ResponseMap', 'package:openapi_base/openapi_base.dart');
+  final _securityRequirement =
+      refer('SecurityRequirement', 'package:openapi_base/openapi_base.dart');
+  final _securityRequirementScheme = refer(
+      'SecurityRequirementScheme', 'package:openapi_base/openapi_base.dart');
+  final _securitySchemeHttp =
+      refer('SecuritySchemeHttp', 'package:openapi_base/openapi_base.dart');
+  final _securitySchemeHttpScheme = refer(
+      'SecuritySchemeHttpScheme', 'package:openapi_base/openapi_base.dart');
   final _required = refer('required', 'package:meta/meta.dart');
   final _override = refer('override');
 
@@ -62,8 +70,10 @@ class OpenApiLibraryGenerator {
 
   final createdSchema = <APISchemaObject, Reference>{};
   final createdEnums = <String, Reference>{};
+  final securitySchemes = <String, Expression>{};
 
   final lb = LibraryBuilder();
+  final securitySchemesClass = ClassBuilder()..name = 'SecuritySchemes';
   final routerConfig = <Expression>[];
 
   Library generate() {
@@ -72,6 +82,9 @@ class OpenApiLibraryGenerator {
     // create class for each schema..
     for (final schemaEntry in api.components.schemas.entries) {
       _schemaReference(schemaEntry.key, schemaEntry.value);
+    }
+    for (final securityScheme in api.components.securitySchemes.entries) {
+      _securitySchemeReference(securityScheme.key, securityScheme.value);
     }
 
     // Create path configs
@@ -434,20 +447,22 @@ class OpenApiLibraryGenerator {
             }
 
             _routerConfig(
-                path.key,
-                operation.key,
-                refer('impl').property('invoke')([
-                  Method((m) => m
-                    ..requiredParameters.add(Parameter((pb) => pb
-                      ..type = refer(baseName)
-                      ..name = 'impl'))
-                    ..lambda = true
-                    ..body = refer('impl')
-                        .property(operationName)(parameters)
+              path.key,
+              operation.key,
+              refer('impl').property('invoke')([
+                Method((m) => m
+                  ..requiredParameters.add(Parameter((pb) => pb
+                    ..type = refer(baseName)
+                    ..name = 'impl'))
+                  ..lambda = true
+                  ..body = refer('impl')
+                      .property(operationName)(parameters)
 //                        .returned
-                        .code
-                    ..modifier = MethodModifier.async).closure
-                ])); //.property(operationName)(parameters));
+                      .code
+                  ..modifier = MethodModifier.async).closure
+              ]),
+              operation.value.security ?? api.security,
+            ); //.property(operationName)(parameters));
           }));
 
           clientCode.add(refer('sendRequest')(
@@ -488,24 +503,44 @@ class OpenApiLibraryGenerator {
         ..returns = refer('void')
         ..body = Block.of(routerConfig.map((e) => e.statement))));
     }));
+    lb.body.add(securitySchemesClass.build());
 
 //       api.paths.map((key, value) => MapEntry(key, refer('ApiPathConfig').newInstance([value.])))
     return lb.build();
   }
 
-  void _routerConfig(String path, String operation, Expression handler) {
-    routerConfig.add(refer('addRoute')([
-      literalString(path),
-      literalString(operation),
-      Method((mb) => mb
-        ..modifier = MethodModifier.async
-        ..requiredParameters.add(Parameter((pb) => pb
-          ..name = 'request'
-          ..type = _openApiRequest))
-        ..body = Block.of([
-          handler.awaited.returned.statement,
-        ])).closure,
-    ]));
+  void _routerConfig(String path, String operation, Expression handler,
+      List<APISecurityRequirement> security) {
+    _logger.fine('RouteConfig for $path - security: $security');
+    routerConfig.add(refer('addRoute')(
+      [
+        literalString(path),
+        literalString(operation),
+        Method((mb) => mb
+          ..modifier = MethodModifier.async
+          ..requiredParameters.add(Parameter((pb) => pb
+            ..name = 'request'
+            ..type = _openApiRequest))
+          ..body = Block.of([
+            handler.awaited.returned.statement,
+          ])).closure,
+      ],
+      {
+        'security': literalList(security.map(
+          (security) => _securityRequirement(
+            [],
+            {
+              'schemes': literalList(security.requirements.entries
+                  .map((req) => _securityRequirementScheme.newInstance([], {
+                        'scheme': refer(securitySchemesClass.name)
+                            .property(req.key.camelCase),
+                        'scopes': literalList(req.value),
+                      }))),
+            },
+          ),
+        )),
+      },
+    ));
   }
 
   String _classNameForComponent(String componentName) {
@@ -650,6 +685,29 @@ class OpenApiLibraryGenerator {
     }
     throw StateError(
         'Invalid type ${schema.type} - $schema - ${schema.referenceURI}');
+  }
+
+  Expression _securitySchemeReference(String name, APISecurityScheme value) {
+    switch (value.type) {
+      case APISecuritySchemeType.http:
+        assert(value.scheme == 'bearer');
+        securitySchemesClass.fields.add(
+          Field((fb) => fb
+            ..name = name.camelCase
+            ..modifier = FieldModifier.final$
+            ..static = true
+            ..assignment = _securitySchemeHttp.newInstance([],
+                {'scheme': _securitySchemeHttpScheme.property('bearer')}).code),
+        );
+        return refer(securitySchemesClass.name).property(name.camelCase);
+      case APISecuritySchemeType.apiKey:
+      case APISecuritySchemeType.oauth2:
+      case APISecuritySchemeType.openID:
+        throw StateError('Unsupported security scheme ${value.type}');
+        break;
+    }
+    throw StateError(
+        'Should not happen - unsupported security scheme ${value.type}');
   }
 }
 

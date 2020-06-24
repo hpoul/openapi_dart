@@ -228,9 +228,9 @@ packages:
   open_api:
     dependency: "direct main"
     description:
-      name: open_api
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../deps/open-api-dart"
+      relative: true
+    source: path
     version: "2.0.1"
   openapi_base:
     dependency: "direct main"

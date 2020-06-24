@@ -43,9 +43,11 @@ class OpenApiServerRouterBase {
   void addRoute(
     String path,
     String operation,
-    RouteHandler handle,
-  ) {
-    configs.add(_RouteConfig(path, operationFromString(operation), handle));
+    RouteHandler handle, {
+    List<SecurityRequirement> security,
+  }) {
+    configs.add(_RouteConfig(path, operationFromString(operation), handle,
+        security: security));
   }
 
   @protected
@@ -88,17 +90,40 @@ Operation operationFromString(String operation) =>
     _operations[operation.toLowerCase()];
 
 class _RouteConfig {
-  _RouteConfig(this.path, this.operation, this.handler)
+  _RouteConfig(this.path, this.operation, this.handler, {this.security})
       : uriParser = UriParser(UriTemplate(path));
 
   final String path;
   final UriParser uriParser;
   final Operation operation;
   final RouteHandler handler;
+  final List<SecurityRequirement> security;
 
   @override
   String toString() {
     return '_RouteConfig{path: $path, uriParser: $uriParser,'
         ' operation: $operation, handler: $handler}';
   }
+}
+
+class SecurityRequirement {
+  SecurityRequirement({this.schemes});
+  List<SecurityRequirementScheme> schemes;
+}
+
+class SecurityRequirementScheme {
+  SecurityRequirementScheme({this.scheme, this.scopes});
+  final SecurityScheme scheme;
+  final List<String> scopes;
+}
+
+abstract class SecurityScheme {}
+
+enum SecuritySchemeHttpScheme {
+  bearer,
+}
+
+class SecuritySchemeHttp extends SecurityScheme {
+  SecuritySchemeHttp({@required this.scheme}) : assert(scheme != null);
+  final SecuritySchemeHttpScheme scheme;
 }
