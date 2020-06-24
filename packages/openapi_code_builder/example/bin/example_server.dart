@@ -31,6 +31,18 @@ class TestApiImpl extends TestApi {
 
   @override
   Future<UserRegisterPostResponse> userRegisterPost(RegisterRequest body) {
-    return null;
+    // TODO: implement userRegisterPost
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<HelloNameHtmlGetResponse> helloNameHtmlGet({String name}) async {
+    // language=html
+    return HelloNameHtmlGetResponse.response200('''<!DOCTYPE html>
+<title>Hello World</title>
+<body>
+<h1>Hello $name!</h1>
+<p>How are you?
+    ''');
   }
 }

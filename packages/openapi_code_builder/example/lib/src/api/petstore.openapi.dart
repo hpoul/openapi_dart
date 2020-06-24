@@ -230,7 +230,11 @@ class _PetPutResponse400 extends PetPutResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 class _PetPutResponse404 extends PetPutResponse {
@@ -241,7 +245,11 @@ class _PetPutResponse404 extends PetPutResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 class _PetPutResponse405 extends PetPutResponse {
@@ -252,7 +260,11 @@ class _PetPutResponse405 extends PetPutResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class PetPutResponse extends _i3.OpenApiResponse {
@@ -291,7 +303,11 @@ class _PetPostResponse405 extends PetPostResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class PetPostResponse extends _i3.OpenApiResponse {
@@ -324,11 +340,12 @@ class PetFindByStatusGetResponseBody200 {
   String toString() => toJson().toString();
 }
 
-class _PetFindByStatusGetResponse200 extends PetFindByStatusGetResponse {
+class _PetFindByStatusGetResponse200 extends PetFindByStatusGetResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// successful operation
-  _PetFindByStatusGetResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _PetFindByStatusGetResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -336,7 +353,19 @@ class _PetFindByStatusGetResponse200 extends PetFindByStatusGetResponse {
   final PetFindByStatusGetResponseBody200 body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 class _PetFindByStatusGetResponse400 extends PetFindByStatusGetResponse {
@@ -347,7 +376,11 @@ class _PetFindByStatusGetResponse400 extends PetFindByStatusGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class PetFindByStatusGetResponse extends _i3.OpenApiResponse {
@@ -409,11 +442,12 @@ class PetFindByTagsGetResponseBody200 {
   String toString() => toJson().toString();
 }
 
-class _PetFindByTagsGetResponse200 extends PetFindByTagsGetResponse {
+class _PetFindByTagsGetResponse200 extends PetFindByTagsGetResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// successful operation
-  _PetFindByTagsGetResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _PetFindByTagsGetResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -421,7 +455,19 @@ class _PetFindByTagsGetResponse200 extends PetFindByTagsGetResponse {
   final PetFindByTagsGetResponseBody200 body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 class _PetFindByTagsGetResponse400 extends PetFindByTagsGetResponse {
@@ -432,7 +478,11 @@ class _PetFindByTagsGetResponse400 extends PetFindByTagsGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class PetFindByTagsGetResponse extends _i3.OpenApiResponse {
@@ -460,11 +510,12 @@ abstract class PetFindByTagsGetResponse extends _i3.OpenApiResponse {
   }
 }
 
-class _PetPetIdGetResponse200 extends PetPetIdGetResponse {
+class _PetPetIdGetResponse200 extends PetPetIdGetResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// successful operation
-  _PetPetIdGetResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _PetPetIdGetResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -472,7 +523,19 @@ class _PetPetIdGetResponse200 extends PetPetIdGetResponse {
   final Pet body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 class _PetPetIdGetResponse400 extends PetPetIdGetResponse {
@@ -483,7 +546,11 @@ class _PetPetIdGetResponse400 extends PetPetIdGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 class _PetPetIdGetResponse404 extends PetPetIdGetResponse {
@@ -494,7 +561,11 @@ class _PetPetIdGetResponse404 extends PetPetIdGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class PetPetIdGetResponse extends _i3.OpenApiResponse {
@@ -536,7 +607,11 @@ class _PetPetIdPostResponse405 extends PetPetIdPostResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class PetPetIdPostResponse extends _i3.OpenApiResponse {
@@ -563,7 +638,11 @@ class _PetPetIdDeleteResponse400 extends PetPetIdDeleteResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 class _PetPetIdDeleteResponse404 extends PetPetIdDeleteResponse {
@@ -574,7 +653,11 @@ class _PetPetIdDeleteResponse404 extends PetPetIdDeleteResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class PetPetIdDeleteResponse extends _i3.OpenApiResponse {
@@ -602,11 +685,12 @@ abstract class PetPetIdDeleteResponse extends _i3.OpenApiResponse {
 }
 
 class _PetPetIdUploadImagePostResponse200
-    extends PetPetIdUploadImagePostResponse {
+    extends PetPetIdUploadImagePostResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// successful operation
-  _PetPetIdUploadImagePostResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _PetPetIdUploadImagePostResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -614,7 +698,19 @@ class _PetPetIdUploadImagePostResponse200
   final ApiResponse body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 abstract class PetPetIdUploadImagePostResponse extends _i3.OpenApiResponse {
@@ -650,11 +746,12 @@ class StoreInventoryGetResponseBody200 {
   String toString() => toJson().toString();
 }
 
-class _StoreInventoryGetResponse200 extends StoreInventoryGetResponse {
+class _StoreInventoryGetResponse200 extends StoreInventoryGetResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// successful operation
-  _StoreInventoryGetResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _StoreInventoryGetResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -662,7 +759,19 @@ class _StoreInventoryGetResponse200 extends StoreInventoryGetResponse {
   final StoreInventoryGetResponseBody200 body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 abstract class StoreInventoryGetResponse extends _i3.OpenApiResponse {
@@ -683,11 +792,12 @@ abstract class StoreInventoryGetResponse extends _i3.OpenApiResponse {
   }
 }
 
-class _StoreOrderPostResponse200 extends StoreOrderPostResponse {
+class _StoreOrderPostResponse200 extends StoreOrderPostResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// successful operation
-  _StoreOrderPostResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _StoreOrderPostResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -695,7 +805,19 @@ class _StoreOrderPostResponse200 extends StoreOrderPostResponse {
   final Order body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 class _StoreOrderPostResponse400 extends StoreOrderPostResponse {
@@ -706,7 +828,11 @@ class _StoreOrderPostResponse400 extends StoreOrderPostResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class StoreOrderPostResponse extends _i3.OpenApiResponse {
@@ -733,11 +859,12 @@ abstract class StoreOrderPostResponse extends _i3.OpenApiResponse {
   }
 }
 
-class _StoreOrderOrderIdGetResponse200 extends StoreOrderOrderIdGetResponse {
+class _StoreOrderOrderIdGetResponse200 extends StoreOrderOrderIdGetResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// successful operation
-  _StoreOrderOrderIdGetResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _StoreOrderOrderIdGetResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -745,7 +872,19 @@ class _StoreOrderOrderIdGetResponse200 extends StoreOrderOrderIdGetResponse {
   final Order body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 class _StoreOrderOrderIdGetResponse400 extends StoreOrderOrderIdGetResponse {
@@ -756,7 +895,11 @@ class _StoreOrderOrderIdGetResponse400 extends StoreOrderOrderIdGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 class _StoreOrderOrderIdGetResponse404 extends StoreOrderOrderIdGetResponse {
@@ -767,7 +910,11 @@ class _StoreOrderOrderIdGetResponse404 extends StoreOrderOrderIdGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class StoreOrderOrderIdGetResponse extends _i3.OpenApiResponse {
@@ -810,7 +957,11 @@ class _StoreOrderOrderIdDeleteResponse400
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 class _StoreOrderOrderIdDeleteResponse404
@@ -822,7 +973,11 @@ class _StoreOrderOrderIdDeleteResponse404
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class StoreOrderOrderIdDeleteResponse extends _i3.OpenApiResponse {
@@ -859,7 +1014,11 @@ class _UserPostResponseDefault extends UserPostResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class UserPostResponse extends _i3.OpenApiResponse {
@@ -889,7 +1048,11 @@ class _UserCreateWithArrayPostResponseDefault
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class UserCreateWithArrayPostResponse extends _i3.OpenApiResponse {
@@ -933,7 +1096,11 @@ class _UserCreateWithListPostResponseDefault
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class UserCreateWithListPostResponse extends _i3.OpenApiResponse {
@@ -967,11 +1134,12 @@ class UserLoginGetResponseBody200 {
   String toString() => toJson().toString();
 }
 
-class _UserLoginGetResponse200 extends UserLoginGetResponse {
+class _UserLoginGetResponse200 extends UserLoginGetResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// successful operation
-  _UserLoginGetResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _UserLoginGetResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -979,7 +1147,19 @@ class _UserLoginGetResponse200 extends UserLoginGetResponse {
   final UserLoginGetResponseBody200 body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 class _UserLoginGetResponse400 extends UserLoginGetResponse {
@@ -990,7 +1170,11 @@ class _UserLoginGetResponse400 extends UserLoginGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class UserLoginGetResponse extends _i3.OpenApiResponse {
@@ -1025,7 +1209,11 @@ class _UserLogoutGetResponseDefault extends UserLogoutGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class UserLogoutGetResponse extends _i3.OpenApiResponse {
@@ -1046,11 +1234,12 @@ abstract class UserLogoutGetResponse extends _i3.OpenApiResponse {
   }
 }
 
-class _UserUsernameGetResponse200 extends UserUsernameGetResponse {
+class _UserUsernameGetResponse200 extends UserUsernameGetResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// successful operation
-  _UserUsernameGetResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _UserUsernameGetResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -1058,7 +1247,19 @@ class _UserUsernameGetResponse200 extends UserUsernameGetResponse {
   final User body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 class _UserUsernameGetResponse400 extends UserUsernameGetResponse {
@@ -1069,7 +1270,11 @@ class _UserUsernameGetResponse400 extends UserUsernameGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 class _UserUsernameGetResponse404 extends UserUsernameGetResponse {
@@ -1080,7 +1285,11 @@ class _UserUsernameGetResponse404 extends UserUsernameGetResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class UserUsernameGetResponse extends _i3.OpenApiResponse {
@@ -1122,7 +1331,11 @@ class _UserUsernamePutResponse400 extends UserUsernamePutResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 class _UserUsernamePutResponse404 extends UserUsernamePutResponse {
@@ -1133,7 +1346,11 @@ class _UserUsernamePutResponse404 extends UserUsernamePutResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class UserUsernamePutResponse extends _i3.OpenApiResponse {
@@ -1168,7 +1385,11 @@ class _UserUsernameDeleteResponse400 extends UserUsernameDeleteResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 class _UserUsernameDeleteResponse404 extends UserUsernameDeleteResponse {
@@ -1179,7 +1400,11 @@ class _UserUsernameDeleteResponse404 extends UserUsernameDeleteResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class UserUsernameDeleteResponse extends _i3.OpenApiResponse {

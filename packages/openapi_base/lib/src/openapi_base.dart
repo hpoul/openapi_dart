@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:openapi_base/src/openapi_content_type.dart';
 import 'package:uri/uri.dart';
 
 abstract class OpenApiRequest {
@@ -13,11 +14,17 @@ abstract class OpenApiRequest {
   Future<Map<String, dynamic>> readJsonBody();
 }
 
+abstract class OpenApiResponseBodyJson {
+  Map<String, dynamic> get bodyJson;
+}
+
+abstract class OpenApiResponseBodyString {
+  String get body;
+}
+
 abstract class OpenApiResponse {
   int get status;
-  String get contentType;
-
-  Map<String, dynamic> bodyJson;
+  OpenApiContentType get contentType;
 
 //  Map<String, dynamic> bodyJson;
   final Map<String, List<String>> headers = {};

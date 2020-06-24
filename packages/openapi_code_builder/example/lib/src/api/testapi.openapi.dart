@@ -63,7 +63,11 @@ class _UserRegisterPostResponse200 extends UserRegisterPostResponse {
   final int status;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status};
+  final _i3.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
 }
 
 abstract class UserRegisterPostResponse extends _i3.OpenApiResponse {
@@ -83,11 +87,48 @@ abstract class UserRegisterPostResponse extends _i3.OpenApiResponse {
   }
 }
 
-class _HelloNameGetResponse200 extends HelloNameGetResponse {
+class _HelloNameHtmlGetResponse200 extends HelloNameHtmlGetResponse
+    implements _i3.OpenApiResponseBodyString {
   /// OK
-  _HelloNameGetResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
+  _HelloNameHtmlGetResponse200.response200(this.body) : status = 200;
+
+  @override
+  final int status;
+
+  final String body;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('text/html');
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'body': body, 'contentType': contentType};
+}
+
+abstract class HelloNameHtmlGetResponse extends _i3.OpenApiResponse {
+  HelloNameHtmlGetResponse();
+
+  /// OK
+  factory HelloNameHtmlGetResponse.response200(String body) =>
+      _HelloNameHtmlGetResponse200.response200(body);
+
+  void map(
+      {@_i2.required _i3.ResponseMap<_HelloNameHtmlGetResponse200> on200}) {
+    if (this is _HelloNameHtmlGetResponse200) {
+      on200((this as _HelloNameHtmlGetResponse200));
+    } else {
+      throw StateError('Invalid instance type $this');
+    }
   }
+}
+
+class _HelloNameGetResponse200 extends HelloNameGetResponse
+    implements _i3.OpenApiResponseBodyJson {
+  /// OK
+  _HelloNameGetResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -95,7 +136,19 @@ class _HelloNameGetResponse200 extends HelloNameGetResponse {
   final HelloResponse body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 abstract class HelloNameGetResponse extends _i3.OpenApiResponse {
@@ -114,11 +167,12 @@ abstract class HelloNameGetResponse extends _i3.OpenApiResponse {
   }
 }
 
-class _HelloNamePutResponse200 extends HelloNamePutResponse {
+class _HelloNamePutResponse200 extends HelloNamePutResponse
+    implements _i3.OpenApiResponseBodyJson {
   /// OK
-  _HelloNamePutResponse200.response200(this.body) : status = 200 {
-    bodyJson = body.toJson();
-  }
+  _HelloNamePutResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
 
   @override
   final int status;
@@ -126,7 +180,19 @@ class _HelloNamePutResponse200 extends HelloNamePutResponse {
   final HelloResponse body;
 
   @override
-  Map<String, Object> propertiesToString() => {'status': status, 'body': body};
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i3.OpenApiContentType contentType =
+      _i3.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
 }
 
 abstract class HelloNamePutResponse extends _i3.OpenApiResponse {
@@ -150,6 +216,11 @@ abstract class TestApi implements _i3.ApiEndpoint {
   /// post: /user/register
   Future<UserRegisterPostResponse> userRegisterPost(RegisterRequest body);
 
+  /// Say Hello World to {name} with a nice html page.
+  /// get: /hello/{name}/html
+  Future<HelloNameHtmlGetResponse> helloNameHtmlGet(
+      {@_i2.required String name});
+
   /// Say Hello World to {name}
   /// get: /hello/{name}
   Future<HelloNameGetResponse> helloNameGet({@_i2.required String name});
@@ -168,6 +239,12 @@ abstract class TestApiClient {
   /// post: /user/register
   ///
   Future<UserRegisterPostResponse> userRegisterPost(RegisterRequest body);
+
+  /// Say Hello World to {name} with a nice html page.
+  /// get: /hello/{name}/html
+  ///
+  Future<HelloNameHtmlGetResponse> helloNameHtmlGet(
+      {@_i2.required String name});
 
   /// Say Hello World to {name}
   /// get: /hello/{name}
@@ -202,6 +279,21 @@ class _TestApiClientImpl extends _i3.OpenApiClientBase
     return await sendRequest(request, {
       '200': (_i3.OpenApiClientResponse response) async =>
           _UserRegisterPostResponse200.response200()
+    });
+  }
+
+  /// Say Hello World to {name} with a nice html page.
+  /// get: /hello/{name}/html
+  ///
+  @override
+  Future<HelloNameHtmlGetResponse> helloNameHtmlGet(
+      {@_i2.required String name}) async {
+    final request = _i3.OpenApiClientRequest('get', '/hello/{name}/html');
+    request.addPathParameter('name', encodeString(name));
+    return await sendRequest(request, {
+      '200': (_i3.OpenApiClientResponse response) async =>
+          _HelloNameHtmlGetResponse200.response200(
+              await response.responseBodyString())
     });
   }
 
@@ -245,6 +337,15 @@ class TestApiUrlResolve with _i3.OpenApiUrlEncodeMixin {
     return request;
   }
 
+  /// Say Hello World to {name} with a nice html page.
+  /// get: /hello/{name}/html
+  ///
+  _i3.OpenApiClientRequest helloNameHtmlGet({@_i2.required String name}) {
+    final request = _i3.OpenApiClientRequest('get', '/hello/{name}/html');
+    request.addPathParameter('name', encodeString(name));
+    return request;
+  }
+
   /// Say Hello World to {name}
   /// get: /hello/{name}
   ///
@@ -274,6 +375,10 @@ class TestApiRouter extends _i3.OpenApiServerRouterBase {
     addRoute('/user/register', 'post', (_i3.OpenApiRequest request) async {
       return await impl.invoke((TestApi impl) async => impl.userRegisterPost(
           RegisterRequest.fromJson(await request.readJsonBody())));
+    }, security: []);
+    addRoute('/hello/{name}/html', 'get', (_i3.OpenApiRequest request) async {
+      return await impl.invoke((TestApi impl) async => impl.helloNameHtmlGet(
+          name: paramToString(request.pathParameter('name'))));
     }, security: []);
     addRoute('/hello/{name}', 'get', (_i3.OpenApiRequest request) async {
       return await impl.invoke((TestApi impl) async => impl.helloNameGet(

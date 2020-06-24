@@ -17,6 +17,22 @@ paths:
       responses:
         '200':
           description: OK
+  /hello/{name}/html:
+    parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Say Hello World to {name} with a nice html page.
+      responses:
+        '200':
+          description: OK
+          content:
+            text/html:
+              schema:
+                type: string
   /hello/{name}:
     parameters:
       - name: name

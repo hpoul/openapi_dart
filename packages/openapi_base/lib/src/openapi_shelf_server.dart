@@ -49,15 +49,35 @@ class OpenApiShelfServer {
       }
       final shelfRequest = ShelfRequest(request, match);
       final response = await config.handler(shelfRequest);
-      final body =
-          response.bodyJson == null ? null : json.encode(response.bodyJson);
+//      if (response.contentType.isJson) {
+      if (response is OpenApiResponseBodyJson) {
+        assert(response.contentType.isJson);
+        final responseJson = response as OpenApiResponseBodyJson;
+        return shelf.Response(
+          response.status,
+          body: responseJson.bodyJson == null
+              ? null
+              : json.encode(responseJson.bodyJson),
+          headers: {
+            HttpHeaders.contentTypeHeader: response.contentType.toString(),
+          },
+        );
+      } else if (response is OpenApiResponseBodyString) {
+        assert(response.contentType.isString);
+        final responseString = response as OpenApiResponseBodyString;
+//        body = response.body;
+        return shelf.Response(
+          response.status,
+          body: responseString.body,
+          headers: {
+            HttpHeaders.contentTypeHeader: response.contentType.toString(),
+          },
+        );
+      }
 
-      return shelf.Response(response.status, body: body, headers: {
-        HttpHeaders.contentTypeHeader: ContentType.json.toString()
-      });
 //      return shelf.Response.ok('Ok found. $response');
     }
-    return shelf.Response.notFound('Not Found :-(');
+    return shelf.Response.notFound('Not Found.');
   }
 }
 

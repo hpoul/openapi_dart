@@ -8,6 +8,7 @@ import 'package:dart_style/dart_style.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:open_api/v3.dart';
+import 'package:openapi_base/openapi_base.dart';
 import 'package:quiver/check.dart';
 import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
@@ -39,6 +40,10 @@ class OpenApiLibraryGenerator {
       refer('OpenApiRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiResponse =
       refer('OpenApiResponse', 'package:openapi_base/openapi_base.dart');
+  final _openApiResponseBodyJson = refer(
+      'OpenApiResponseBodyJson', 'package:openapi_base/openapi_base.dart');
+  final _openApiResponseBodyString = refer(
+      'OpenApiResponseBodyString', 'package:openapi_base/openapi_base.dart');
   final _openApiEndpoint =
       refer('ApiEndpoint', 'package:openapi_base/openapi_base.dart');
   final _endpointProvider =
@@ -63,10 +68,12 @@ class OpenApiLibraryGenerator {
       refer('SecuritySchemeHttp', 'package:openapi_base/openapi_base.dart');
   final _securitySchemeHttpScheme = refer(
       'SecuritySchemeHttpScheme', 'package:openapi_base/openapi_base.dart');
+  final _openApiContentType = refer((OpenApiContentType).toString(),
+      'package:openapi_base/openapi_base.dart');
   final _required = refer('required', 'package:meta/meta.dart');
   final _override = refer('override');
 
-  static const mediaTypeJson = 'application/json';
+  static const mediaTypeJson = OpenApiContentType.json;
 
   final createdSchema = <APISchemaObject, Reference>{};
   final createdEnums = <String, Reference>{};
@@ -208,9 +215,11 @@ class OpenApiLibraryGenerator {
                     .assign(literalNum(int.parse(response.key)))
                     .code);
               }
-              final content = (response.value.content ?? {})[mediaTypeJson];
-              String responseContentType;
+              final content =
+                  (response.value.content ?? {})[mediaTypeJson.contentType];
+              OpenApiContentType responseContentType;
               if (content != null) {
+                responseContentType = OpenApiContentType.json;
                 final bodyType = _schemaReference(
                     '${responseClass.name}Body$codeName', content.schema);
                 if (response.key.startsWith('2') ||
@@ -222,15 +231,21 @@ class OpenApiLibraryGenerator {
                   ..name = 'body'
                   ..type = bodyType
                   ..modifier = FieldModifier.final$));
+                responseCodeClass.fields.add(Field((fb) => fb
+                  ..name = 'bodyJson'
+                  ..annotations.add(_override)
+                  ..type = _referType('Map',
+                      generics: [refer('String'), refer('dynamic')])
+                  ..modifier = FieldModifier.final$));
                 cb.requiredParameters.add(Parameter((pb) => pb
                   ..name = 'body'
                   ..type = bodyType
                   ..toThis = true));
-                cb.body = Block.of([
-                  refer('bodyJson')
-                      .assign(refer('body').property('toJson')([]))
-                      .statement
-                ]);
+                cb.initializers.add(refer('bodyJson')
+                    .assign(refer('body').property('toJson')([]))
+                    .code);
+                responseCodeClass.implements.add(_openApiResponseBodyJson);
+
                 clientResponseParseParams.add(bodyType.newInstanceNamed(
                     'fromJson', [
                   refer('response').property('responseBodyJson')([]).awaited
@@ -238,7 +253,8 @@ class OpenApiLibraryGenerator {
               } else {
                 if (response.value.content?.length == 1) {
                   final responseContent = response.value.content.entries.first;
-                  responseContentType = responseContent.key;
+                  responseContentType =
+                      OpenApiContentType.parse(responseContent.key);
                   final bodyType = _toDartType('${responseCodeClass}Content',
                       responseContent.value.schema);
                   checkState(
@@ -253,6 +269,7 @@ class OpenApiLibraryGenerator {
                     ..name = 'body'
                     ..type = bodyType
                     ..toThis = true));
+                  responseCodeClass.implements.add(_openApiResponseBodyString);
                   clientResponseParseParams.add(refer('response')
                       .property('responseBodyString')([])
                       .awaited);
@@ -260,12 +277,13 @@ class OpenApiLibraryGenerator {
               }
               responseCodeClass.fields.add(Field((fb) => fb
                 ..name = 'contentType'
-                ..type = refer('String')
+                ..type = _openApiContentType
                 ..annotations.add(_override)
                 ..modifier = FieldModifier.final$
                 ..assignment = responseContentType == null
                     ? literalNull.code
-                    : literalString(responseContentType).code));
+                    : _openApiContentType.newInstanceNamed('parse',
+                        [literalString(responseContentType.toString())]).code));
             });
 
             responseCodeClass.constructors.add((constructor.toBuilder()
@@ -496,7 +514,7 @@ class OpenApiLibraryGenerator {
             final body = operation.value.requestBody;
             if (body != null) {
               // TODO for now we only support application/json request body.
-              final reqBody = body.content[mediaTypeJson];
+              final reqBody = body.content[mediaTypeJson.contentType];
 //              for (final reqBody in body.content.entries) {
               if (reqBody != null) {
                 _logger.finer('reqBody.schema: ${reqBody.schema}');

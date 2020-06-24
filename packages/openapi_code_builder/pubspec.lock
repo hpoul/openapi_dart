@@ -235,9 +235,9 @@ packages:
   openapi_base:
     dependency: "direct main"
     description:
-      name: openapi_base
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../openapi_base"
+      relative: true
+    source: path
     version: "0.1.0"
   package_config:
     dependency: transitive
