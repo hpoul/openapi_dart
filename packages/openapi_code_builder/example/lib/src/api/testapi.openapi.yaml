@@ -1,12 +1,8 @@
 openapi: 3.0.0
-# Added by API Auto Mocking Plugin
-servers:
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/hpoul/Testapi/1.0.0
 info:
   version: 0.1.0
-  title: AuthPass Cloud Backend
-
+  title: Example Api
+  x-dart-name: TestApi
 
 paths:
   /user/register:
@@ -22,6 +18,12 @@ paths:
         '200':
           description: OK
   /hello/{name}:
+    parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
     get:
       summary: Say Hello World to {name}
       responses:
@@ -31,12 +33,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HelloResponse'
-    parameters:
-      - name: name
-        in: path
+    put:
+      summary: Say Hello World to {name} with some parameters
+      requestBody:
         required: true
-        schema:
-          type: string
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HelloRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloResponse'
 
 components:
   schemas:
@@ -47,8 +58,13 @@ components:
           description: 'Email address for the current user.'
       required:
         - email
+    HelloRequest:
+      properties:
+        salutation:
+          type: string
+          description: 'Salutation used for greetings.'
     HelloResponse:
       properties:
         message:
           type: string
-          description: 'lorem ipsum'
+          description: 'The Hello World greeting ;-)'

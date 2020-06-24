@@ -240,6 +240,16 @@ class OpenApiLibraryGenerator {
                         ..type = pb.toThis ? null : pb.type)
                       .build()))
                 .build());
+            responseCodeClass.methods.add(Method((mb) => mb
+              ..name = 'propertiesToString'
+              ..annotations.add(_override)
+              ..returns = _referType('Map',
+                  generics: [refer('String'), refer('Object')])
+              ..lambda = true
+              ..body = literalMap(
+                Map.fromEntries(responseCodeClass.fields.build().map(
+                    (f) => MapEntry(literalString(f.name), refer(f.name)))),
+              ).code));
             responseClass.constructors.add((constructor.toBuilder()
                   ..factory = true
                   ..initializers.clear()
@@ -301,13 +311,14 @@ class OpenApiLibraryGenerator {
               ..returns =
                   _referType('Future', generics: [refer(responseClass.name)]);
 
-            final parameters = <Expression>[];
+            final routerParams = <Expression>[];
+            final routerParamsNamed = <String, Expression>{};
 
             if (apiMethodsWithRequest) {
               mb.requiredParameters.add(Parameter((pb) => pb
                 ..name = 'request'
                 ..type = _openApiRequest));
-              parameters.add(refer('request'));
+              routerParams.add(refer('request'));
             }
 
             // ignore: avoid_function_literals_in_foreach_calls
@@ -327,7 +338,7 @@ class OpenApiLibraryGenerator {
                 ..type = paramType
                 ..asRequired(this, param.isRequired)
                 ..named = true);
-              mb.requiredParameters.add(p);
+              mb.optionalParameters.add(p);
               clientMethod.optionalParameters.add(p);
               final decodeParameter = (Expression expression) {
                 switch (param.schema.type) {
@@ -367,8 +378,9 @@ class OpenApiLibraryGenerator {
               };
               switch (param.location) {
                 case APIParameterLocation.query:
-                  parameters.add(decodeParameter(refer('request').property(
-                      'queryParameter')([literalString(param.name)])));
+                  routerParamsNamed[paramName] = decodeParameter(
+                      refer('request').property('queryParameter')(
+                          [literalString(param.name)]));
                   clientCode.add(refer('request')
                       .property('addQueryParameter')([
                         literalString(param.name),
@@ -377,8 +389,9 @@ class OpenApiLibraryGenerator {
                       .statement);
                   break;
                 case APIParameterLocation.header:
-                  parameters.add(decodeParameter(refer('request').property(
-                      'headerParameter')([literalString(param.name)])));
+                  routerParamsNamed[paramName] = decodeParameter(
+                      refer('request').property('headerParameter')(
+                          [literalString(param.name)]));
                   clientCode.add(refer('request')
                       .property('addHeaderParameter')([
                         literalString(param.name),
@@ -387,8 +400,9 @@ class OpenApiLibraryGenerator {
                       .statement);
                   break;
                 case APIParameterLocation.path:
-                  parameters.add(decodeParameter(refer('request')
-                      .property('pathParameter')([literalString(param.name)])));
+                  routerParamsNamed[paramName] = decodeParameter(
+                      refer('request').property('pathParameter')(
+                          [literalString(param.name)]));
                   clientCode.add(refer('request')
                       .property('addPathParameter')([
                         literalString(param.name),
@@ -397,8 +411,9 @@ class OpenApiLibraryGenerator {
                       .statement);
                   break;
                 case APIParameterLocation.cookie:
-                  parameters.add(decodeParameter(refer('request').property(
-                      'cookieParameter')([literalString(param.name)])));
+                  routerParamsNamed[paramName] = decodeParameter(
+                      refer('request').property('cookieParameter')(
+                          [literalString(param.name)]));
                   clientCode.add(refer('req')
                       .property('addCookieParameter')([
                         literalString(param.name),
@@ -428,7 +443,7 @@ class OpenApiLibraryGenerator {
                 mb.requiredParameters.add(Parameter((pb) => pb
                   ..name = 'body'
                   ..type = reference));
-                parameters.add(reference.property('fromJson')(
+                routerParams.add(reference.property('fromJson')(
                   [
                     refer('request').property('readJsonBody')([]).awaited,
                   ],
@@ -456,7 +471,7 @@ class OpenApiLibraryGenerator {
                     ..name = 'impl'))
                   ..lambda = true
                   ..body = refer('impl')
-                      .property(operationName)(parameters)
+                      .property(operationName)(routerParams, routerParamsNamed)
 //                        .returned
                       .code
                   ..modifier = MethodModifier.async).closure
@@ -500,6 +515,7 @@ class OpenApiLibraryGenerator {
         ..modifier = FieldModifier.final$));
       cb.methods.add(Method((mb) => mb
         ..name = 'configure'
+        ..annotations.add(_override)
         ..returns = refer('void')
         ..body = Block.of(routerConfig.map((e) => e.statement))));
     }));
@@ -591,7 +607,7 @@ class OpenApiLibraryGenerator {
           ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb
 //            ..docs.addAll(f.docs)
             ..name = f.name
-            ..asRequired(this, obj.required.contains(f.name))
+            ..asRequired(this, obj.required?.contains(f.name) ?? false)
             ..named = true
             ..toThis = true)))))
         ..constructors.add(Constructor((cb) => cb
@@ -639,7 +655,13 @@ class OpenApiLibraryGenerator {
 //            refer('dynamic'),
 //          ).code,
 //      ),
-        ),
+        )
+        ..methods.add(Method((mb) => mb
+          ..name = 'toString'
+          ..returns = refer('String')
+          ..annotations.add(_override)
+          ..lambda = true
+          ..body = refer('toJson')([]).property('toString')([]).code)),
     );
     return c;
   }
@@ -749,6 +771,31 @@ class EnumValueSpec extends Spec {
   }
 }
 
+class OpenApiCodeBuilderUtils {
+  static Map<String, dynamic> _loadYaml(String source) {
+    final dynamic tmp = loadYaml(source) as dynamic;
+    return json.decode(json.encode(tmp)) as Map<String, dynamic>;
+  }
+
+  static APIDocument loadApiFromYaml(String yamlSource) {
+    final decoded = _loadYaml(yamlSource);
+    final api = APIDocument.fromMap(
+        Map<String, dynamic>.from(decoded.cast<String, dynamic>()));
+    return api;
+  }
+
+  static String formatLibrary(Library library,
+      {bool orderDirectives = false, bool useNullSafetySyntax}) {
+    final emitter = DartEmitter(
+        Allocator.simplePrefixing(), orderDirectives, useNullSafetySyntax);
+    final libraryOutput =
+        DartFormatter().format('// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
+            '// ignore_for_file: prefer_initializing_formals\n\n'
+            '${library.accept(emitter)}');
+    return libraryOutput;
+  }
+}
+
 class OpenApiCodeBuilder extends Builder {
   OpenApiCodeBuilder(
       {this.orderDirectives = false, @required this.useNullSafetySyntax})
@@ -768,10 +815,8 @@ class OpenApiCodeBuilder extends Builder {
     checkArgument(inputId.pathSegments.last.endsWith('.openapi.yaml'));
     final inputIdBasename =
         inputId.pathSegments.last.replaceAll('.openapi.yaml', '');
-    final decoded = _loadYaml(source);
-//    final decoded = loadYaml(source) as Map<dynamic, dynamic>;
-    final api = APIDocument.fromMap(
-        Map<String, dynamic>.from(decoded.cast<String, dynamic>()));
+    OpenApiCodeBuilderUtils.loadApiFromYaml(source);
+    final api = OpenApiCodeBuilderUtils.loadApiFromYaml(source);
 
     final baseName = api.info.extensions['x-dart-name'] as String ??
         inputIdBasename.pascalCase;
@@ -782,26 +827,16 @@ class OpenApiCodeBuilder extends Builder {
       outputId.changeExtension('.g.dart').pathSegments.last,
     ).generate();
 
-    final emitter = DartEmitter(
-        Allocator.simplePrefixing(), orderDirectives, useNullSafetySyntax);
+    final libraryOutput = OpenApiCodeBuilderUtils.formatLibrary(l);
 //    print(DartFormatter().format('${l.accept(emitter)}'));
 //    print('inputId: $inputId / outputId: $outputId');
-    await buildStep.writeAsString(
-        outputId,
-        DartFormatter().format('// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
-            '// ignore_for_file: prefer_initializing_formals\n\n'
-            '${l.accept(emitter)}'));
+    await buildStep.writeAsString(outputId, libraryOutput);
   }
 
   @override
   Map<String, List<String>> get buildExtensions => {
         '.openapi.yaml': ['.openapi.dart']
       };
-
-  Map<String, dynamic> _loadYaml(String source) {
-    final dynamic tmp = loadYaml(source) as dynamic;
-    return json.decode(json.encode(tmp)) as Map<String, dynamic>;
-  }
 }
 
 TypeReference _referType(String name, {String url, List<Reference> generics}) =>

@@ -20,6 +20,16 @@ abstract class OpenApiResponse {
 
 //  Map<String, dynamic> bodyJson;
   final Map<String, List<String>> headers = {};
+
+  @override
+  String toString() {
+    return '$runtimeType{${propertiesToString()}';
+  }
+
+  @protected
+  Map<String, Object> propertiesToString() {
+    return {};
+  }
 }
 
 abstract class ApiEndpoint {}
@@ -27,17 +37,42 @@ abstract class ApiEndpoint {}
 typedef RouteHandler = Future<OpenApiResponse> Function(OpenApiRequest request);
 
 //typedef ServiceProvider<T extends Service> = FutureOr<U> Function<U>(Future<U> callback(T));
-typedef ApiEndpointCallback<T extends ApiEndpoint, U> = Future<U> Function(
-    T impl);
+typedef ApiEndpointCallback<ENDPOINT extends ApiEndpoint, RET> = Future<RET>
+    Function(ENDPOINT impl);
 
-abstract class ApiEndpointProvider<T extends ApiEndpoint> {
-  Future<U> invoke<U>(ApiEndpointCallback<T, U> callback);
+abstract class ApiEndpointProvider<ENDPOINT extends ApiEndpoint> {
+  ApiEndpointProvider();
+  factory ApiEndpointProvider.static(ENDPOINT endpoint) {
+    return StaticEndpointProvider(endpoint);
+  }
+
+  Future<RET> invoke<RET>(ApiEndpointCallback<ENDPOINT, RET> callback);
 }
+
+class StaticEndpointProvider<ENDPOINT extends ApiEndpoint>
+    extends ApiEndpointProvider<ENDPOINT> {
+  StaticEndpointProvider(this.endpoint);
+
+  final ENDPOINT endpoint;
+
+  @override
+  Future<RET> invoke<RET>(ApiEndpointCallback<ENDPOINT, RET> callback) async {
+    return await callback(endpoint);
+  }
+}
+
 //typedef ServiceProvider<T extends Service> = FutureOr<
 //    U> Function<U>(ServiceProviderCallback<T, U> impl);
 
-class OpenApiServerRouterBase {
+abstract class OpenApiServerRouterBase {
+  OpenApiServerRouterBase() {
+    configure();
+  }
+
   final List<_RouteConfig> configs = [];
+
+  @protected
+  void configure();
 
   @protected
   void addRoute(

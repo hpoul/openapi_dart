@@ -8,22 +8,29 @@ final _logger = Logger('example_server');
 Future<void> main() async {
   PrintAppender.setupLogging();
   _logger.fine('Starting Server ...');
-  final server = OpenApiShelfServer(TestapiRouter(TestapiImpl())..configure());
+  final server = OpenApiShelfServer(
+    TestApiRouter(ApiEndpointProvider.static(TestApiImpl())),
+  );
   server.startServer();
 }
 
-class TestapiImpl extends Testapi {
+class TestApiImpl extends TestApi {
   @override
-  Future<HelloNameGetResponse> helloNameGet(
-      OpenApiRequest request, String name) async {
+  Future<HelloNamePutResponse> helloNamePut(HelloRequest body,
+      {String name}) async {
+    return HelloNamePutResponse.response200(
+        HelloResponse(message: 'Hello ${body.salutation} $name'));
+  }
+
+  @override
+  Future<HelloNameGetResponse> helloNameGet({String name}) async {
     _logger.info('Saying hi to $name');
     return HelloNameGetResponse.response200(
         HelloResponse(message: 'Hello $name'));
   }
 
   @override
-  Future<UserRegisterPostResponse> userRegisterPost(
-      OpenApiRequest request, RegisterRequest body) {
+  Future<UserRegisterPostResponse> userRegisterPost(RegisterRequest body) {
     return null;
   }
 }
