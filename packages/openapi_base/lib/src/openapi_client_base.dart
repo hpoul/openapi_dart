@@ -57,19 +57,19 @@ class OpenApiClientRequest {
   final Map<String, List<String>> paramQuery = {};
   Map<String, dynamic> jsonBody;
 
-  void addHeaderParameter(String name, List<String> value) =>
+  void addHeaderParameter(String name, Iterable<String> value) =>
       _addParam(paramHeader, name, value);
-  void addCookieParameter(String name, List<String> value) =>
+  void addCookieParameter(String name, Iterable<String> value) =>
       _addParam(paramCookie, name, value);
-  void addPathParameter(String name, List<String> value) =>
+  void addPathParameter(String name, Iterable<String> value) =>
       _addParam(paramPath, name, value);
-  void addQueryParameter(String name, List<String> value) =>
+  void addQueryParameter(String name, Iterable<String> value) =>
       _addParam(paramQuery, name, value);
 
   void _addParam(
-      Map<String, List<String>> paramMap, String name, List<String> value) {
+      Map<String, List<String>> paramMap, String name, Iterable<String> value) {
     // TODO add it, if it already exists?
-    paramMap[name] = value;
+    paramMap[name] = value.toList();
   }
 
   void setJsonBody(Map<String, dynamic> json) {

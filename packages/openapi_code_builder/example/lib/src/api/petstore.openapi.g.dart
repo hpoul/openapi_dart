@@ -12,7 +12,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
     petId: json['petId'] as int,
     quantity: json['quantity'] as int,
     shipDate: json['shipDate'] as String,
-    status: json['status'] as String,
+    status: _$enumDecodeNullable(_$OrderStatusEnumMap, json['status']),
     complete: json['complete'] as bool,
   );
 }
@@ -22,9 +22,47 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'petId': instance.petId,
       'quantity': instance.quantity,
       'shipDate': instance.shipDate,
-      'status': instance.status,
+      'status': _$OrderStatusEnumMap[instance.status],
       'complete': instance.complete,
     };
+
+T _$enumDecode<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    throw ArgumentError('A value must be provided. Supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+
+  final value = enumValues.entries
+      .singleWhere((e) => e.value == source, orElse: () => null)
+      ?.key;
+
+  if (value == null && unknownValue == null) {
+    throw ArgumentError('`$source` is not one of the supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+  return value ?? unknownValue;
+}
+
+T _$enumDecodeNullable<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+}
+
+const _$OrderStatusEnumMap = {
+  OrderStatus.placed: 'placed',
+  OrderStatus.approved: 'approved',
+  OrderStatus.delivered: 'delivered',
+};
 
 Category _$CategoryFromJson(Map<String, dynamic> json) {
   return Category(
@@ -85,7 +123,7 @@ Pet _$PetFromJson(Map<String, dynamic> json) {
     tags: (json['tags'] as List)
         ?.map((e) => e == null ? null : Tag.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-    status: json['status'] as String,
+    status: _$enumDecodeNullable(_$PetStatusEnumMap, json['status']),
   );
 }
 
@@ -95,8 +133,14 @@ Map<String, dynamic> _$PetToJson(Pet instance) => <String, dynamic>{
       'name': instance.name,
       'photoUrls': instance.photoUrls,
       'tags': instance.tags,
-      'status': instance.status,
+      'status': _$PetStatusEnumMap[instance.status],
     };
+
+const _$PetStatusEnumMap = {
+  PetStatus.available: 'available',
+  PetStatus.pending: 'pending',
+  PetStatus.sold: 'sold',
+};
 
 ApiResponse _$ApiResponseFromJson(Map<String, dynamic> json) {
   return ApiResponse(

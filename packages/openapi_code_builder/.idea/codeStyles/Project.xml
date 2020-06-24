@@ -1,9 +1,19 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
+    <JetCodeStyleSettings>
+      <option name="WRAP_EXPRESSION_BODY_FUNCTIONS" value="1" />
+    </JetCodeStyleSettings>
+    <ScalaCodeStyleSettings>
+      <option name="MULTILINE_STRING_CLOSING_QUOTES_ON_NEW_LINE" value="true" />
+    </ScalaCodeStyleSettings>
+    <codeStyleSettings language="PHP">
+      <option name="CLASS_BRACE_STYLE" value="1" />
+      <option name="METHOD_BRACE_STYLE" value="1" />
+    </codeStyleSettings>
+    <codeStyleSettings language="Python">
+      <option name="RIGHT_MARGIN" value="80" />
+    </codeStyleSettings>
     <codeStyleSettings language="XML">
-      <indentOptions>
-        <option name="CONTINUATION_INDENT_SIZE" value="4" />
-      </indentOptions>
       <arrangement>
         <rules>
           <section>
@@ -111,6 +121,28 @@
           </section>
         </rules>
       </arrangement>
+    </codeStyleSettings>
+    <codeStyleSettings language="kotlin">
+      <option name="RIGHT_MARGIN" value="80" />
+      <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+      <option name="CALL_PARAMETERS_WRAP" value="5" />
+      <option name="CALL_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
+      <option name="CALL_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
+      <option name="METHOD_PARAMETERS_WRAP" value="5" />
+      <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
+      <option name="METHOD_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
+      <option name="EXTENDS_LIST_WRAP" value="1" />
+      <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
+      <option name="WRAP_FIRST_METHOD_IN_CALL_CHAIN" value="true" />
+      <option name="ASSIGNMENT_WRAP" value="1" />
+      <option name="PARAMETER_ANNOTATION_WRAP" value="1" />
+      <option name="ENUM_CONSTANTS_WRAP" value="1" />
+      <option name="WRAP_ON_TYPING" value="0" />
+      <indentOptions>
+        <option name="INDENT_SIZE" value="2" />
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+      </indentOptions>
     </codeStyleSettings>
   </code_scheme>
 </component>

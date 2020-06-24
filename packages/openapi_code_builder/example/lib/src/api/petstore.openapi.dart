@@ -7,6 +7,25 @@ import 'package:meta/meta.dart' as _i2;
 import 'package:openapi_base/openapi_base.dart' as _i3;
 part 'petstore.openapi.g.dart';
 
+enum OrderStatus {
+  @_i1.JsonValue('placed')
+  placed,
+  @_i1.JsonValue('approved')
+  approved,
+  @_i1.JsonValue('delivered')
+  delivered,
+}
+
+extension OrderStatusExt on OrderStatus {
+  static final Map<String, OrderStatus> _names = {
+    'placed': OrderStatus.placed,
+    'approved': OrderStatus.approved,
+    'delivered': OrderStatus.delivered
+  };
+  static OrderStatus fromName(String name) => _names[name];
+  String get name => toString().substring(12);
+}
+
 ///
 @_i1.JsonSerializable()
 class Order {
@@ -34,7 +53,7 @@ class Order {
   final String shipDate;
 
   /// Order Status
-  final String status;
+  final OrderStatus status;
 
   /// null
   final bool complete;
@@ -126,6 +145,25 @@ class Tag {
   String toString() => toJson().toString();
 }
 
+enum PetStatus {
+  @_i1.JsonValue('available')
+  available,
+  @_i1.JsonValue('pending')
+  pending,
+  @_i1.JsonValue('sold')
+  sold,
+}
+
+extension PetStatusExt on PetStatus {
+  static final Map<String, PetStatus> _names = {
+    'available': PetStatus.available,
+    'pending': PetStatus.pending,
+    'sold': PetStatus.sold
+  };
+  static PetStatus fromName(String name) => _names[name];
+  String get name => toString().substring(10);
+}
+
 ///
 @_i1.JsonSerializable()
 class Pet {
@@ -155,7 +193,7 @@ class Pet {
   final List<Tag> tags;
 
   /// pet status in the store
-  final String status;
+  final PetStatus status;
 
   Map<String, dynamic> toJson() => _$PetToJson(this);
   @override
@@ -335,6 +373,25 @@ abstract class PetFindByStatusGetResponse extends _i3.OpenApiResponse {
       throw StateError('Invalid instance type $this');
     }
   }
+}
+
+enum PetFindByStatusGet {
+  @_i1.JsonValue('available')
+  available,
+  @_i1.JsonValue('pending')
+  pending,
+  @_i1.JsonValue('sold')
+  sold,
+}
+
+extension PetFindByStatusGetExt on PetFindByStatusGet {
+  static final Map<String, PetFindByStatusGet> _names = {
+    'available': PetFindByStatusGet.available,
+    'pending': PetFindByStatusGet.pending,
+    'sold': PetFindByStatusGet.sold
+  };
+  static PetFindByStatusGet fromName(String name) => _names[name];
+  String get name => toString().substring(19);
 }
 
 ///
@@ -1162,7 +1219,7 @@ abstract class Petstore implements _i3.ApiEndpoint {
   /// Multiple status values can be provided with comma separated strings
   /// get: /pet/findByStatus
   Future<PetFindByStatusGetResponse> petFindByStatusGet(
-      {@_i2.required List<String> status});
+      {@_i2.required List<PetFindByStatusGet> status});
 
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
@@ -1272,7 +1329,7 @@ abstract class PetstoreClient {
   ///
   /// * [status]: Status values that need to be considered for filter
   Future<PetFindByStatusGetResponse> petFindByStatusGet(
-      {@_i2.required List<String> status});
+      {@_i2.required List<PetFindByStatusGet> status});
 
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
@@ -1438,9 +1495,9 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [status]: Status values that need to be considered for filter
   @override
   Future<PetFindByStatusGetResponse> petFindByStatusGet(
-      {@_i2.required List<String> status}) async {
+      {@_i2.required List<PetFindByStatusGet> status}) async {
     final request = _i3.OpenApiClientRequest('get', '/pet/findByStatus');
-    request.addQueryParameter('status', status);
+    request.addQueryParameter('status', status.map((e) => e.name));
     return await sendRequest(request, {
       '200': (_i3.OpenApiClientResponse response) async =>
           _PetFindByStatusGetResponse200.response200(
@@ -1769,9 +1826,9 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   ///
   /// * [status]: Status values that need to be considered for filter
   _i3.OpenApiClientRequest petFindByStatusGet(
-      {@_i2.required List<String> status}) {
+      {@_i2.required List<PetFindByStatusGet> status}) {
     final request = _i3.OpenApiClientRequest('get', '/pet/findByStatus');
-    request.addQueryParameter('status', status);
+    request.addQueryParameter('status', status.map((e) => e.name));
     return request;
   }
 
@@ -1960,94 +2017,99 @@ class PetstoreRouter extends _i3.OpenApiServerRouterBase {
     addRoute('/pet', 'put', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.petPut(Pet.fromJson(await request.readJsonBody())));
-    });
+    }, security: []);
     addRoute('/pet', 'post', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.petPost(Pet.fromJson(await request.readJsonBody())));
-    });
+    }, security: []);
     addRoute('/pet/findByStatus', 'get', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.petFindByStatusGet(status: request.queryParameter('status')));
-    });
+      return await impl.invoke((Petstore impl) async => impl.petFindByStatusGet(
+          status: request
+              .queryParameter('status')
+              .map((e) => PetFindByStatusGetExt.fromName(e))
+              .toList()));
+    }, security: []);
     addRoute('/pet/findByTags', 'get', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.petFindByTagsGet(tags: request.queryParameter('tags')));
-    });
+    }, security: []);
     addRoute('/pet/{petId}', 'get', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.petPetIdGet(petId: paramToInt(request.pathParameter('petId'))));
-    });
+    }, security: []);
     addRoute('/pet/{petId}', 'post', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.petPetIdPost(petId: paramToInt(request.pathParameter('petId'))));
-    });
+    }, security: []);
     addRoute('/pet/{petId}', 'delete', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async => impl.petPetIdDelete(
           apiKey: paramToString(request.headerParameter('api_key')),
           petId: paramToInt(request.pathParameter('petId'))));
-    });
+    }, security: []);
     addRoute('/pet/{petId}/uploadImage', 'post',
         (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.petPetIdUploadImagePost(
               petId: paramToInt(request.pathParameter('petId'))));
-    });
+    }, security: []);
     addRoute('/store/inventory', 'get', (_i3.OpenApiRequest request) async {
       return await impl
           .invoke((Petstore impl) async => impl.storeInventoryGet());
-    });
+    }, security: []);
     addRoute('/store/order', 'post', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.storeOrderPost(Order.fromJson(await request.readJsonBody())));
-    });
+    }, security: []);
     addRoute('/store/order/{orderId}', 'get',
         (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.storeOrderOrderIdGet(
               orderId: paramToInt(request.pathParameter('orderId'))));
-    });
+    }, security: []);
     addRoute('/store/order/{orderId}', 'delete',
         (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.storeOrderOrderIdDelete(
               orderId: paramToInt(request.pathParameter('orderId'))));
-    });
+    }, security: []);
     addRoute('/user', 'post', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.userPost(User.fromJson(await request.readJsonBody())));
-    });
+    }, security: []);
     addRoute('/user/createWithArray', 'post',
         (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.userCreateWithArrayPost(UserCreateWithArraySchema.fromJson(
               await request.readJsonBody())));
-    });
+    }, security: []);
     addRoute('/user/createWithList', 'post',
         (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async =>
           impl.userCreateWithListPost(UserCreateWithArraySchema.fromJson(
               await request.readJsonBody())));
-    });
+    }, security: []);
     addRoute('/user/login', 'get', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async => impl.userLoginGet(
           username: paramToString(request.queryParameter('username')),
           password: paramToString(request.queryParameter('password'))));
-    });
+    }, security: []);
     addRoute('/user/logout', 'get', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async => impl.userLogoutGet());
-    });
+    }, security: []);
     addRoute('/user/{username}', 'get', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async => impl.userUsernameGet(
           username: paramToString(request.pathParameter('username'))));
-    });
+    }, security: []);
     addRoute('/user/{username}', 'put', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async => impl.userUsernamePut(
           User.fromJson(await request.readJsonBody()),
           username: paramToString(request.pathParameter('username'))));
-    });
+    }, security: []);
     addRoute('/user/{username}', 'delete', (_i3.OpenApiRequest request) async {
       return await impl.invoke((Petstore impl) async => impl.userUsernameDelete(
           username: paramToString(request.pathParameter('username'))));
-    });
+    }, security: []);
   }
 }
+
+class SecuritySchemes {}

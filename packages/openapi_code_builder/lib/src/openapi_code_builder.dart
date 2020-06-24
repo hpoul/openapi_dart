@@ -83,8 +83,10 @@ class OpenApiLibraryGenerator {
     for (final schemaEntry in api.components.schemas.entries) {
       _schemaReference(schemaEntry.key, schemaEntry.value);
     }
-    for (final securityScheme in api.components.securitySchemes.entries) {
-      _securitySchemeReference(securityScheme.key, securityScheme.value);
+    if (api.components.securitySchemes != null) {
+      for (final securityScheme in api.components.securitySchemes.entries) {
+        _securitySchemeReference(securityScheme.key, securityScheme.value);
+      }
     }
 
     // Create path configs
@@ -352,6 +354,24 @@ class OpenApiLibraryGenerator {
                     return refer('paramToBool')([expression]);
                   case APIType.array:
                     checkState(param.schema.items.type == APIType.string);
+                    if (param.schema.items.enumerated != null &&
+                        param.schema.items.enumerated.isNotEmpty) {
+                      final paramEnumType =
+                          (paramType as TypeReference).types.first;
+                      return expression
+                          .property('map')([
+                            Method(
+                              (mb) => mb
+                                ..lambda = true
+                                ..requiredParameters
+                                    .add(Parameter((pb) => pb..name = 'e'))
+                                ..body = refer(paramEnumType.symbol + 'Ext')
+                                    .property('fromName')([refer('e')])
+                                    .code,
+                            ).closure
+                          ])
+                          .property('toList')([]);
+                    }
                     return expression;
                   case APIType.object:
                     return expression;
@@ -370,6 +390,18 @@ class OpenApiLibraryGenerator {
                     return refer('encodeBool')([expression]);
                   case APIType.array:
                     checkState(param.schema.items.type == APIType.string);
+                    if (param.schema.items.enumerated != null &&
+                        param.schema.items.enumerated.isNotEmpty) {
+                      return expression.property('map')([
+                        Method(
+                          (mb) => mb
+                            ..lambda = true
+                            ..requiredParameters
+                                .add(Parameter((pb) => pb..name = 'e'))
+                            ..body = refer('e').property('name').code,
+                        ).closure
+                      ]);
+                    }
                     return expression;
                   case APIType.object:
                     return expression;
@@ -542,19 +574,22 @@ class OpenApiLibraryGenerator {
           ])).closure,
       ],
       {
-        'security': literalList(security.map(
-          (security) => _securityRequirement(
-            [],
-            {
-              'schemes': literalList(security.requirements.entries
-                  .map((req) => _securityRequirementScheme.newInstance([], {
-                        'scheme': refer(securitySchemesClass.name)
-                            .property(req.key.camelCase),
-                        'scopes': literalList(req.value),
-                      }))),
-            },
-          ),
-        )),
+        'security': literalList(
+          security?.map(
+                (security) => _securityRequirement(
+                  [],
+                  {
+                    'schemes': literalList(security.requirements.entries.map(
+                        (req) => _securityRequirementScheme.newInstance([], {
+                              'scheme': refer(securitySchemesClass.name)
+                                  .property(req.key.camelCase),
+                              'scopes': literalList(req.value),
+                            }))),
+                  },
+                ),
+              ) ??
+              [],
+        ),
       },
     ));
   }
@@ -689,7 +724,7 @@ class OpenApiLibraryGenerator {
     switch (schema.type ?? APIType.object) {
       case APIType.string:
         if (schema.enumerated != null && schema.enumerated.isNotEmpty) {
-          return _createEnum(parent, schema.enumerated);
+          return _createEnum(parent.pascalCase, schema.enumerated);
         }
         return refer('String');
       case APIType.number:
@@ -748,6 +783,16 @@ class EnumSpec extends Spec {
       visitor.visitSpec(value, context);
       ctx.write(',');
     }
+    ctx.writeln('}');
+    ctx.write('extension ${name}Ext on $name {');
+    ctx.write('static final Map<String, $name> _names = ');
+    visitor.visitSpec(
+        literalMap(Map.fromEntries(values.map((e) =>
+            MapEntry(literalString(e.name), refer(name).property(e.name))))),
+        context);
+    ctx.write(';');
+    ctx.write('static $name fromName(String name) => _names[name];');
+    ctx.write('String get name => toString().substring(${name.length + 1});');
     ctx.writeln('}');
     return context;
   }

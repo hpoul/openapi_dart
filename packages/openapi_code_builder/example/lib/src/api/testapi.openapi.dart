@@ -274,15 +274,17 @@ class TestApiRouter extends _i3.OpenApiServerRouterBase {
     addRoute('/user/register', 'post', (_i3.OpenApiRequest request) async {
       return await impl.invoke((TestApi impl) async => impl.userRegisterPost(
           RegisterRequest.fromJson(await request.readJsonBody())));
-    });
+    }, security: []);
     addRoute('/hello/{name}', 'get', (_i3.OpenApiRequest request) async {
       return await impl.invoke((TestApi impl) async => impl.helloNameGet(
           name: paramToString(request.pathParameter('name'))));
-    });
+    }, security: []);
     addRoute('/hello/{name}', 'put', (_i3.OpenApiRequest request) async {
       return await impl.invoke((TestApi impl) async => impl.helloNamePut(
           HelloRequest.fromJson(await request.readJsonBody()),
           name: paramToString(request.pathParameter('name'))));
-    });
+    }, security: []);
   }
 }
+
+class SecuritySchemes {}

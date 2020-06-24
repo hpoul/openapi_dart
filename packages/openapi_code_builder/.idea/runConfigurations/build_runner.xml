@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="build_runner" type="BashConfigurationType" factoryName="Bash">
+    <module name="openapi_code_builder" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="INTERPRETER_PATH" value="/bin/bash" />
+    <option name="PROJECT_INTERPRETER" value="false" />
+    <option name="WORKING_DIRECTORY" value="example" />
+    <option name="PARENT_ENVS" value="true" />
+    <option name="SCRIPT_NAME" value="pub" />
+    <option name="PARAMETERS" value="run build_runner build -v --delete-conflicting-outputs" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -184,7 +184,7 @@ packages:
     source: hosted
     version: "3.0.1"
   logging:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: logging
       url: "https://pub.dartlang.org"
@@ -205,7 +205,7 @@ packages:
     source: hosted
     version: "0.12.6"
   meta:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: meta
       url: "https://pub.dartlang.org"
@@ -235,10 +235,10 @@ packages:
   openapi_base:
     dependency: "direct main"
     description:
-      path: "../openapi_base"
-      relative: true
-    source: path
-    version: "0.0.1"
+      name: openapi_base
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   package_config:
     dependency: transitive
     description:
@@ -380,4 +380,4 @@ packages:
     source: hosted
     version: "2.2.1"
 sdks:
-  dart: ">=2.9.0-13.0.dev <3.0.0"
+  dart: ">=2.8.0 <3.0.0"

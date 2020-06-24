@@ -20,6 +20,8 @@ dev_dependencies:
   build_runner: ^1.10.0
   pedantic: ^1.9.0
 
-#dependency_overrides:
-#  open_api:
-#    path: ../../../deps/open-api-dart
+dependency_overrides:
+  openapi_base:
+    path: ../../openapi_base
+  open_api:
+    path: ../../../deps/open-api-dart
