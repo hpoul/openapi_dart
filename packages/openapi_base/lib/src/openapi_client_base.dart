@@ -93,6 +93,7 @@ abstract class OpenApiClientResponse {
   int get status;
 
   Future<Map<String, dynamic>> responseBodyJson();
+  Future<String> responseBodyString();
 }
 
 class HttpRequestSender extends OpenApiRequestSender {
@@ -129,4 +130,9 @@ class HttpClientResponse extends OpenApiClientResponse {
 
   @override
   int get status => response.statusCode;
+
+  @override
+  Future<String> responseBodyString() async {
+    return response.body;
+  }
 }

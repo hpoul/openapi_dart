@@ -15,6 +15,7 @@ abstract class OpenApiRequest {
 
 abstract class OpenApiResponse {
   int get status;
+  String get contentType;
 
   Map<String, dynamic> bodyJson;
 

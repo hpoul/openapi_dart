@@ -209,6 +209,7 @@ class OpenApiLibraryGenerator {
                     .code);
               }
               final content = (response.value.content ?? {})[mediaTypeJson];
+              String responseContentType;
               if (content != null) {
                 final bodyType = _schemaReference(
                     '${responseClass.name}Body$codeName', content.schema);
@@ -234,7 +235,37 @@ class OpenApiLibraryGenerator {
                     'fromJson', [
                   refer('response').property('responseBodyJson')([]).awaited
                 ]));
+              } else {
+                if (response.value.content?.length == 1) {
+                  final responseContent = response.value.content.entries.first;
+                  responseContentType = responseContent.key;
+                  final bodyType = _toDartType('${responseCodeClass}Content',
+                      responseContent.value.schema);
+                  checkState(
+                      responseContent.value.schema.type == APIType.string,
+                      message:
+                          'schema type not supported: ${responseContent.value.schema.type}');
+                  responseCodeClass.fields.add(Field((fb) => fb
+                    ..name = 'body'
+                    ..type = bodyType
+                    ..modifier = FieldModifier.final$));
+                  cb.requiredParameters.add(Parameter((pb) => pb
+                    ..name = 'body'
+                    ..type = bodyType
+                    ..toThis = true));
+                  clientResponseParseParams.add(refer('response')
+                      .property('responseBodyString')([])
+                      .awaited);
+                }
               }
+              responseCodeClass.fields.add(Field((fb) => fb
+                ..name = 'contentType'
+                ..type = refer('String')
+                ..annotations.add(_override)
+                ..modifier = FieldModifier.final$
+                ..assignment = responseContentType == null
+                    ? literalNull.code
+                    : literalString(responseContentType).code));
             });
 
             responseCodeClass.constructors.add((constructor.toBuilder()
