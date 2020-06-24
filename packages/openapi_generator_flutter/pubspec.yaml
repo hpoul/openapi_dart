@@ -39,6 +39,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+dependency_overrides:
+  openapi_base:
+    path: ../openapi_base
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
