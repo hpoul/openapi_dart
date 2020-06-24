@@ -68,8 +68,8 @@ class OpenApiLibraryGenerator {
       refer('SecuritySchemeHttp', 'package:openapi_base/openapi_base.dart');
   final _securitySchemeHttpScheme = refer(
       'SecuritySchemeHttpScheme', 'package:openapi_base/openapi_base.dart');
-  final _openApiContentType = refer((OpenApiContentType).toString(),
-      'package:openapi_base/openapi_base.dart');
+  final _openApiContentType =
+      refer('OpenApiContentType', 'package:openapi_base/openapi_base.dart');
   final _required = refer('required', 'package:meta/meta.dart');
   final _override = refer('override');
 
