@@ -175,6 +175,28 @@ Map<String, dynamic> _$PetFindByTagsGetResponseBody200ToJson(
         PetFindByTagsGetResponseBody200 instance) =>
     <String, dynamic>{};
 
+PetPetIdSchema _$PetPetIdSchemaFromJson(Map<String, dynamic> json) {
+  return PetPetIdSchema(
+    name: json['name'] as String,
+    status: json['status'] as String,
+  );
+}
+
+Map<String, dynamic> _$PetPetIdSchemaToJson(PetPetIdSchema instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'status': instance.status,
+    };
+
+PetPetIdUploadImageSchema _$PetPetIdUploadImageSchemaFromJson(
+    Map<String, dynamic> json) {
+  return PetPetIdUploadImageSchema();
+}
+
+Map<String, dynamic> _$PetPetIdUploadImageSchemaToJson(
+        PetPetIdUploadImageSchema instance) =>
+    <String, dynamic>{};
+
 StoreInventoryGetResponseBody200 _$StoreInventoryGetResponseBody200FromJson(
     Map<String, dynamic> json) {
   return StoreInventoryGetResponseBody200();

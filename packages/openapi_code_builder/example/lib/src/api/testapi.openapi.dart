@@ -16,6 +16,7 @@ class RegisterRequest {
       _$RegisterRequestFromJson(jsonMap);
 
   /// Email address for the current user.
+  @_i1.JsonKey(name: 'email')
   final String email;
 
   Map<String, dynamic> toJson() => _$RegisterRequestToJson(this);
@@ -32,6 +33,7 @@ class HelloRequest {
       _$HelloRequestFromJson(jsonMap);
 
   /// Salutation used for greetings.
+  @_i1.JsonKey(name: 'salutation')
   final String salutation;
 
   Map<String, dynamic> toJson() => _$HelloRequestToJson(this);
@@ -48,6 +50,7 @@ class HelloResponse {
       _$HelloResponseFromJson(jsonMap);
 
   /// The Hello World greeting ;-)
+  @_i1.JsonKey(name: 'message')
   final String message;
 
   Map<String, dynamic> toJson() => _$HelloResponseToJson(this);
@@ -151,7 +154,8 @@ class _HelloNameGetResponse200 extends HelloNameGetResponse
       };
 }
 
-abstract class HelloNameGetResponse extends _i3.OpenApiResponse {
+abstract class HelloNameGetResponse extends _i3.OpenApiResponse
+    implements _i3.HasSuccessResponse<HelloResponse> {
   HelloNameGetResponse();
 
   /// OK
@@ -163,6 +167,15 @@ abstract class HelloNameGetResponse extends _i3.OpenApiResponse {
       on200((this as _HelloNameGetResponse200));
     } else {
       throw StateError('Invalid instance type $this');
+    }
+  }
+
+  @override
+  HelloResponse requireSuccess() {
+    if (this is _HelloNameGetResponse200) {
+      return (this as _HelloNameGetResponse200).body;
+    } else {
+      throw StateError('Expected success response, but got $this');
     }
   }
 }
@@ -195,7 +208,8 @@ class _HelloNamePutResponse200 extends HelloNamePutResponse
       };
 }
 
-abstract class HelloNamePutResponse extends _i3.OpenApiResponse {
+abstract class HelloNamePutResponse extends _i3.OpenApiResponse
+    implements _i3.HasSuccessResponse<HelloResponse> {
   HelloNamePutResponse();
 
   /// OK
@@ -207,6 +221,15 @@ abstract class HelloNamePutResponse extends _i3.OpenApiResponse {
       on200((this as _HelloNamePutResponse200));
     } else {
       throw StateError('Invalid instance type $this');
+    }
+  }
+
+  @override
+  HelloResponse requireSuccess() {
+    if (this is _HelloNamePutResponse200) {
+      return (this as _HelloNamePutResponse200).body;
+    } else {
+      throw StateError('Expected success response, but got $this');
     }
   }
 }
@@ -231,7 +254,7 @@ abstract class TestApi implements _i3.ApiEndpoint {
       {@_i2.required String name});
 }
 
-abstract class TestApiClient {
+abstract class TestApiClient implements _i3.OpenApiClient {
   factory TestApiClient(Uri baseUri, _i3.OpenApiRequestSender requestSender) =>
       _TestApiClientImpl._(baseUri, requestSender);
 
@@ -274,7 +297,7 @@ class _TestApiClientImpl extends _i3.OpenApiClientBase
   @override
   Future<UserRegisterPostResponse> userRegisterPost(
       RegisterRequest body) async {
-    final request = _i3.OpenApiClientRequest('post', '/user/register');
+    final request = _i3.OpenApiClientRequest('post', '/user/register', []);
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
       '200': (_i3.OpenApiClientResponse response) async =>
@@ -288,7 +311,7 @@ class _TestApiClientImpl extends _i3.OpenApiClientBase
   @override
   Future<HelloNameHtmlGetResponse> helloNameHtmlGet(
       {@_i2.required String name}) async {
-    final request = _i3.OpenApiClientRequest('get', '/hello/{name}/html');
+    final request = _i3.OpenApiClientRequest('get', '/hello/{name}/html', []);
     request.addPathParameter('name', encodeString(name));
     return await sendRequest(request, {
       '200': (_i3.OpenApiClientResponse response) async =>
@@ -302,7 +325,7 @@ class _TestApiClientImpl extends _i3.OpenApiClientBase
   ///
   @override
   Future<HelloNameGetResponse> helloNameGet({@_i2.required String name}) async {
-    final request = _i3.OpenApiClientRequest('get', '/hello/{name}');
+    final request = _i3.OpenApiClientRequest('get', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
     return await sendRequest(request, {
       '200': (_i3.OpenApiClientResponse response) async =>
@@ -317,7 +340,7 @@ class _TestApiClientImpl extends _i3.OpenApiClientBase
   @override
   Future<HelloNamePutResponse> helloNamePut(HelloRequest body,
       {@_i2.required String name}) async {
-    final request = _i3.OpenApiClientRequest('put', '/hello/{name}');
+    final request = _i3.OpenApiClientRequest('put', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
@@ -333,7 +356,7 @@ class TestApiUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// post: /user/register
   ///
   _i3.OpenApiClientRequest userRegisterPost() {
-    final request = _i3.OpenApiClientRequest('post', '/user/register');
+    final request = _i3.OpenApiClientRequest('post', '/user/register', []);
     return request;
   }
 
@@ -341,7 +364,7 @@ class TestApiUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// get: /hello/{name}/html
   ///
   _i3.OpenApiClientRequest helloNameHtmlGet({@_i2.required String name}) {
-    final request = _i3.OpenApiClientRequest('get', '/hello/{name}/html');
+    final request = _i3.OpenApiClientRequest('get', '/hello/{name}/html', []);
     request.addPathParameter('name', encodeString(name));
     return request;
   }
@@ -350,7 +373,7 @@ class TestApiUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// get: /hello/{name}
   ///
   _i3.OpenApiClientRequest helloNameGet({@_i2.required String name}) {
-    final request = _i3.OpenApiClientRequest('get', '/hello/{name}');
+    final request = _i3.OpenApiClientRequest('get', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
     return request;
   }
@@ -359,7 +382,7 @@ class TestApiUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// put: /hello/{name}
   ///
   _i3.OpenApiClientRequest helloNamePut({@_i2.required String name}) {
-    final request = _i3.OpenApiClientRequest('put', '/hello/{name}');
+    final request = _i3.OpenApiClientRequest('put', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
     return request;
   }

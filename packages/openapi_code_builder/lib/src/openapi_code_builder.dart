@@ -38,6 +38,8 @@ class OpenApiLibraryGenerator {
       refer('JsonValue', 'package:json_annotation/json_annotation.dart');
   final jsonKey =
       refer('JsonKey', 'package:json_annotation/json_annotation.dart');
+  final _openApiContent =
+      refer('OpenApiContent', 'package:openapi_base/openapi_base.dart');
   final _openApiRequest =
       refer('OpenApiRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiResponse =
@@ -52,8 +54,12 @@ class OpenApiLibraryGenerator {
       refer('ApiEndpointProvider', 'package:openapi_base/openapi_base.dart');
   final _openApiUrlEncodeMixin =
       refer('OpenApiUrlEncodeMixin', 'package:openapi_base/openapi_base.dart');
+  final _openApiClient =
+      refer('OpenApiClient', 'package:openapi_base/openapi_base.dart');
   final _openApiClientBase =
       refer('OpenApiClientBase', 'package:openapi_base/openapi_base.dart');
+  final _hasSuccessResponse =
+      refer('HasSuccessResponse', 'package:openapi_base/openapi_base.dart');
   final _openApiClientRequest =
       refer('OpenApiClientRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiClientResponse =
@@ -101,6 +107,7 @@ class OpenApiLibraryGenerator {
     // Create path configs
     final clientInterface = ClassBuilder()
       ..name = '${baseName}Client'
+      ..implements.add(_openApiClient)
       ..abstract = true;
     final fields = [
       MapEntry('baseUri', refer('Uri')),
@@ -166,7 +173,8 @@ class OpenApiLibraryGenerator {
             ..name = 'map'
             ..returns = refer('void');
           final mapCode = <Code>[];
-          Reference /*?*/ successResponseType;
+          Reference /*?*/ successResponseBodyType;
+          Reference /*?*/ successResponseCodeType;
           final clientResponseParse = <String, Expression>{};
           for (final response in operation.value.responses.entries) {
             final statusAsParameter = response.key == 'default';
@@ -226,8 +234,9 @@ class OpenApiLibraryGenerator {
                     '${responseClass.name}Body$codeName', content.schema);
                 if (response.key.startsWith('2') ||
                     (response.key == 'default' &&
-                        successResponseType == null)) {
-                  successResponseType = bodyType;
+                        successResponseBodyType == null)) {
+                  successResponseCodeType = refer(responseCodeClass.name);
+                  successResponseBodyType = bodyType;
                 }
                 responseCodeClass.fields.add(Field((fb) => fb
                   ..name = 'body'
@@ -334,6 +343,32 @@ class OpenApiLibraryGenerator {
           }
           mapMethod.body = Block.of(mapCode);
           responseClass.methods.add(mapMethod.build());
+
+          if (successResponseBodyType != null) {
+            responseClass.implements
+                .add(_hasSuccessResponse.addGenerics(successResponseBodyType));
+            responseClass.methods.add(
+              Method((mb) => mb
+                ..name = 'requireSuccess'
+                ..annotations.add(_override)
+                ..returns = successResponseBodyType
+                ..body = Block.of([
+                  const Code('if (this is '),
+                  successResponseCodeType.code,
+                  const Code(') {'),
+                  refer('this')
+                      .asA(successResponseCodeType)
+                      .property('body')
+                      .returned
+                      .statement,
+                  const Code('} else {'),
+                  const Code(
+                      r'''throw StateError('Expected success response, but got $this');'''),
+                  const Code('}'),
+                ])),
+            );
+          }
+
           lb.body.add(responseClass.build());
 
           final clientMethod = MethodBuilder()
@@ -350,10 +385,13 @@ class OpenApiLibraryGenerator {
                 .newInstance([
                   literalString(operation.key),
                   literalString(path.key),
+                  _operationSecurityRequirements(
+                      operation.value.security ?? api.security),
                 ])
                 .assignFinal('request')
                 .statement,
           ];
+          final clientCodeRequest = refer('request');
 
           cb.methods.add(Method((mb) {
             mb
@@ -464,7 +502,7 @@ class OpenApiLibraryGenerator {
                   routerParamsNamed[paramName] = decodeParameter(
                       refer('request').property('queryParameter')(
                           [literalString(param.name)]));
-                  clientCode.add(refer('request')
+                  clientCode.add(clientCodeRequest
                       .property('addQueryParameter')([
                         literalString(param.name),
                         encodeParameter(refer(paramName)),
@@ -475,7 +513,7 @@ class OpenApiLibraryGenerator {
                   routerParamsNamed[paramName] = decodeParameter(
                       refer('request').property('headerParameter')(
                           [literalString(param.name)]));
-                  clientCode.add(refer('request')
+                  clientCode.add(clientCodeRequest
                       .property('addHeaderParameter')([
                         literalString(param.name),
                         encodeParameter(refer(paramName)),
@@ -486,7 +524,7 @@ class OpenApiLibraryGenerator {
                   routerParamsNamed[paramName] = decodeParameter(
                       refer('request').property('pathParameter')(
                           [literalString(param.name)]));
-                  clientCode.add(refer('request')
+                  clientCode.add(clientCodeRequest
                       .property('addPathParameter')([
                         literalString(param.name),
                         encodeParameter(refer(paramName)),
@@ -497,7 +535,7 @@ class OpenApiLibraryGenerator {
                   routerParamsNamed[paramName] = decodeParameter(
                       refer('request').property('cookieParameter')(
                           [literalString(param.name)]));
-                  clientCode.add(refer('req')
+                  clientCode.add(clientCodeRequest
                       .property('addCookieParameter')([
                         literalString(param.name),
                         encodeParameter(refer(paramName)),
@@ -510,12 +548,19 @@ class OpenApiLibraryGenerator {
               ..returns = _openApiClientRequest
               ..modifier = null
               ..body =
-                  Block.of(clientCode + [refer('request').returned.statement]);
+                  Block.of(clientCode + [clientCodeRequest.returned.statement]);
             urlResolveClass.methods.add(urlResolverMethod.build());
 
             final body = operation.value.requestBody;
-            if (body != null) {
-              body.content.forEach((key, reqBody) {
+            if (body != null && body.content.isNotEmpty) {
+              final entry = body.content.entries.first;
+
+              if (body.content.length > 1) {
+                _logger.warning('Right now we only support on request body, '
+                    'but found: ${body.content.keys}, only using $entry');
+              }
+
+              Map.fromEntries([entry]).forEach((key, reqBody) {
                 final contentType = OpenApiContentType.parse(key);
 //                final ct = OpenApiContentType.allKnown
 //                    .firstWhere((element) => element.matches(contentType));
@@ -529,9 +574,6 @@ class OpenApiLibraryGenerator {
                   clientCode,
                 );
               });
-              final reqBody = body.content[mediaTypeJson.contentType];
-//              for (final reqBody in body.content.entries) {
-              if (reqBody != null) {}
             }
 
             _routerConfig(
@@ -649,24 +691,29 @@ class OpenApiLibraryGenerator {
           ])).closure,
       ],
       {
-        'security': literalList(
-          security?.map(
-                (security) => _securityRequirement(
-                  [],
-                  {
-                    'schemes': literalList(security.requirements.entries.map(
-                        (req) => _securityRequirementScheme.newInstance([], {
-                              'scheme': refer(securitySchemesClass.name)
-                                  .property(req.key.camelCase),
-                              'scopes': literalList(req.value),
-                            }))),
-                  },
-                ),
-              ) ??
-              [],
-        ),
+        'security': _operationSecurityRequirements(security),
       },
     ));
+  }
+
+  LiteralListExpression _operationSecurityRequirements(
+      List<APISecurityRequirement> security) {
+    return literalList(
+      security?.map(
+            (security) => _securityRequirement(
+              [],
+              {
+                'schemes': literalList(security.requirements.entries
+                    .map((req) => _securityRequirementScheme.newInstance([], {
+                          'scheme': refer(securitySchemesClass.name)
+                              .property(req.key.camelCase),
+                          'scopes': literalList(req.value),
+                        }))),
+              },
+            ),
+          ) ??
+          [],
+    );
   }
 
   String _classNameForComponent(String componentName) {
@@ -713,6 +760,7 @@ class OpenApiLibraryGenerator {
       (cb) => cb
         ..annotations.add(jsonSerializable([]))
         ..name = className
+//        ..implements.add(_openApiContent)
         ..docs.add('/// ${obj.description ?? ''}')
         ..constructors.add(Constructor((cb) => cb
           ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb

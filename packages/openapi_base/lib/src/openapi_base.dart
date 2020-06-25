@@ -166,13 +166,25 @@ class SecurityRequirementScheme {
   final List<String> scopes;
 }
 
-abstract class SecurityScheme {}
+abstract class OpenApiContent {}
+
+abstract class SecurityScheme<T extends SecuritySchemeData> {}
+
+abstract class SecuritySchemeData {}
 
 enum SecuritySchemeHttpScheme {
   bearer,
 }
 
-class SecuritySchemeHttp extends SecurityScheme {
+class SecuritySchemeBlubbData extends SecuritySchemeData {}
+
+class SecuritySchemeHttpData extends SecuritySchemeData {
+  SecuritySchemeHttpData({this.bearerToken});
+
+  final String bearerToken;
+}
+
+class SecuritySchemeHttp extends SecurityScheme<SecuritySchemeHttpData> {
   SecuritySchemeHttp({@required this.scheme}) : assert(scheme != null);
   final SecuritySchemeHttpScheme scheme;
 }

@@ -30,9 +30,25 @@ mixin OpenApiUrlEncodeMixin {
   List<String> encodeBool(bool value) => ['$value'];
 }
 
-abstract class OpenApiClientBase with OpenApiUrlEncodeMixin {
+abstract class OpenApiClient {
+  Map<SecurityScheme, SecuritySchemeData> get _securitySchemeData;
+  void setAuth<U extends SecuritySchemeData, T extends SecurityScheme<U>>(
+      T security, U data);
+}
+
+abstract class OpenApiClientBase
+    with OpenApiUrlEncodeMixin
+    implements OpenApiClient {
   Uri get baseUri;
   OpenApiRequestSender get requestSender;
+  @override
+  Map<SecurityScheme, SecuritySchemeData> _securitySchemeData;
+
+  @override
+  void setAuth<U extends SecuritySchemeData, T extends SecurityScheme<U>>(
+      T security, U data) {
+    _securitySchemeData[security] = data;
+  }
 
   Future<T> sendRequest<T extends OpenApiResponse>(OpenApiClientRequest request,
       Map<String, ResponseParser<T>> parserMap) async {
@@ -46,11 +62,23 @@ abstract class OpenApiClientBase with OpenApiUrlEncodeMixin {
   }
 }
 
+extension SecuritySchemeClient<T extends SecuritySchemeData>
+    on SecurityScheme<T> {
+  T getForClient(OpenApiClient client) {
+    return client._securitySchemeData[this] as T;
+  }
+
+  void setForClient(OpenApiClient client, T data) {
+    client._securitySchemeData[this] = data;
+  }
+}
+
 class OpenApiClientRequest {
-  OpenApiClientRequest(this.operation, this.path);
+  OpenApiClientRequest(this.operation, this.path, this.securityRequirement);
 
   final String operation;
   final String path;
+  final List<SecurityRequirement> securityRequirement;
   final Map<String, List<String>> paramHeader = {};
   final Map<String, List<String>> paramCookie = {};
   final Map<String, List<String>> paramPath = {};
@@ -139,4 +167,13 @@ class HttpClientResponse extends OpenApiClientResponse {
   Future<String> responseBodyString() async {
     return response.body;
   }
+}
+
+abstract class HasSuccessResponse<BODY_TYPE> implements OpenApiResponse {
+  BODY_TYPE requireSuccess();
+}
+
+extension HasSuccessFuture<BODY_TYPE, T extends HasSuccessResponse<BODY_TYPE>>
+    on Future<T> {
+  Future<BODY_TYPE> requireSuccess() => then((value) => value.requireSuccess());
 }
