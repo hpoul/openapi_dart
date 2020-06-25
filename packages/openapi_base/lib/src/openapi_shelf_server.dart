@@ -21,7 +21,7 @@ class OpenApiShelfServer {
   shelf.Handler preparePipeline() => const shelf.Pipeline()
       .addMiddleware(cookieParser())
       .addMiddleware(shelf.logRequests())
-      .addHandler(_handleRequest);
+      .addHandler(_handleRequestWithExceptions);
 
   void startServer({
     String address = 'localhost',
@@ -30,6 +30,19 @@ class OpenApiShelfServer {
     io.serve(preparePipeline(), address, port).then((server) {
       _logger.info('Serving at http://${server.address.host}:${server.port}');
     });
+  }
+
+  Future<shelf.Response> _handleRequestWithExceptions(
+      shelf.Request request) async {
+    try {
+      return await _handleRequest(request);
+    } on OpenApiResponseException catch (e, stackTrace) {
+      _logger.fine('response exception during request handling', e, stackTrace);
+      return shelf.Response(e.status, body: e.message);
+    } catch (e, stackTrace) {
+      _logger.warning('Error while handling requet.', e, stackTrace);
+      rethrow;
+    }
   }
 
   Future<shelf.Response> _handleRequest(shelf.Request request) async {

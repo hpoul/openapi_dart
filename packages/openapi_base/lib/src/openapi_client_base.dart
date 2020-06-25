@@ -42,7 +42,7 @@ abstract class OpenApiClientBase
   Uri get baseUri;
   OpenApiRequestSender get requestSender;
   @override
-  Map<SecurityScheme, SecuritySchemeData> _securitySchemeData;
+  final Map<SecurityScheme, SecuritySchemeData> _securitySchemeData = {};
 
   @override
   void setAuth<U extends SecuritySchemeData, T extends SecurityScheme<U>>(
@@ -52,6 +52,17 @@ abstract class OpenApiClientBase
 
   Future<T> sendRequest<T extends OpenApiResponse>(OpenApiClientRequest request,
       Map<String, ResponseParser<T>> parserMap) async {
+    for (final security in request.securityRequirement) {
+      for (final scheme in security.schemes) {
+        final data = _securitySchemeData[scheme.scheme];
+        if (data == null) {
+          _logger.warning('Missing security scheme data for request.'
+              ' $scheme to ${request.path}');
+          continue;
+        }
+        scheme.scheme.applyToRequest(request, data);
+      }
+    }
     final response = await requestSender.sendRequest(baseUri, request);
     final parser =
         parserMap[response.status.toString()] ?? parserMap['default'];
@@ -141,6 +152,9 @@ class HttpRequestSender extends OpenApiRequestSender {
     if (request.jsonBody != null) {
       req.body = json.encode(request.jsonBody);
     }
+    request.paramHeader.forEach((key, value) {
+      req.headers[key] = value?.first;
+    });
     final response = await _client.send(req);
     return HttpClientResponse(await Response.fromStream(response));
   }

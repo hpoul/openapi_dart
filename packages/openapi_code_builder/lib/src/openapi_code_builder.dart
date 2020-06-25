@@ -580,6 +580,7 @@ class OpenApiLibraryGenerator {
               path.key,
               operation.key,
               refer('impl').property('invoke')([
+                refer('request'),
                 Method((m) => m
                   ..requiredParameters.add(Parameter((pb) => pb
                     ..type = refer(baseName)
@@ -760,7 +761,7 @@ class OpenApiLibraryGenerator {
       (cb) => cb
         ..annotations.add(jsonSerializable([]))
         ..name = className
-//        ..implements.add(_openApiContent)
+        ..implements.add(_openApiContent)
         ..docs.add('/// ${obj.description ?? ''}')
         ..constructors.add(Constructor((cb) => cb
           ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb

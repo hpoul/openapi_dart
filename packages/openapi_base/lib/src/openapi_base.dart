@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:openapi_base/src/openapi_client_base.dart';
 import 'package:openapi_base/src/openapi_content_type.dart';
 import 'package:uri/uri.dart';
 
@@ -59,7 +60,8 @@ abstract class ApiEndpointProvider<ENDPOINT extends ApiEndpoint> {
     return StaticEndpointProvider(endpoint);
   }
 
-  Future<RET> invoke<RET>(ApiEndpointCallback<ENDPOINT, RET> callback);
+  Future<RET> invoke<RET>(
+      OpenApiRequest request, ApiEndpointCallback<ENDPOINT, RET> callback);
 }
 
 class StaticEndpointProvider<ENDPOINT extends ApiEndpoint>
@@ -69,7 +71,8 @@ class StaticEndpointProvider<ENDPOINT extends ApiEndpoint>
   final ENDPOINT endpoint;
 
   @override
-  Future<RET> invoke<RET>(ApiEndpointCallback<ENDPOINT, RET> callback) async {
+  Future<RET> invoke<RET>(OpenApiRequest request,
+      ApiEndpointCallback<ENDPOINT, RET> callback) async {
     return await callback(endpoint);
   }
 }
@@ -168,15 +171,19 @@ class SecurityRequirementScheme {
 
 abstract class OpenApiContent {}
 
-abstract class SecurityScheme<T extends SecuritySchemeData> {}
+abstract class SecurityScheme<T extends SecuritySchemeData> {
+  /// apply security data into a client side request.
+  void applyToRequest(OpenApiClientRequest request, T data);
+
+  /// extract security data from a server side request.
+  T fromRequest(OpenApiRequest request);
+}
 
 abstract class SecuritySchemeData {}
 
 enum SecuritySchemeHttpScheme {
   bearer,
 }
-
-class SecuritySchemeBlubbData extends SecuritySchemeData {}
 
 class SecuritySchemeHttpData extends SecuritySchemeData {
   SecuritySchemeHttpData({this.bearerToken});
@@ -187,4 +194,28 @@ class SecuritySchemeHttpData extends SecuritySchemeData {
 class SecuritySchemeHttp extends SecurityScheme<SecuritySchemeHttpData> {
   SecuritySchemeHttp({@required this.scheme}) : assert(scheme != null);
   final SecuritySchemeHttpScheme scheme;
+  static const _headerName = 'Authorization';
+  static const _headerPrefix = 'Bearer ';
+
+  @override
+  void applyToRequest(
+      OpenApiClientRequest request, SecuritySchemeHttpData data) {
+    request.addHeaderParameter(
+      _headerName,
+      ['$_headerPrefix${data.bearerToken}'],
+    );
+  }
+
+  @override
+  SecuritySchemeHttpData fromRequest(OpenApiRequest request) {
+    final authHeader = request.headerParameter(_headerName);
+    if (authHeader != null && authHeader.isNotEmpty) {
+      final auth = authHeader.first;
+      if (auth.startsWith(_headerPrefix)) {
+        final token = auth.substring(_headerPrefix.length);
+        return SecuritySchemeHttpData(bearerToken: token);
+      }
+    }
+    return null;
+  }
 }
