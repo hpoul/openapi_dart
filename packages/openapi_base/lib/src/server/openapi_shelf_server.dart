@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:openapi_base/openapi_base.dart';
+import 'package:openapi_base/src/server/stoppable_process.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_cookie/shelf_cookie.dart';
@@ -23,12 +24,16 @@ class OpenApiShelfServer {
       .addMiddleware(shelf.logRequests())
       .addHandler(_handleRequestWithExceptions);
 
-  void startServer({
+  Future<StoppableProcess> startServer({
     String address = 'localhost',
     int port = 8080,
-  }) {
-    io.serve(preparePipeline(), address, port).then((server) {
-      _logger.info('Serving at http://${server.address.host}:${server.port}');
+  }) async {
+    final server = await io.serve(preparePipeline(), address, port);
+    _logger.info('Serving at http://${server.address.host}:${server.port}');
+    return StoppableProcess((reason) async {
+      _logger.info('Stopping server... ($reason)');
+      await server.close();
+      _logger.info('Successfully stopped server.');
     });
   }
 

@@ -11,7 +11,10 @@ Future<void> main() async {
   final server = OpenApiShelfServer(
     TestApiRouter(ApiEndpointProvider.static(TestApiImpl())),
   );
-  server.startServer();
+  final process = await server.startServer();
+  _logger.fine('startServer finished.');
+  final exitCode = await process.exitCode;
+  _logger.fine('exitCode from process: $exitCode');
 }
 
 class TestApiImpl extends TestApi {
