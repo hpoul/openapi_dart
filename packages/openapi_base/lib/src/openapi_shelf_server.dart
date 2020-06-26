@@ -89,7 +89,7 @@ class OpenApiShelfServer {
         );
       } else {
         return shelf.Response(response.status);
-        throw StateError('Invalid response $response');
+//        throw StateError('Invalid response $response');
       }
 
 //      return shelf.Response.ok('Ok found. $response');

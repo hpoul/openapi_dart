@@ -275,6 +275,7 @@ class OpenApiLibraryGenerator {
                   responseCodeClass.fields.add(Field((fb) => fb
                     ..name = 'body'
                     ..type = bodyType
+                    ..annotations.add(_override)
                     ..modifier = FieldModifier.final$));
                   cb.requiredParameters.add(Parameter((pb) => pb
                     ..name = 'body'
@@ -997,7 +998,11 @@ class OpenApiCodeBuilder extends Builder {
       outputId.changeExtension('.g.dart').pathSegments.last,
     ).generate();
 
-    final libraryOutput = OpenApiCodeBuilderUtils.formatLibrary(l);
+    final libraryOutput = OpenApiCodeBuilderUtils.formatLibrary(
+      l,
+      orderDirectives: true,
+      useNullSafetySyntax: useNullSafetySyntax,
+    );
 //    print(DartFormatter().format('${l.accept(emitter)}'));
 //    print('inputId: $inputId / outputId: $outputId');
     await buildStep.writeAsString(outputId, libraryOutput);

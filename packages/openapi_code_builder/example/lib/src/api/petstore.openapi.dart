@@ -3,8 +3,8 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:json_annotation/json_annotation.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
-import 'package:openapi_base/openapi_base.dart' as _i3;
+import 'package:meta/meta.dart' as _i3;
+import 'package:openapi_base/openapi_base.dart' as _i2;
 part 'petstore.openapi.g.dart';
 
 enum OrderStatus {
@@ -28,7 +28,7 @@ extension OrderStatusExt on OrderStatus {
 
 ///
 @_i1.JsonSerializable()
-class Order {
+class Order implements _i2.OpenApiContent {
   Order(
       {this.id,
       this.petId,
@@ -71,7 +71,7 @@ class Order {
 
 ///
 @_i1.JsonSerializable()
-class Category {
+class Category implements _i2.OpenApiContent {
   Category({this.id, this.name});
 
   factory Category.fromJson(Map<String, dynamic> jsonMap) =>
@@ -92,7 +92,7 @@ class Category {
 
 ///
 @_i1.JsonSerializable()
-class User {
+class User implements _i2.OpenApiContent {
   User(
       {this.id,
       this.username,
@@ -145,7 +145,7 @@ class User {
 
 ///
 @_i1.JsonSerializable()
-class Tag {
+class Tag implements _i2.OpenApiContent {
   Tag({this.id, this.name});
 
   factory Tag.fromJson(Map<String, dynamic> jsonMap) => _$TagFromJson(jsonMap);
@@ -184,12 +184,12 @@ extension PetStatusExt on PetStatus {
 
 ///
 @_i1.JsonSerializable()
-class Pet {
+class Pet implements _i2.OpenApiContent {
   Pet(
       {this.id,
       this.category,
-      @_i2.required this.name,
-      @_i2.required this.photoUrls,
+      @_i3.required this.name,
+      @_i3.required this.photoUrls,
       this.tags,
       this.status});
 
@@ -226,7 +226,7 @@ class Pet {
 
 ///
 @_i1.JsonSerializable()
-class ApiResponse {
+class ApiResponse implements _i2.OpenApiContent {
   ApiResponse({this.code, this.type, this.message});
 
   factory ApiResponse.fromJson(Map<String, dynamic> jsonMap) =>
@@ -257,7 +257,7 @@ class _PetPutResponse400 extends PetPutResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
@@ -272,7 +272,7 @@ class _PetPutResponse404 extends PetPutResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
@@ -287,14 +287,14 @@ class _PetPutResponse405 extends PetPutResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPutResponse extends _i3.OpenApiResponse {
+abstract class PetPutResponse extends _i2.OpenApiResponse {
   PetPutResponse();
 
   /// Invalid ID supplied
@@ -307,9 +307,9 @@ abstract class PetPutResponse extends _i3.OpenApiResponse {
   factory PetPutResponse.response405() => _PetPutResponse405.response405();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_PetPutResponse400> on400,
-      @_i2.required _i3.ResponseMap<_PetPutResponse404> on404,
-      @_i2.required _i3.ResponseMap<_PetPutResponse405> on405}) {
+      {@_i3.required _i2.ResponseMap<_PetPutResponse400> on400,
+      @_i3.required _i2.ResponseMap<_PetPutResponse404> on404,
+      @_i3.required _i2.ResponseMap<_PetPutResponse405> on405}) {
     if (this is _PetPutResponse400) {
       on400((this as _PetPutResponse400));
     } else if (this is _PetPutResponse404) {
@@ -330,20 +330,20 @@ class _PetPostResponse405 extends PetPostResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPostResponse extends _i3.OpenApiResponse {
+abstract class PetPostResponse extends _i2.OpenApiResponse {
   PetPostResponse();
 
   /// Invalid input
   factory PetPostResponse.response405() => _PetPostResponse405.response405();
 
-  void map({@_i2.required _i3.ResponseMap<_PetPostResponse405> on405}) {
+  void map({@_i3.required _i2.ResponseMap<_PetPostResponse405> on405}) {
     if (this is _PetPostResponse405) {
       on405((this as _PetPostResponse405));
     } else {
@@ -354,7 +354,7 @@ abstract class PetPostResponse extends _i3.OpenApiResponse {
 
 ///
 @_i1.JsonSerializable()
-class PetFindByStatusGetResponseBody200 {
+class PetFindByStatusGetResponseBody200 implements _i2.OpenApiContent {
   PetFindByStatusGetResponseBody200();
 
   factory PetFindByStatusGetResponseBody200.fromJson(
@@ -368,7 +368,7 @@ class PetFindByStatusGetResponseBody200 {
 }
 
 class _PetFindByStatusGetResponse200 extends PetFindByStatusGetResponse
-    implements _i3.OpenApiResponseBodyJson {
+    implements _i2.OpenApiResponseBodyJson {
   /// successful operation
   _PetFindByStatusGetResponse200.response200(this.body)
       : status = 200,
@@ -383,8 +383,8 @@ class _PetFindByStatusGetResponse200 extends PetFindByStatusGetResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i3.OpenApiContentType contentType =
-      _i3.OpenApiContentType.parse('application/json');
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -403,15 +403,15 @@ class _PetFindByStatusGetResponse400 extends PetFindByStatusGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetFindByStatusGetResponse extends _i3.OpenApiResponse
-    implements _i3.HasSuccessResponse<PetFindByStatusGetResponseBody200> {
+abstract class PetFindByStatusGetResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<PetFindByStatusGetResponseBody200> {
   PetFindByStatusGetResponse();
 
   /// successful operation
@@ -424,8 +424,8 @@ abstract class PetFindByStatusGetResponse extends _i3.OpenApiResponse
       _PetFindByStatusGetResponse400.response400();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_PetFindByStatusGetResponse200> on200,
-      @_i2.required _i3.ResponseMap<_PetFindByStatusGetResponse400> on400}) {
+      {@_i3.required _i2.ResponseMap<_PetFindByStatusGetResponse200> on200,
+      @_i3.required _i2.ResponseMap<_PetFindByStatusGetResponse400> on400}) {
     if (this is _PetFindByStatusGetResponse200) {
       on200((this as _PetFindByStatusGetResponse200));
     } else if (this is _PetFindByStatusGetResponse400) {
@@ -466,7 +466,7 @@ extension PetFindByStatusGetExt on PetFindByStatusGet {
 
 ///
 @_i1.JsonSerializable()
-class PetFindByTagsGetResponseBody200 {
+class PetFindByTagsGetResponseBody200 implements _i2.OpenApiContent {
   PetFindByTagsGetResponseBody200();
 
   factory PetFindByTagsGetResponseBody200.fromJson(
@@ -480,7 +480,7 @@ class PetFindByTagsGetResponseBody200 {
 }
 
 class _PetFindByTagsGetResponse200 extends PetFindByTagsGetResponse
-    implements _i3.OpenApiResponseBodyJson {
+    implements _i2.OpenApiResponseBodyJson {
   /// successful operation
   _PetFindByTagsGetResponse200.response200(this.body)
       : status = 200,
@@ -495,8 +495,8 @@ class _PetFindByTagsGetResponse200 extends PetFindByTagsGetResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i3.OpenApiContentType contentType =
-      _i3.OpenApiContentType.parse('application/json');
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -515,15 +515,15 @@ class _PetFindByTagsGetResponse400 extends PetFindByTagsGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetFindByTagsGetResponse extends _i3.OpenApiResponse
-    implements _i3.HasSuccessResponse<PetFindByTagsGetResponseBody200> {
+abstract class PetFindByTagsGetResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<PetFindByTagsGetResponseBody200> {
   PetFindByTagsGetResponse();
 
   /// successful operation
@@ -536,8 +536,8 @@ abstract class PetFindByTagsGetResponse extends _i3.OpenApiResponse
       _PetFindByTagsGetResponse400.response400();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_PetFindByTagsGetResponse200> on200,
-      @_i2.required _i3.ResponseMap<_PetFindByTagsGetResponse400> on400}) {
+      {@_i3.required _i2.ResponseMap<_PetFindByTagsGetResponse200> on200,
+      @_i3.required _i2.ResponseMap<_PetFindByTagsGetResponse400> on400}) {
     if (this is _PetFindByTagsGetResponse200) {
       on200((this as _PetFindByTagsGetResponse200));
     } else if (this is _PetFindByTagsGetResponse400) {
@@ -558,7 +558,7 @@ abstract class PetFindByTagsGetResponse extends _i3.OpenApiResponse
 }
 
 class _PetPetIdGetResponse200 extends PetPetIdGetResponse
-    implements _i3.OpenApiResponseBodyJson {
+    implements _i2.OpenApiResponseBodyJson {
   /// successful operation
   _PetPetIdGetResponse200.response200(this.body)
       : status = 200,
@@ -573,8 +573,8 @@ class _PetPetIdGetResponse200 extends PetPetIdGetResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i3.OpenApiContentType contentType =
-      _i3.OpenApiContentType.parse('application/json');
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -593,7 +593,7 @@ class _PetPetIdGetResponse400 extends PetPetIdGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
@@ -608,15 +608,15 @@ class _PetPetIdGetResponse404 extends PetPetIdGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPetIdGetResponse extends _i3.OpenApiResponse
-    implements _i3.HasSuccessResponse<Pet> {
+abstract class PetPetIdGetResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<Pet> {
   PetPetIdGetResponse();
 
   /// successful operation
@@ -632,9 +632,9 @@ abstract class PetPetIdGetResponse extends _i3.OpenApiResponse
       _PetPetIdGetResponse404.response404();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_PetPetIdGetResponse200> on200,
-      @_i2.required _i3.ResponseMap<_PetPetIdGetResponse400> on400,
-      @_i2.required _i3.ResponseMap<_PetPetIdGetResponse404> on404}) {
+      {@_i3.required _i2.ResponseMap<_PetPetIdGetResponse200> on200,
+      @_i3.required _i2.ResponseMap<_PetPetIdGetResponse400> on400,
+      @_i3.required _i2.ResponseMap<_PetPetIdGetResponse404> on404}) {
     if (this is _PetPetIdGetResponse200) {
       on200((this as _PetPetIdGetResponse200));
     } else if (this is _PetPetIdGetResponse400) {
@@ -664,21 +664,21 @@ class _PetPetIdPostResponse405 extends PetPetIdPostResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPetIdPostResponse extends _i3.OpenApiResponse {
+abstract class PetPetIdPostResponse extends _i2.OpenApiResponse {
   PetPetIdPostResponse();
 
   /// Invalid input
   factory PetPetIdPostResponse.response405() =>
       _PetPetIdPostResponse405.response405();
 
-  void map({@_i2.required _i3.ResponseMap<_PetPetIdPostResponse405> on405}) {
+  void map({@_i3.required _i2.ResponseMap<_PetPetIdPostResponse405> on405}) {
     if (this is _PetPetIdPostResponse405) {
       on405((this as _PetPetIdPostResponse405));
     } else {
@@ -689,7 +689,7 @@ abstract class PetPetIdPostResponse extends _i3.OpenApiResponse {
 
 ///
 @_i1.JsonSerializable()
-class PetPetIdSchema {
+class PetPetIdSchema implements _i2.OpenApiContent {
   PetPetIdSchema({this.name, this.status});
 
   factory PetPetIdSchema.fromJson(Map<String, dynamic> jsonMap) =>
@@ -716,7 +716,7 @@ class _PetPetIdDeleteResponse400 extends PetPetIdDeleteResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
@@ -731,14 +731,14 @@ class _PetPetIdDeleteResponse404 extends PetPetIdDeleteResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPetIdDeleteResponse extends _i3.OpenApiResponse {
+abstract class PetPetIdDeleteResponse extends _i2.OpenApiResponse {
   PetPetIdDeleteResponse();
 
   /// Invalid ID supplied
@@ -750,8 +750,8 @@ abstract class PetPetIdDeleteResponse extends _i3.OpenApiResponse {
       _PetPetIdDeleteResponse404.response404();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_PetPetIdDeleteResponse400> on400,
-      @_i2.required _i3.ResponseMap<_PetPetIdDeleteResponse404> on404}) {
+      {@_i3.required _i2.ResponseMap<_PetPetIdDeleteResponse400> on400,
+      @_i3.required _i2.ResponseMap<_PetPetIdDeleteResponse404> on404}) {
     if (this is _PetPetIdDeleteResponse400) {
       on400((this as _PetPetIdDeleteResponse400));
     } else if (this is _PetPetIdDeleteResponse404) {
@@ -764,7 +764,7 @@ abstract class PetPetIdDeleteResponse extends _i3.OpenApiResponse {
 
 class _PetPetIdUploadImagePostResponse200
     extends PetPetIdUploadImagePostResponse
-    implements _i3.OpenApiResponseBodyJson {
+    implements _i2.OpenApiResponseBodyJson {
   /// successful operation
   _PetPetIdUploadImagePostResponse200.response200(this.body)
       : status = 200,
@@ -779,8 +779,8 @@ class _PetPetIdUploadImagePostResponse200
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i3.OpenApiContentType contentType =
-      _i3.OpenApiContentType.parse('application/json');
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -791,8 +791,8 @@ class _PetPetIdUploadImagePostResponse200
       };
 }
 
-abstract class PetPetIdUploadImagePostResponse extends _i3.OpenApiResponse
-    implements _i3.HasSuccessResponse<ApiResponse> {
+abstract class PetPetIdUploadImagePostResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<ApiResponse> {
   PetPetIdUploadImagePostResponse();
 
   /// successful operation
@@ -800,8 +800,8 @@ abstract class PetPetIdUploadImagePostResponse extends _i3.OpenApiResponse
       _PetPetIdUploadImagePostResponse200.response200(body);
 
   void map(
-      {@_i2.required
-          _i3.ResponseMap<_PetPetIdUploadImagePostResponse200> on200}) {
+      {@_i3.required
+          _i2.ResponseMap<_PetPetIdUploadImagePostResponse200> on200}) {
     if (this is _PetPetIdUploadImagePostResponse200) {
       on200((this as _PetPetIdUploadImagePostResponse200));
     } else {
@@ -821,7 +821,7 @@ abstract class PetPetIdUploadImagePostResponse extends _i3.OpenApiResponse
 
 ///
 @_i1.JsonSerializable()
-class PetPetIdUploadImageSchema {
+class PetPetIdUploadImageSchema implements _i2.OpenApiContent {
   PetPetIdUploadImageSchema();
 
   factory PetPetIdUploadImageSchema.fromJson(Map<String, dynamic> jsonMap) =>
@@ -834,7 +834,7 @@ class PetPetIdUploadImageSchema {
 
 ///
 @_i1.JsonSerializable()
-class StoreInventoryGetResponseBody200 {
+class StoreInventoryGetResponseBody200 implements _i2.OpenApiContent {
   StoreInventoryGetResponseBody200();
 
   factory StoreInventoryGetResponseBody200.fromJson(
@@ -848,7 +848,7 @@ class StoreInventoryGetResponseBody200 {
 }
 
 class _StoreInventoryGetResponse200 extends StoreInventoryGetResponse
-    implements _i3.OpenApiResponseBodyJson {
+    implements _i2.OpenApiResponseBodyJson {
   /// successful operation
   _StoreInventoryGetResponse200.response200(this.body)
       : status = 200,
@@ -863,8 +863,8 @@ class _StoreInventoryGetResponse200 extends StoreInventoryGetResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i3.OpenApiContentType contentType =
-      _i3.OpenApiContentType.parse('application/json');
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -875,8 +875,8 @@ class _StoreInventoryGetResponse200 extends StoreInventoryGetResponse
       };
 }
 
-abstract class StoreInventoryGetResponse extends _i3.OpenApiResponse
-    implements _i3.HasSuccessResponse<StoreInventoryGetResponseBody200> {
+abstract class StoreInventoryGetResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<StoreInventoryGetResponseBody200> {
   StoreInventoryGetResponse();
 
   /// successful operation
@@ -885,7 +885,7 @@ abstract class StoreInventoryGetResponse extends _i3.OpenApiResponse
       _StoreInventoryGetResponse200.response200(body);
 
   void map(
-      {@_i2.required _i3.ResponseMap<_StoreInventoryGetResponse200> on200}) {
+      {@_i3.required _i2.ResponseMap<_StoreInventoryGetResponse200> on200}) {
     if (this is _StoreInventoryGetResponse200) {
       on200((this as _StoreInventoryGetResponse200));
     } else {
@@ -904,7 +904,7 @@ abstract class StoreInventoryGetResponse extends _i3.OpenApiResponse
 }
 
 class _StoreOrderPostResponse200 extends StoreOrderPostResponse
-    implements _i3.OpenApiResponseBodyJson {
+    implements _i2.OpenApiResponseBodyJson {
   /// successful operation
   _StoreOrderPostResponse200.response200(this.body)
       : status = 200,
@@ -919,8 +919,8 @@ class _StoreOrderPostResponse200 extends StoreOrderPostResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i3.OpenApiContentType contentType =
-      _i3.OpenApiContentType.parse('application/json');
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -939,15 +939,15 @@ class _StoreOrderPostResponse400 extends StoreOrderPostResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class StoreOrderPostResponse extends _i3.OpenApiResponse
-    implements _i3.HasSuccessResponse<Order> {
+abstract class StoreOrderPostResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<Order> {
   StoreOrderPostResponse();
 
   /// successful operation
@@ -959,8 +959,8 @@ abstract class StoreOrderPostResponse extends _i3.OpenApiResponse
       _StoreOrderPostResponse400.response400();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_StoreOrderPostResponse200> on200,
-      @_i2.required _i3.ResponseMap<_StoreOrderPostResponse400> on400}) {
+      {@_i3.required _i2.ResponseMap<_StoreOrderPostResponse200> on200,
+      @_i3.required _i2.ResponseMap<_StoreOrderPostResponse400> on400}) {
     if (this is _StoreOrderPostResponse200) {
       on200((this as _StoreOrderPostResponse200));
     } else if (this is _StoreOrderPostResponse400) {
@@ -981,7 +981,7 @@ abstract class StoreOrderPostResponse extends _i3.OpenApiResponse
 }
 
 class _StoreOrderOrderIdGetResponse200 extends StoreOrderOrderIdGetResponse
-    implements _i3.OpenApiResponseBodyJson {
+    implements _i2.OpenApiResponseBodyJson {
   /// successful operation
   _StoreOrderOrderIdGetResponse200.response200(this.body)
       : status = 200,
@@ -996,8 +996,8 @@ class _StoreOrderOrderIdGetResponse200 extends StoreOrderOrderIdGetResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i3.OpenApiContentType contentType =
-      _i3.OpenApiContentType.parse('application/json');
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -1016,7 +1016,7 @@ class _StoreOrderOrderIdGetResponse400 extends StoreOrderOrderIdGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
@@ -1031,15 +1031,15 @@ class _StoreOrderOrderIdGetResponse404 extends StoreOrderOrderIdGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class StoreOrderOrderIdGetResponse extends _i3.OpenApiResponse
-    implements _i3.HasSuccessResponse<Order> {
+abstract class StoreOrderOrderIdGetResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<Order> {
   StoreOrderOrderIdGetResponse();
 
   /// successful operation
@@ -1055,9 +1055,9 @@ abstract class StoreOrderOrderIdGetResponse extends _i3.OpenApiResponse
       _StoreOrderOrderIdGetResponse404.response404();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_StoreOrderOrderIdGetResponse200> on200,
-      @_i2.required _i3.ResponseMap<_StoreOrderOrderIdGetResponse400> on400,
-      @_i2.required _i3.ResponseMap<_StoreOrderOrderIdGetResponse404> on404}) {
+      {@_i3.required _i2.ResponseMap<_StoreOrderOrderIdGetResponse200> on200,
+      @_i3.required _i2.ResponseMap<_StoreOrderOrderIdGetResponse400> on400,
+      @_i3.required _i2.ResponseMap<_StoreOrderOrderIdGetResponse404> on404}) {
     if (this is _StoreOrderOrderIdGetResponse200) {
       on200((this as _StoreOrderOrderIdGetResponse200));
     } else if (this is _StoreOrderOrderIdGetResponse400) {
@@ -1088,7 +1088,7 @@ class _StoreOrderOrderIdDeleteResponse400
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
@@ -1104,14 +1104,14 @@ class _StoreOrderOrderIdDeleteResponse404
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class StoreOrderOrderIdDeleteResponse extends _i3.OpenApiResponse {
+abstract class StoreOrderOrderIdDeleteResponse extends _i2.OpenApiResponse {
   StoreOrderOrderIdDeleteResponse();
 
   /// Invalid ID supplied
@@ -1123,10 +1123,10 @@ abstract class StoreOrderOrderIdDeleteResponse extends _i3.OpenApiResponse {
       _StoreOrderOrderIdDeleteResponse404.response404();
 
   void map(
-      {@_i2.required
-          _i3.ResponseMap<_StoreOrderOrderIdDeleteResponse400> on400,
-      @_i2.required
-          _i3.ResponseMap<_StoreOrderOrderIdDeleteResponse404> on404}) {
+      {@_i3.required
+          _i2.ResponseMap<_StoreOrderOrderIdDeleteResponse400> on400,
+      @_i3.required
+          _i2.ResponseMap<_StoreOrderOrderIdDeleteResponse404> on404}) {
     if (this is _StoreOrderOrderIdDeleteResponse400) {
       on400((this as _StoreOrderOrderIdDeleteResponse400));
     } else if (this is _StoreOrderOrderIdDeleteResponse404) {
@@ -1145,14 +1145,14 @@ class _UserPostResponseDefault extends UserPostResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserPostResponse extends _i3.OpenApiResponse {
+abstract class UserPostResponse extends _i2.OpenApiResponse {
   UserPostResponse();
 
   /// successful operation
@@ -1160,7 +1160,7 @@ abstract class UserPostResponse extends _i3.OpenApiResponse {
       _UserPostResponseDefault.responseDefault(status);
 
   void map(
-      {@_i2.required _i3.ResponseMap<_UserPostResponseDefault> onDefault}) {
+      {@_i3.required _i2.ResponseMap<_UserPostResponseDefault> onDefault}) {
     if (this is _UserPostResponseDefault) {
       onDefault((this as _UserPostResponseDefault));
     } else {
@@ -1179,14 +1179,14 @@ class _UserCreateWithArrayPostResponseDefault
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserCreateWithArrayPostResponse extends _i3.OpenApiResponse {
+abstract class UserCreateWithArrayPostResponse extends _i2.OpenApiResponse {
   UserCreateWithArrayPostResponse();
 
   /// successful operation
@@ -1194,8 +1194,8 @@ abstract class UserCreateWithArrayPostResponse extends _i3.OpenApiResponse {
       _UserCreateWithArrayPostResponseDefault.responseDefault(status);
 
   void map(
-      {@_i2.required
-          _i3.ResponseMap<_UserCreateWithArrayPostResponseDefault> onDefault}) {
+      {@_i3.required
+          _i2.ResponseMap<_UserCreateWithArrayPostResponseDefault> onDefault}) {
     if (this is _UserCreateWithArrayPostResponseDefault) {
       onDefault((this as _UserCreateWithArrayPostResponseDefault));
     } else {
@@ -1206,7 +1206,7 @@ abstract class UserCreateWithArrayPostResponse extends _i3.OpenApiResponse {
 
 ///
 @_i1.JsonSerializable()
-class UserCreateWithArraySchema {
+class UserCreateWithArraySchema implements _i2.OpenApiContent {
   UserCreateWithArraySchema();
 
   factory UserCreateWithArraySchema.fromJson(Map<String, dynamic> jsonMap) =>
@@ -1227,14 +1227,14 @@ class _UserCreateWithListPostResponseDefault
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserCreateWithListPostResponse extends _i3.OpenApiResponse {
+abstract class UserCreateWithListPostResponse extends _i2.OpenApiResponse {
   UserCreateWithListPostResponse();
 
   /// successful operation
@@ -1242,8 +1242,8 @@ abstract class UserCreateWithListPostResponse extends _i3.OpenApiResponse {
       _UserCreateWithListPostResponseDefault.responseDefault(status);
 
   void map(
-      {@_i2.required
-          _i3.ResponseMap<_UserCreateWithListPostResponseDefault> onDefault}) {
+      {@_i3.required
+          _i2.ResponseMap<_UserCreateWithListPostResponseDefault> onDefault}) {
     if (this is _UserCreateWithListPostResponseDefault) {
       onDefault((this as _UserCreateWithListPostResponseDefault));
     } else {
@@ -1254,7 +1254,7 @@ abstract class UserCreateWithListPostResponse extends _i3.OpenApiResponse {
 
 ///
 @_i1.JsonSerializable()
-class UserLoginGetResponseBody200 {
+class UserLoginGetResponseBody200 implements _i2.OpenApiContent {
   UserLoginGetResponseBody200();
 
   factory UserLoginGetResponseBody200.fromJson(Map<String, dynamic> jsonMap) =>
@@ -1266,7 +1266,7 @@ class UserLoginGetResponseBody200 {
 }
 
 class _UserLoginGetResponse200 extends UserLoginGetResponse
-    implements _i3.OpenApiResponseBodyJson {
+    implements _i2.OpenApiResponseBodyJson {
   /// successful operation
   _UserLoginGetResponse200.response200(this.body)
       : status = 200,
@@ -1281,8 +1281,8 @@ class _UserLoginGetResponse200 extends UserLoginGetResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i3.OpenApiContentType contentType =
-      _i3.OpenApiContentType.parse('application/json');
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -1301,15 +1301,15 @@ class _UserLoginGetResponse400 extends UserLoginGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserLoginGetResponse extends _i3.OpenApiResponse
-    implements _i3.HasSuccessResponse<UserLoginGetResponseBody200> {
+abstract class UserLoginGetResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<UserLoginGetResponseBody200> {
   UserLoginGetResponse();
 
   /// successful operation
@@ -1321,8 +1321,8 @@ abstract class UserLoginGetResponse extends _i3.OpenApiResponse
       _UserLoginGetResponse400.response400();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_UserLoginGetResponse200> on200,
-      @_i2.required _i3.ResponseMap<_UserLoginGetResponse400> on400}) {
+      {@_i3.required _i2.ResponseMap<_UserLoginGetResponse200> on200,
+      @_i3.required _i2.ResponseMap<_UserLoginGetResponse400> on400}) {
     if (this is _UserLoginGetResponse200) {
       on200((this as _UserLoginGetResponse200));
     } else if (this is _UserLoginGetResponse400) {
@@ -1350,14 +1350,14 @@ class _UserLogoutGetResponseDefault extends UserLogoutGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserLogoutGetResponse extends _i3.OpenApiResponse {
+abstract class UserLogoutGetResponse extends _i2.OpenApiResponse {
   UserLogoutGetResponse();
 
   /// successful operation
@@ -1365,8 +1365,8 @@ abstract class UserLogoutGetResponse extends _i3.OpenApiResponse {
       _UserLogoutGetResponseDefault.responseDefault(status);
 
   void map(
-      {@_i2.required
-          _i3.ResponseMap<_UserLogoutGetResponseDefault> onDefault}) {
+      {@_i3.required
+          _i2.ResponseMap<_UserLogoutGetResponseDefault> onDefault}) {
     if (this is _UserLogoutGetResponseDefault) {
       onDefault((this as _UserLogoutGetResponseDefault));
     } else {
@@ -1376,7 +1376,7 @@ abstract class UserLogoutGetResponse extends _i3.OpenApiResponse {
 }
 
 class _UserUsernameGetResponse200 extends UserUsernameGetResponse
-    implements _i3.OpenApiResponseBodyJson {
+    implements _i2.OpenApiResponseBodyJson {
   /// successful operation
   _UserUsernameGetResponse200.response200(this.body)
       : status = 200,
@@ -1391,8 +1391,8 @@ class _UserUsernameGetResponse200 extends UserUsernameGetResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i3.OpenApiContentType contentType =
-      _i3.OpenApiContentType.parse('application/json');
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -1411,7 +1411,7 @@ class _UserUsernameGetResponse400 extends UserUsernameGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
@@ -1426,15 +1426,15 @@ class _UserUsernameGetResponse404 extends UserUsernameGetResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserUsernameGetResponse extends _i3.OpenApiResponse
-    implements _i3.HasSuccessResponse<User> {
+abstract class UserUsernameGetResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<User> {
   UserUsernameGetResponse();
 
   /// successful operation
@@ -1450,9 +1450,9 @@ abstract class UserUsernameGetResponse extends _i3.OpenApiResponse
       _UserUsernameGetResponse404.response404();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_UserUsernameGetResponse200> on200,
-      @_i2.required _i3.ResponseMap<_UserUsernameGetResponse400> on400,
-      @_i2.required _i3.ResponseMap<_UserUsernameGetResponse404> on404}) {
+      {@_i3.required _i2.ResponseMap<_UserUsernameGetResponse200> on200,
+      @_i3.required _i2.ResponseMap<_UserUsernameGetResponse400> on400,
+      @_i3.required _i2.ResponseMap<_UserUsernameGetResponse404> on404}) {
     if (this is _UserUsernameGetResponse200) {
       on200((this as _UserUsernameGetResponse200));
     } else if (this is _UserUsernameGetResponse400) {
@@ -1482,7 +1482,7 @@ class _UserUsernamePutResponse400 extends UserUsernamePutResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
@@ -1497,14 +1497,14 @@ class _UserUsernamePutResponse404 extends UserUsernamePutResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserUsernamePutResponse extends _i3.OpenApiResponse {
+abstract class UserUsernamePutResponse extends _i2.OpenApiResponse {
   UserUsernamePutResponse();
 
   /// Invalid user supplied
@@ -1516,8 +1516,8 @@ abstract class UserUsernamePutResponse extends _i3.OpenApiResponse {
       _UserUsernamePutResponse404.response404();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_UserUsernamePutResponse400> on400,
-      @_i2.required _i3.ResponseMap<_UserUsernamePutResponse404> on404}) {
+      {@_i3.required _i2.ResponseMap<_UserUsernamePutResponse400> on400,
+      @_i3.required _i2.ResponseMap<_UserUsernamePutResponse404> on404}) {
     if (this is _UserUsernamePutResponse400) {
       on400((this as _UserUsernamePutResponse400));
     } else if (this is _UserUsernamePutResponse404) {
@@ -1536,7 +1536,7 @@ class _UserUsernameDeleteResponse400 extends UserUsernameDeleteResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
@@ -1551,14 +1551,14 @@ class _UserUsernameDeleteResponse404 extends UserUsernameDeleteResponse {
   final int status;
 
   @override
-  final _i3.OpenApiContentType contentType = null;
+  final _i2.OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserUsernameDeleteResponse extends _i3.OpenApiResponse {
+abstract class UserUsernameDeleteResponse extends _i2.OpenApiResponse {
   UserUsernameDeleteResponse();
 
   /// Invalid username supplied
@@ -1570,8 +1570,8 @@ abstract class UserUsernameDeleteResponse extends _i3.OpenApiResponse {
       _UserUsernameDeleteResponse404.response404();
 
   void map(
-      {@_i2.required _i3.ResponseMap<_UserUsernameDeleteResponse400> on400,
-      @_i2.required _i3.ResponseMap<_UserUsernameDeleteResponse404> on404}) {
+      {@_i3.required _i2.ResponseMap<_UserUsernameDeleteResponse400> on400,
+      @_i3.required _i2.ResponseMap<_UserUsernameDeleteResponse404> on404}) {
     if (this is _UserUsernameDeleteResponse400) {
       on400((this as _UserUsernameDeleteResponse400));
     } else if (this is _UserUsernameDeleteResponse404) {
@@ -1582,7 +1582,7 @@ abstract class UserUsernameDeleteResponse extends _i3.OpenApiResponse {
   }
 }
 
-abstract class Petstore implements _i3.ApiEndpoint {
+abstract class Petstore implements _i2.ApiEndpoint {
   /// Update an existing pet
   /// put: /pet
   Future<PetPutResponse> petPut(Pet body);
@@ -1595,34 +1595,34 @@ abstract class Petstore implements _i3.ApiEndpoint {
   /// Multiple status values can be provided with comma separated strings
   /// get: /pet/findByStatus
   Future<PetFindByStatusGetResponse> petFindByStatusGet(
-      {@_i2.required List<PetFindByStatusGet> status});
+      {@_i3.required List<PetFindByStatusGet> status});
 
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
   /// get: /pet/findByTags
   Future<PetFindByTagsGetResponse> petFindByTagsGet(
-      {@_i2.required List<String> tags});
+      {@_i3.required List<String> tags});
 
   /// Find pet by ID
   /// Returns a single pet
   /// get: /pet/{petId}
-  Future<PetPetIdGetResponse> petPetIdGet({@_i2.required int petId});
+  Future<PetPetIdGetResponse> petPetIdGet({@_i3.required int petId});
 
   /// Updates a pet in the store with form data
   /// post: /pet/{petId}
   Future<PetPetIdPostResponse> petPetIdPost(PetPetIdSchema body,
-      {@_i2.required int petId});
+      {@_i3.required int petId});
 
   /// Deletes a pet
   /// delete: /pet/{petId}
   Future<PetPetIdDeleteResponse> petPetIdDelete(
-      {String apiKey, @_i2.required int petId});
+      {String apiKey, @_i3.required int petId});
 
   /// uploads an image
   /// post: /pet/{petId}/uploadImage
   Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(
       PetPetIdUploadImageSchema body,
-      {@_i2.required int petId});
+      {@_i3.required int petId});
 
   /// Returns pet inventories by status
   /// Returns a map of status codes to quantities
@@ -1637,13 +1637,13 @@ abstract class Petstore implements _i3.ApiEndpoint {
   /// For valid response try integer IDs with value >= 1 and <= 10.\ \ Other values will generated exceptions
   /// get: /store/order/{orderId}
   Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(
-      {@_i2.required int orderId});
+      {@_i3.required int orderId});
 
   /// Delete purchase order by ID
   /// For valid response try integer IDs with positive integer value.\ \ Negative or non-integer values will generate API errors
   /// delete: /store/order/{orderId}
   Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(
-      {@_i2.required int orderId});
+      {@_i3.required int orderId});
 
   /// Create user
   /// This can only be done by the logged in user.
@@ -1663,7 +1663,7 @@ abstract class Petstore implements _i3.ApiEndpoint {
   /// Logs user into the system
   /// get: /user/login
   Future<UserLoginGetResponse> userLoginGet(
-      {@_i2.required String username, @_i2.required String password});
+      {@_i3.required String username, @_i3.required String password});
 
   /// Logs out current logged in user session
   /// get: /user/logout
@@ -1672,23 +1672,23 @@ abstract class Petstore implements _i3.ApiEndpoint {
   /// Get user by user name
   /// get: /user/{username}
   Future<UserUsernameGetResponse> userUsernameGet(
-      {@_i2.required String username});
+      {@_i3.required String username});
 
   /// Updated user
   /// This can only be done by the logged in user.
   /// put: /user/{username}
   Future<UserUsernamePutResponse> userUsernamePut(User body,
-      {@_i2.required String username});
+      {@_i3.required String username});
 
   /// Delete user
   /// This can only be done by the logged in user.
   /// delete: /user/{username}
   Future<UserUsernameDeleteResponse> userUsernameDelete(
-      {@_i2.required String username});
+      {@_i3.required String username});
 }
 
-abstract class PetstoreClient implements _i3.OpenApiClient {
-  factory PetstoreClient(Uri baseUri, _i3.OpenApiRequestSender requestSender) =>
+abstract class PetstoreClient implements _i2.OpenApiClient {
+  factory PetstoreClient(Uri baseUri, _i2.OpenApiRequestSender requestSender) =>
       _PetstoreClientImpl._(baseUri, requestSender);
 
   /// Update an existing pet
@@ -1707,7 +1707,7 @@ abstract class PetstoreClient implements _i3.OpenApiClient {
   ///
   /// * [status]: Status values that need to be considered for filter
   Future<PetFindByStatusGetResponse> petFindByStatusGet(
-      {@_i2.required List<PetFindByStatusGet> status});
+      {@_i3.required List<PetFindByStatusGet> status});
 
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
@@ -1715,28 +1715,28 @@ abstract class PetstoreClient implements _i3.OpenApiClient {
   ///
   /// * [tags]: Tags to filter by
   Future<PetFindByTagsGetResponse> petFindByTagsGet(
-      {@_i2.required List<String> tags});
+      {@_i3.required List<String> tags});
 
   /// Find pet by ID
   /// Returns a single pet
   /// get: /pet/{petId}
   ///
   /// * [petId]: ID of pet to return
-  Future<PetPetIdGetResponse> petPetIdGet({@_i2.required int petId});
+  Future<PetPetIdGetResponse> petPetIdGet({@_i3.required int petId});
 
   /// Updates a pet in the store with form data
   /// post: /pet/{petId}
   ///
   /// * [petId]: ID of pet that needs to be updated
   Future<PetPetIdPostResponse> petPetIdPost(PetPetIdSchema body,
-      {@_i2.required int petId});
+      {@_i3.required int petId});
 
   /// Deletes a pet
   /// delete: /pet/{petId}
   ///
   /// * [petId]: Pet id to delete
   Future<PetPetIdDeleteResponse> petPetIdDelete(
-      {String apiKey, @_i2.required int petId});
+      {String apiKey, @_i3.required int petId});
 
   /// uploads an image
   /// post: /pet/{petId}/uploadImage
@@ -1744,7 +1744,7 @@ abstract class PetstoreClient implements _i3.OpenApiClient {
   /// * [petId]: ID of pet to update
   Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(
       PetPetIdUploadImageSchema body,
-      {@_i2.required int petId});
+      {@_i3.required int petId});
 
   /// Returns pet inventories by status
   /// Returns a map of status codes to quantities
@@ -1763,7 +1763,7 @@ abstract class PetstoreClient implements _i3.OpenApiClient {
   ///
   /// * [orderId]: ID of pet that needs to be fetched
   Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(
-      {@_i2.required int orderId});
+      {@_i3.required int orderId});
 
   /// Delete purchase order by ID
   /// For valid response try integer IDs with positive integer value.\ \ Negative or non-integer values will generate API errors
@@ -1771,7 +1771,7 @@ abstract class PetstoreClient implements _i3.OpenApiClient {
   ///
   /// * [orderId]: ID of the order that needs to be deleted
   Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(
-      {@_i2.required int orderId});
+      {@_i3.required int orderId});
 
   /// Create user
   /// This can only be done by the logged in user.
@@ -1797,7 +1797,7 @@ abstract class PetstoreClient implements _i3.OpenApiClient {
   /// * [username]: The user name for login
   /// * [password]: The password for login in clear text
   Future<UserLoginGetResponse> userLoginGet(
-      {@_i2.required String username, @_i2.required String password});
+      {@_i3.required String username, @_i3.required String password});
 
   /// Logs out current logged in user session
   /// get: /user/logout
@@ -1809,7 +1809,7 @@ abstract class PetstoreClient implements _i3.OpenApiClient {
   ///
   /// * [username]: The name that needs to be fetched. Use user1 for testing.
   Future<UserUsernameGetResponse> userUsernameGet(
-      {@_i2.required String username});
+      {@_i3.required String username});
 
   /// Updated user
   /// This can only be done by the logged in user.
@@ -1817,7 +1817,7 @@ abstract class PetstoreClient implements _i3.OpenApiClient {
   ///
   /// * [username]: name that need to be updated
   Future<UserUsernamePutResponse> userUsernamePut(User body,
-      {@_i2.required String username});
+      {@_i3.required String username});
 
   /// Delete user
   /// This can only be done by the logged in user.
@@ -1825,10 +1825,10 @@ abstract class PetstoreClient implements _i3.OpenApiClient {
   ///
   /// * [username]: The name that needs to be deleted
   Future<UserUsernameDeleteResponse> userUsernameDelete(
-      {@_i2.required String username});
+      {@_i3.required String username});
 }
 
-class _PetstoreClientImpl extends _i3.OpenApiClientBase
+class _PetstoreClientImpl extends _i2.OpenApiClientBase
     implements PetstoreClient {
   _PetstoreClientImpl._(this.baseUri, this.requestSender);
 
@@ -1836,21 +1836,21 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   final Uri baseUri;
 
   @override
-  final _i3.OpenApiRequestSender requestSender;
+  final _i2.OpenApiRequestSender requestSender;
 
   /// Update an existing pet
   /// put: /pet
   ///
   @override
   Future<PetPutResponse> petPut(Pet body) async {
-    final request = _i3.OpenApiClientRequest('put', '/pet', []);
+    final request = _i2.OpenApiClientRequest('put', '/pet', []);
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _PetPutResponse400.response400(),
-      '404': (_i3.OpenApiClientResponse response) async =>
+      '404': (_i2.OpenApiClientResponse response) async =>
           _PetPutResponse404.response404(),
-      '405': (_i3.OpenApiClientResponse response) async =>
+      '405': (_i2.OpenApiClientResponse response) async =>
           _PetPutResponse405.response405()
     });
   }
@@ -1860,10 +1860,10 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   ///
   @override
   Future<PetPostResponse> petPost(Pet body) async {
-    final request = _i3.OpenApiClientRequest('post', '/pet', []);
+    final request = _i2.OpenApiClientRequest('post', '/pet', []);
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
-      '405': (_i3.OpenApiClientResponse response) async =>
+      '405': (_i2.OpenApiClientResponse response) async =>
           _PetPostResponse405.response405()
     });
   }
@@ -1875,15 +1875,15 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [status]: Status values that need to be considered for filter
   @override
   Future<PetFindByStatusGetResponse> petFindByStatusGet(
-      {@_i2.required List<PetFindByStatusGet> status}) async {
-    final request = _i3.OpenApiClientRequest('get', '/pet/findByStatus', []);
+      {@_i3.required List<PetFindByStatusGet> status}) async {
+    final request = _i2.OpenApiClientRequest('get', '/pet/findByStatus', []);
     request.addQueryParameter('status', status.map((e) => e.name));
     return await sendRequest(request, {
-      '200': (_i3.OpenApiClientResponse response) async =>
+      '200': (_i2.OpenApiClientResponse response) async =>
           _PetFindByStatusGetResponse200.response200(
               PetFindByStatusGetResponseBody200.fromJson(
                   await response.responseBodyJson())),
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _PetFindByStatusGetResponse400.response400()
     });
   }
@@ -1895,15 +1895,15 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [tags]: Tags to filter by
   @override
   Future<PetFindByTagsGetResponse> petFindByTagsGet(
-      {@_i2.required List<String> tags}) async {
-    final request = _i3.OpenApiClientRequest('get', '/pet/findByTags', []);
+      {@_i3.required List<String> tags}) async {
+    final request = _i2.OpenApiClientRequest('get', '/pet/findByTags', []);
     request.addQueryParameter('tags', tags);
     return await sendRequest(request, {
-      '200': (_i3.OpenApiClientResponse response) async =>
+      '200': (_i2.OpenApiClientResponse response) async =>
           _PetFindByTagsGetResponse200.response200(
               PetFindByTagsGetResponseBody200.fromJson(
                   await response.responseBodyJson())),
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _PetFindByTagsGetResponse400.response400()
     });
   }
@@ -1914,16 +1914,16 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   ///
   /// * [petId]: ID of pet to return
   @override
-  Future<PetPetIdGetResponse> petPetIdGet({@_i2.required int petId}) async {
-    final request = _i3.OpenApiClientRequest('get', '/pet/{petId}', []);
+  Future<PetPetIdGetResponse> petPetIdGet({@_i3.required int petId}) async {
+    final request = _i2.OpenApiClientRequest('get', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
     return await sendRequest(request, {
-      '200': (_i3.OpenApiClientResponse response) async =>
+      '200': (_i2.OpenApiClientResponse response) async =>
           _PetPetIdGetResponse200.response200(
               Pet.fromJson(await response.responseBodyJson())),
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _PetPetIdGetResponse400.response400(),
-      '404': (_i3.OpenApiClientResponse response) async =>
+      '404': (_i2.OpenApiClientResponse response) async =>
           _PetPetIdGetResponse404.response404()
     });
   }
@@ -1934,12 +1934,12 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [petId]: ID of pet that needs to be updated
   @override
   Future<PetPetIdPostResponse> petPetIdPost(PetPetIdSchema body,
-      {@_i2.required int petId}) async {
-    final request = _i3.OpenApiClientRequest('post', '/pet/{petId}', []);
+      {@_i3.required int petId}) async {
+    final request = _i2.OpenApiClientRequest('post', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
-      '405': (_i3.OpenApiClientResponse response) async =>
+      '405': (_i2.OpenApiClientResponse response) async =>
           _PetPetIdPostResponse405.response405()
     });
   }
@@ -1950,14 +1950,14 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [petId]: Pet id to delete
   @override
   Future<PetPetIdDeleteResponse> petPetIdDelete(
-      {String apiKey, @_i2.required int petId}) async {
-    final request = _i3.OpenApiClientRequest('delete', '/pet/{petId}', []);
+      {String apiKey, @_i3.required int petId}) async {
+    final request = _i2.OpenApiClientRequest('delete', '/pet/{petId}', []);
     request.addHeaderParameter('api_key', encodeString(apiKey));
     request.addPathParameter('petId', encodeInt(petId));
     return await sendRequest(request, {
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _PetPetIdDeleteResponse400.response400(),
-      '404': (_i3.OpenApiClientResponse response) async =>
+      '404': (_i2.OpenApiClientResponse response) async =>
           _PetPetIdDeleteResponse404.response404()
     });
   }
@@ -1969,13 +1969,13 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   @override
   Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(
       PetPetIdUploadImageSchema body,
-      {@_i2.required int petId}) async {
+      {@_i3.required int petId}) async {
     final request =
-        _i3.OpenApiClientRequest('post', '/pet/{petId}/uploadImage', []);
+        _i2.OpenApiClientRequest('post', '/pet/{petId}/uploadImage', []);
     request.addPathParameter('petId', encodeInt(petId));
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
-      '200': (_i3.OpenApiClientResponse response) async =>
+      '200': (_i2.OpenApiClientResponse response) async =>
           _PetPetIdUploadImagePostResponse200.response200(
               ApiResponse.fromJson(await response.responseBodyJson()))
     });
@@ -1987,9 +1987,9 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   ///
   @override
   Future<StoreInventoryGetResponse> storeInventoryGet() async {
-    final request = _i3.OpenApiClientRequest('get', '/store/inventory', []);
+    final request = _i2.OpenApiClientRequest('get', '/store/inventory', []);
     return await sendRequest(request, {
-      '200': (_i3.OpenApiClientResponse response) async =>
+      '200': (_i2.OpenApiClientResponse response) async =>
           _StoreInventoryGetResponse200.response200(
               StoreInventoryGetResponseBody200.fromJson(
                   await response.responseBodyJson()))
@@ -2001,13 +2001,13 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   ///
   @override
   Future<StoreOrderPostResponse> storeOrderPost(Order body) async {
-    final request = _i3.OpenApiClientRequest('post', '/store/order', []);
+    final request = _i2.OpenApiClientRequest('post', '/store/order', []);
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
-      '200': (_i3.OpenApiClientResponse response) async =>
+      '200': (_i2.OpenApiClientResponse response) async =>
           _StoreOrderPostResponse200.response200(
               Order.fromJson(await response.responseBodyJson())),
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _StoreOrderPostResponse400.response400()
     });
   }
@@ -2019,17 +2019,17 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [orderId]: ID of pet that needs to be fetched
   @override
   Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(
-      {@_i2.required int orderId}) async {
+      {@_i3.required int orderId}) async {
     final request =
-        _i3.OpenApiClientRequest('get', '/store/order/{orderId}', []);
+        _i2.OpenApiClientRequest('get', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
     return await sendRequest(request, {
-      '200': (_i3.OpenApiClientResponse response) async =>
+      '200': (_i2.OpenApiClientResponse response) async =>
           _StoreOrderOrderIdGetResponse200.response200(
               Order.fromJson(await response.responseBodyJson())),
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _StoreOrderOrderIdGetResponse400.response400(),
-      '404': (_i3.OpenApiClientResponse response) async =>
+      '404': (_i2.OpenApiClientResponse response) async =>
           _StoreOrderOrderIdGetResponse404.response404()
     });
   }
@@ -2041,14 +2041,14 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [orderId]: ID of the order that needs to be deleted
   @override
   Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(
-      {@_i2.required int orderId}) async {
+      {@_i3.required int orderId}) async {
     final request =
-        _i3.OpenApiClientRequest('delete', '/store/order/{orderId}', []);
+        _i2.OpenApiClientRequest('delete', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
     return await sendRequest(request, {
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _StoreOrderOrderIdDeleteResponse400.response400(),
-      '404': (_i3.OpenApiClientResponse response) async =>
+      '404': (_i2.OpenApiClientResponse response) async =>
           _StoreOrderOrderIdDeleteResponse404.response404()
     });
   }
@@ -2059,10 +2059,10 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   ///
   @override
   Future<UserPostResponse> userPost(User body) async {
-    final request = _i3.OpenApiClientRequest('post', '/user', []);
+    final request = _i2.OpenApiClientRequest('post', '/user', []);
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
-      'default': (_i3.OpenApiClientResponse response) async =>
+      'default': (_i2.OpenApiClientResponse response) async =>
           _UserPostResponseDefault.responseDefault(response.status)
     });
   }
@@ -2074,10 +2074,10 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   Future<UserCreateWithArrayPostResponse> userCreateWithArrayPost(
       UserCreateWithArraySchema body) async {
     final request =
-        _i3.OpenApiClientRequest('post', '/user/createWithArray', []);
+        _i2.OpenApiClientRequest('post', '/user/createWithArray', []);
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
-      'default': (_i3.OpenApiClientResponse response) async =>
+      'default': (_i2.OpenApiClientResponse response) async =>
           _UserCreateWithArrayPostResponseDefault.responseDefault(
               response.status)
     });
@@ -2090,10 +2090,10 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   Future<UserCreateWithListPostResponse> userCreateWithListPost(
       UserCreateWithArraySchema body) async {
     final request =
-        _i3.OpenApiClientRequest('post', '/user/createWithList', []);
+        _i2.OpenApiClientRequest('post', '/user/createWithList', []);
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
-      'default': (_i3.OpenApiClientResponse response) async =>
+      'default': (_i2.OpenApiClientResponse response) async =>
           _UserCreateWithListPostResponseDefault.responseDefault(
               response.status)
     });
@@ -2106,16 +2106,16 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [password]: The password for login in clear text
   @override
   Future<UserLoginGetResponse> userLoginGet(
-      {@_i2.required String username, @_i2.required String password}) async {
-    final request = _i3.OpenApiClientRequest('get', '/user/login', []);
+      {@_i3.required String username, @_i3.required String password}) async {
+    final request = _i2.OpenApiClientRequest('get', '/user/login', []);
     request.addQueryParameter('username', encodeString(username));
     request.addQueryParameter('password', encodeString(password));
     return await sendRequest(request, {
-      '200': (_i3.OpenApiClientResponse response) async =>
+      '200': (_i2.OpenApiClientResponse response) async =>
           _UserLoginGetResponse200.response200(
               UserLoginGetResponseBody200.fromJson(
                   await response.responseBodyJson())),
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _UserLoginGetResponse400.response400()
     });
   }
@@ -2125,9 +2125,9 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   ///
   @override
   Future<UserLogoutGetResponse> userLogoutGet() async {
-    final request = _i3.OpenApiClientRequest('get', '/user/logout', []);
+    final request = _i2.OpenApiClientRequest('get', '/user/logout', []);
     return await sendRequest(request, {
-      'default': (_i3.OpenApiClientResponse response) async =>
+      'default': (_i2.OpenApiClientResponse response) async =>
           _UserLogoutGetResponseDefault.responseDefault(response.status)
     });
   }
@@ -2138,16 +2138,16 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [username]: The name that needs to be fetched. Use user1 for testing.
   @override
   Future<UserUsernameGetResponse> userUsernameGet(
-      {@_i2.required String username}) async {
-    final request = _i3.OpenApiClientRequest('get', '/user/{username}', []);
+      {@_i3.required String username}) async {
+    final request = _i2.OpenApiClientRequest('get', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return await sendRequest(request, {
-      '200': (_i3.OpenApiClientResponse response) async =>
+      '200': (_i2.OpenApiClientResponse response) async =>
           _UserUsernameGetResponse200.response200(
               User.fromJson(await response.responseBodyJson())),
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _UserUsernameGetResponse400.response400(),
-      '404': (_i3.OpenApiClientResponse response) async =>
+      '404': (_i2.OpenApiClientResponse response) async =>
           _UserUsernameGetResponse404.response404()
     });
   }
@@ -2159,14 +2159,14 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [username]: name that need to be updated
   @override
   Future<UserUsernamePutResponse> userUsernamePut(User body,
-      {@_i2.required String username}) async {
-    final request = _i3.OpenApiClientRequest('put', '/user/{username}', []);
+      {@_i3.required String username}) async {
+    final request = _i2.OpenApiClientRequest('put', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     request.setJsonBody(body.toJson());
     return await sendRequest(request, {
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _UserUsernamePutResponse400.response400(),
-      '404': (_i3.OpenApiClientResponse response) async =>
+      '404': (_i2.OpenApiClientResponse response) async =>
           _UserUsernamePutResponse404.response404()
     });
   }
@@ -2178,32 +2178,32 @@ class _PetstoreClientImpl extends _i3.OpenApiClientBase
   /// * [username]: The name that needs to be deleted
   @override
   Future<UserUsernameDeleteResponse> userUsernameDelete(
-      {@_i2.required String username}) async {
-    final request = _i3.OpenApiClientRequest('delete', '/user/{username}', []);
+      {@_i3.required String username}) async {
+    final request = _i2.OpenApiClientRequest('delete', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return await sendRequest(request, {
-      '400': (_i3.OpenApiClientResponse response) async =>
+      '400': (_i2.OpenApiClientResponse response) async =>
           _UserUsernameDeleteResponse400.response400(),
-      '404': (_i3.OpenApiClientResponse response) async =>
+      '404': (_i2.OpenApiClientResponse response) async =>
           _UserUsernameDeleteResponse404.response404()
     });
   }
 }
 
-class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
+class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// Update an existing pet
   /// put: /pet
   ///
-  _i3.OpenApiClientRequest petPut() {
-    final request = _i3.OpenApiClientRequest('put', '/pet', []);
+  _i2.OpenApiClientRequest petPut() {
+    final request = _i2.OpenApiClientRequest('put', '/pet', []);
     return request;
   }
 
   /// Add a new pet to the store
   /// post: /pet
   ///
-  _i3.OpenApiClientRequest petPost() {
-    final request = _i3.OpenApiClientRequest('post', '/pet', []);
+  _i2.OpenApiClientRequest petPost() {
+    final request = _i2.OpenApiClientRequest('post', '/pet', []);
     return request;
   }
 
@@ -2212,9 +2212,9 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// get: /pet/findByStatus
   ///
   /// * [status]: Status values that need to be considered for filter
-  _i3.OpenApiClientRequest petFindByStatusGet(
-      {@_i2.required List<PetFindByStatusGet> status}) {
-    final request = _i3.OpenApiClientRequest('get', '/pet/findByStatus', []);
+  _i2.OpenApiClientRequest petFindByStatusGet(
+      {@_i3.required List<PetFindByStatusGet> status}) {
+    final request = _i2.OpenApiClientRequest('get', '/pet/findByStatus', []);
     request.addQueryParameter('status', status.map((e) => e.name));
     return request;
   }
@@ -2224,8 +2224,8 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// get: /pet/findByTags
   ///
   /// * [tags]: Tags to filter by
-  _i3.OpenApiClientRequest petFindByTagsGet({@_i2.required List<String> tags}) {
-    final request = _i3.OpenApiClientRequest('get', '/pet/findByTags', []);
+  _i2.OpenApiClientRequest petFindByTagsGet({@_i3.required List<String> tags}) {
+    final request = _i2.OpenApiClientRequest('get', '/pet/findByTags', []);
     request.addQueryParameter('tags', tags);
     return request;
   }
@@ -2235,8 +2235,8 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// get: /pet/{petId}
   ///
   /// * [petId]: ID of pet to return
-  _i3.OpenApiClientRequest petPetIdGet({@_i2.required int petId}) {
-    final request = _i3.OpenApiClientRequest('get', '/pet/{petId}', []);
+  _i2.OpenApiClientRequest petPetIdGet({@_i3.required int petId}) {
+    final request = _i2.OpenApiClientRequest('get', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
     return request;
   }
@@ -2245,8 +2245,8 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// post: /pet/{petId}
   ///
   /// * [petId]: ID of pet that needs to be updated
-  _i3.OpenApiClientRequest petPetIdPost({@_i2.required int petId}) {
-    final request = _i3.OpenApiClientRequest('post', '/pet/{petId}', []);
+  _i2.OpenApiClientRequest petPetIdPost({@_i3.required int petId}) {
+    final request = _i2.OpenApiClientRequest('post', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
     return request;
   }
@@ -2255,9 +2255,9 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// delete: /pet/{petId}
   ///
   /// * [petId]: Pet id to delete
-  _i3.OpenApiClientRequest petPetIdDelete(
-      {String apiKey, @_i2.required int petId}) {
-    final request = _i3.OpenApiClientRequest('delete', '/pet/{petId}', []);
+  _i2.OpenApiClientRequest petPetIdDelete(
+      {String apiKey, @_i3.required int petId}) {
+    final request = _i2.OpenApiClientRequest('delete', '/pet/{petId}', []);
     request.addHeaderParameter('api_key', encodeString(apiKey));
     request.addPathParameter('petId', encodeInt(petId));
     return request;
@@ -2267,9 +2267,9 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// post: /pet/{petId}/uploadImage
   ///
   /// * [petId]: ID of pet to update
-  _i3.OpenApiClientRequest petPetIdUploadImagePost({@_i2.required int petId}) {
+  _i2.OpenApiClientRequest petPetIdUploadImagePost({@_i3.required int petId}) {
     final request =
-        _i3.OpenApiClientRequest('post', '/pet/{petId}/uploadImage', []);
+        _i2.OpenApiClientRequest('post', '/pet/{petId}/uploadImage', []);
     request.addPathParameter('petId', encodeInt(petId));
     return request;
   }
@@ -2278,16 +2278,16 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// Returns a map of status codes to quantities
   /// get: /store/inventory
   ///
-  _i3.OpenApiClientRequest storeInventoryGet() {
-    final request = _i3.OpenApiClientRequest('get', '/store/inventory', []);
+  _i2.OpenApiClientRequest storeInventoryGet() {
+    final request = _i2.OpenApiClientRequest('get', '/store/inventory', []);
     return request;
   }
 
   /// Place an order for a pet
   /// post: /store/order
   ///
-  _i3.OpenApiClientRequest storeOrderPost() {
-    final request = _i3.OpenApiClientRequest('post', '/store/order', []);
+  _i2.OpenApiClientRequest storeOrderPost() {
+    final request = _i2.OpenApiClientRequest('post', '/store/order', []);
     return request;
   }
 
@@ -2296,9 +2296,9 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// get: /store/order/{orderId}
   ///
   /// * [orderId]: ID of pet that needs to be fetched
-  _i3.OpenApiClientRequest storeOrderOrderIdGet({@_i2.required int orderId}) {
+  _i2.OpenApiClientRequest storeOrderOrderIdGet({@_i3.required int orderId}) {
     final request =
-        _i3.OpenApiClientRequest('get', '/store/order/{orderId}', []);
+        _i2.OpenApiClientRequest('get', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
     return request;
   }
@@ -2308,10 +2308,10 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// delete: /store/order/{orderId}
   ///
   /// * [orderId]: ID of the order that needs to be deleted
-  _i3.OpenApiClientRequest storeOrderOrderIdDelete(
-      {@_i2.required int orderId}) {
+  _i2.OpenApiClientRequest storeOrderOrderIdDelete(
+      {@_i3.required int orderId}) {
     final request =
-        _i3.OpenApiClientRequest('delete', '/store/order/{orderId}', []);
+        _i2.OpenApiClientRequest('delete', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
     return request;
   }
@@ -2320,26 +2320,26 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// This can only be done by the logged in user.
   /// post: /user
   ///
-  _i3.OpenApiClientRequest userPost() {
-    final request = _i3.OpenApiClientRequest('post', '/user', []);
+  _i2.OpenApiClientRequest userPost() {
+    final request = _i2.OpenApiClientRequest('post', '/user', []);
     return request;
   }
 
   /// Creates list of users with given input array
   /// post: /user/createWithArray
   ///
-  _i3.OpenApiClientRequest userCreateWithArrayPost() {
+  _i2.OpenApiClientRequest userCreateWithArrayPost() {
     final request =
-        _i3.OpenApiClientRequest('post', '/user/createWithArray', []);
+        _i2.OpenApiClientRequest('post', '/user/createWithArray', []);
     return request;
   }
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
   ///
-  _i3.OpenApiClientRequest userCreateWithListPost() {
+  _i2.OpenApiClientRequest userCreateWithListPost() {
     final request =
-        _i3.OpenApiClientRequest('post', '/user/createWithList', []);
+        _i2.OpenApiClientRequest('post', '/user/createWithList', []);
     return request;
   }
 
@@ -2348,9 +2348,9 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   ///
   /// * [username]: The user name for login
   /// * [password]: The password for login in clear text
-  _i3.OpenApiClientRequest userLoginGet(
-      {@_i2.required String username, @_i2.required String password}) {
-    final request = _i3.OpenApiClientRequest('get', '/user/login', []);
+  _i2.OpenApiClientRequest userLoginGet(
+      {@_i3.required String username, @_i3.required String password}) {
+    final request = _i2.OpenApiClientRequest('get', '/user/login', []);
     request.addQueryParameter('username', encodeString(username));
     request.addQueryParameter('password', encodeString(password));
     return request;
@@ -2359,8 +2359,8 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// Logs out current logged in user session
   /// get: /user/logout
   ///
-  _i3.OpenApiClientRequest userLogoutGet() {
-    final request = _i3.OpenApiClientRequest('get', '/user/logout', []);
+  _i2.OpenApiClientRequest userLogoutGet() {
+    final request = _i2.OpenApiClientRequest('get', '/user/logout', []);
     return request;
   }
 
@@ -2368,8 +2368,8 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// get: /user/{username}
   ///
   /// * [username]: The name that needs to be fetched. Use user1 for testing.
-  _i3.OpenApiClientRequest userUsernameGet({@_i2.required String username}) {
-    final request = _i3.OpenApiClientRequest('get', '/user/{username}', []);
+  _i2.OpenApiClientRequest userUsernameGet({@_i3.required String username}) {
+    final request = _i2.OpenApiClientRequest('get', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return request;
   }
@@ -2379,8 +2379,8 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// put: /user/{username}
   ///
   /// * [username]: name that need to be updated
-  _i3.OpenApiClientRequest userUsernamePut({@_i2.required String username}) {
-    final request = _i3.OpenApiClientRequest('put', '/user/{username}', []);
+  _i2.OpenApiClientRequest userUsernamePut({@_i3.required String username}) {
+    final request = _i2.OpenApiClientRequest('put', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return request;
   }
@@ -2390,115 +2390,150 @@ class PetstoreUrlResolve with _i3.OpenApiUrlEncodeMixin {
   /// delete: /user/{username}
   ///
   /// * [username]: The name that needs to be deleted
-  _i3.OpenApiClientRequest userUsernameDelete({@_i2.required String username}) {
-    final request = _i3.OpenApiClientRequest('delete', '/user/{username}', []);
+  _i2.OpenApiClientRequest userUsernameDelete({@_i3.required String username}) {
+    final request = _i2.OpenApiClientRequest('delete', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return request;
   }
 }
 
-class PetstoreRouter extends _i3.OpenApiServerRouterBase {
+class PetstoreRouter extends _i2.OpenApiServerRouterBase {
   PetstoreRouter(this.impl);
 
-  final _i3.ApiEndpointProvider<Petstore> impl;
+  final _i2.ApiEndpointProvider<Petstore> impl;
 
   @override
   void configure() {
-    addRoute('/pet', 'put', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.petPut(Pet.fromJson(await request.readJsonBody())));
+    addRoute('/pet', 'put', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async =>
+              impl.petPut(Pet.fromJson(await request.readJsonBody())));
     }, security: []);
-    addRoute('/pet', 'post', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.petPost(Pet.fromJson(await request.readJsonBody())));
+    addRoute('/pet', 'post', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async =>
+              impl.petPost(Pet.fromJson(await request.readJsonBody())));
     }, security: []);
-    addRoute('/pet/findByStatus', 'get', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async => impl.petFindByStatusGet(
-          status: request
-              .queryParameter('status')
-              .map((e) => PetFindByStatusGetExt.fromName(e))
-              .toList()));
+    addRoute('/pet/findByStatus', 'get', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.petFindByStatusGet(
+              status: request
+                  .queryParameter('status')
+                  .map((e) => PetFindByStatusGetExt.fromName(e))
+                  .toList()));
     }, security: []);
-    addRoute('/pet/findByTags', 'get', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.petFindByTagsGet(tags: request.queryParameter('tags')));
+    addRoute('/pet/findByTags', 'get', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async =>
+              impl.petFindByTagsGet(tags: request.queryParameter('tags')));
     }, security: []);
-    addRoute('/pet/{petId}', 'get', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.petPetIdGet(petId: paramToInt(request.pathParameter('petId'))));
-    }, security: []);
-    addRoute('/pet/{petId}', 'post', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async => impl.petPetIdPost(
-          PetPetIdSchema.fromJson(await request.readUrlEncodedBodyFlat()),
-          petId: paramToInt(request.pathParameter('petId'))));
-    }, security: []);
-    addRoute('/pet/{petId}', 'delete', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async => impl.petPetIdDelete(
-          apiKey: paramToString(request.headerParameter('api_key')),
-          petId: paramToInt(request.pathParameter('petId'))));
-    }, security: []);
-    addRoute('/pet/{petId}/uploadImage', 'post',
-        (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.petPetIdUploadImagePost(PetPetIdUploadImageSchema.fromJson(null),
+    addRoute('/pet/{petId}', 'get', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.petPetIdGet(
               petId: paramToInt(request.pathParameter('petId'))));
     }, security: []);
-    addRoute('/store/inventory', 'get', (_i3.OpenApiRequest request) async {
-      return await impl
-          .invoke((Petstore impl) async => impl.storeInventoryGet());
+    addRoute('/pet/{petId}', 'post', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.petPetIdPost(
+              PetPetIdSchema.fromJson(await request.readUrlEncodedBodyFlat()),
+              petId: paramToInt(request.pathParameter('petId'))));
     }, security: []);
-    addRoute('/store/order', 'post', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.storeOrderPost(Order.fromJson(await request.readJsonBody())));
+    addRoute('/pet/{petId}', 'delete', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.petPetIdDelete(
+              apiKey: paramToString(request.headerParameter('api_key')),
+              petId: paramToInt(request.pathParameter('petId'))));
+    }, security: []);
+    addRoute('/pet/{petId}/uploadImage', 'post',
+        (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.petPetIdUploadImagePost(
+              PetPetIdUploadImageSchema.fromJson(null),
+              petId: paramToInt(request.pathParameter('petId'))));
+    }, security: []);
+    addRoute('/store/inventory', 'get', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request, (Petstore impl) async => impl.storeInventoryGet());
+    }, security: []);
+    addRoute('/store/order', 'post', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl
+              .storeOrderPost(Order.fromJson(await request.readJsonBody())));
     }, security: []);
     addRoute('/store/order/{orderId}', 'get',
-        (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.storeOrderOrderIdGet(
+        (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.storeOrderOrderIdGet(
               orderId: paramToInt(request.pathParameter('orderId'))));
     }, security: []);
     addRoute('/store/order/{orderId}', 'delete',
-        (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.storeOrderOrderIdDelete(
+        (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.storeOrderOrderIdDelete(
               orderId: paramToInt(request.pathParameter('orderId'))));
     }, security: []);
-    addRoute('/user', 'post', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.userPost(User.fromJson(await request.readJsonBody())));
+    addRoute('/user', 'post', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async =>
+              impl.userPost(User.fromJson(await request.readJsonBody())));
     }, security: []);
     addRoute('/user/createWithArray', 'post',
-        (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.userCreateWithArrayPost(UserCreateWithArraySchema.fromJson(
-              await request.readJsonBody())));
+        (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.userCreateWithArrayPost(
+              UserCreateWithArraySchema.fromJson(
+                  await request.readJsonBody())));
     }, security: []);
     addRoute('/user/createWithList', 'post',
-        (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async =>
-          impl.userCreateWithListPost(UserCreateWithArraySchema.fromJson(
-              await request.readJsonBody())));
+        (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.userCreateWithListPost(
+              UserCreateWithArraySchema.fromJson(
+                  await request.readJsonBody())));
     }, security: []);
-    addRoute('/user/login', 'get', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async => impl.userLoginGet(
-          username: paramToString(request.queryParameter('username')),
-          password: paramToString(request.queryParameter('password'))));
+    addRoute('/user/login', 'get', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.userLoginGet(
+              username: paramToString(request.queryParameter('username')),
+              password: paramToString(request.queryParameter('password'))));
     }, security: []);
-    addRoute('/user/logout', 'get', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async => impl.userLogoutGet());
+    addRoute('/user/logout', 'get', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request, (Petstore impl) async => impl.userLogoutGet());
     }, security: []);
-    addRoute('/user/{username}', 'get', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async => impl.userUsernameGet(
-          username: paramToString(request.pathParameter('username'))));
+    addRoute('/user/{username}', 'get', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.userUsernameGet(
+              username: paramToString(request.pathParameter('username'))));
     }, security: []);
-    addRoute('/user/{username}', 'put', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async => impl.userUsernamePut(
-          User.fromJson(await request.readJsonBody()),
-          username: paramToString(request.pathParameter('username'))));
+    addRoute('/user/{username}', 'put', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.userUsernamePut(
+              User.fromJson(await request.readJsonBody()),
+              username: paramToString(request.pathParameter('username'))));
     }, security: []);
-    addRoute('/user/{username}', 'delete', (_i3.OpenApiRequest request) async {
-      return await impl.invoke((Petstore impl) async => impl.userUsernameDelete(
-          username: paramToString(request.pathParameter('username'))));
+    addRoute('/user/{username}', 'delete', (_i2.OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (Petstore impl) async => impl.userUsernameDelete(
+              username: paramToString(request.pathParameter('username'))));
     }, security: []);
   }
 }
