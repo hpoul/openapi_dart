@@ -299,7 +299,8 @@ class _TestApiClientImpl extends _i2.OpenApiClientBase
   Future<UserRegisterPostResponse> userRegisterPost(
       RegisterRequest body) async {
     final request = _i2.OpenApiClientRequest('post', '/user/register', []);
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/json');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _UserRegisterPostResponse200.response200()
@@ -343,7 +344,8 @@ class _TestApiClientImpl extends _i2.OpenApiClientBase
       {@_i3.required String name}) async {
     final request = _i2.OpenApiClientRequest('put', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/json');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _HelloNamePutResponse200.response200(

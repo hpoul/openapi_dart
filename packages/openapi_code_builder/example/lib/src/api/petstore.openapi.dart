@@ -1844,7 +1844,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   @override
   Future<PetPutResponse> petPut(Pet body) async {
     final request = _i2.OpenApiClientRequest('put', '/pet', []);
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/json');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
           _PetPutResponse400.response400(),
@@ -1861,7 +1862,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   @override
   Future<PetPostResponse> petPost(Pet body) async {
     final request = _i2.OpenApiClientRequest('post', '/pet', []);
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/json');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '405': (_i2.OpenApiClientResponse response) async =>
           _PetPostResponse405.response405()
@@ -1937,7 +1939,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       {@_i3.required int petId}) async {
     final request = _i2.OpenApiClientRequest('post', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/x-www-form-urlencoded');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '405': (_i2.OpenApiClientResponse response) async =>
           _PetPetIdPostResponse405.response405()
@@ -1973,7 +1976,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
     final request =
         _i2.OpenApiClientRequest('post', '/pet/{petId}/uploadImage', []);
     request.addPathParameter('petId', encodeInt(petId));
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/octet-stream');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _PetPetIdUploadImagePostResponse200.response200(
@@ -2002,7 +2006,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   @override
   Future<StoreOrderPostResponse> storeOrderPost(Order body) async {
     final request = _i2.OpenApiClientRequest('post', '/store/order', []);
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/json');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _StoreOrderPostResponse200.response200(
@@ -2060,7 +2065,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   @override
   Future<UserPostResponse> userPost(User body) async {
     final request = _i2.OpenApiClientRequest('post', '/user', []);
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/json');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       'default': (_i2.OpenApiClientResponse response) async =>
           _UserPostResponseDefault.responseDefault(response.status)
@@ -2075,7 +2081,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       UserCreateWithArraySchema body) async {
     final request =
         _i2.OpenApiClientRequest('post', '/user/createWithArray', []);
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/json');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       'default': (_i2.OpenApiClientResponse response) async =>
           _UserCreateWithArrayPostResponseDefault.responseDefault(
@@ -2091,7 +2098,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       UserCreateWithArraySchema body) async {
     final request =
         _i2.OpenApiClientRequest('post', '/user/createWithList', []);
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/json');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       'default': (_i2.OpenApiClientResponse response) async =>
           _UserCreateWithListPostResponseDefault.responseDefault(
@@ -2162,7 +2170,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       {@_i3.required String username}) async {
     final request = _i2.OpenApiClientRequest('put', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
-    request.setJsonBody(body.toJson());
+    request.setHeader('content-type', 'application/json');
+    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
           _UserUsernamePutResponse400.response400(),

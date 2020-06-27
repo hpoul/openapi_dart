@@ -60,6 +60,12 @@ class OpenApiLibraryGenerator {
       refer('OpenApiClientBase', 'package:openapi_base/openapi_base.dart');
   final _hasSuccessResponse =
       refer('HasSuccessResponse', 'package:openapi_base/openapi_base.dart');
+  final _openApiHttpHeaders =
+      refer('OpenApiHttpHeaders', 'package:openapi_base/openapi_base.dart');
+  final _openApiClientRequestBodyJson = refer(
+      'OpenApiClientRequestBodyJson', 'package:openapi_base/openapi_base.dart');
+  final _openApiClientRequestBodyText = refer(
+      'OpenApiClientRequestBodyText', 'package:openapi_base/openapi_base.dart');
   final _openApiClientRequest =
       refer('OpenApiClientRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiClientResponse =
@@ -651,29 +657,52 @@ class OpenApiLibraryGenerator {
       MethodBuilder clientMethod,
       List<Code> clientCode) {
     _logger.finer('reqBody.schema: ${reqBody.schema}');
-    final reference =
-        _schemaReference('${pathName.pascalCase}Schema', reqBody.schema);
 
-    mb.requiredParameters.add(Parameter((pb) => pb
-      ..name = 'body'
-      ..type = reference));
-    routerParams.add(reference.property('fromJson')(
-      [
-        contentType.matches(OpenApiContentType.json)
-            ? refer('request').property('readJsonBody')([]).awaited
-            : (contentType.matches(OpenApiContentType.urlencoded)
-                ? refer('request')
-                    .property('readUrlEncodedBodyFlat')([])
-                    .awaited
-                : literalNull.expression),
-      ],
-    ));
-    clientMethod.requiredParameters.add(Parameter((pb) => pb
-      ..name = 'body'
-      ..type = reference));
+    void _addRequestBody(
+        Reference bodyType, Expression encodeBody, Expression decodeBody) {
+      mb.requiredParameters.add(Parameter((pb) => pb
+        ..name = 'body'
+        ..type = bodyType));
+      clientMethod.requiredParameters.add(Parameter((pb) => pb
+        ..name = 'body'
+        ..type = bodyType));
+
+      clientCode.add(
+        refer('request').property('setBody')([encodeBody]).statement,
+      );
+      routerParams.add(decodeBody);
+    }
+
     clientCode.add(refer('request')
-        .property('setJsonBody')([refer('body').property('toJson')([])])
+        .property('setHeader')([
+          literalString(OpenApiHttpHeaders.contentType),
+          literalString(contentType.toString())
+        ])
         .statement);
+
+    if (contentType.matches(OpenApiContentType.text_plain)) {
+      _addRequestBody(
+        refer('String'),
+        _openApiClientRequestBodyText.newInstance([refer('body')]),
+        refer('request').property('readBodyString')([]).awaited,
+      );
+    } else {
+      final reference =
+          _schemaReference('${pathName.pascalCase}Schema', reqBody.schema);
+
+      final mapExpression = contentType.matches(OpenApiContentType.json)
+          ? refer('request').property('readJsonBody')([]).awaited
+          : (contentType.matches(OpenApiContentType.urlencoded)
+              ? refer('request').property('readUrlEncodedBodyFlat')([]).awaited
+              : literalNull.expression);
+      _addRequestBody(
+          reference,
+          _openApiClientRequestBodyJson
+              .newInstance([refer('body').property('toJson')([])]),
+          reference.property('fromJson')(
+            [mapExpression],
+          ));
+    }
   }
 
   void _routerConfig(String path, String operation, Expression handler,

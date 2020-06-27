@@ -148,4 +148,7 @@ class ShelfRequest extends OpenApiRequest {
     final map = Uri.splitQueryString(query);
     return map.map((key, value) => MapEntry(key, [value]));
   }
+
+  @override
+  Future<String> readBodyString() async => await _request.readAsString();
 }

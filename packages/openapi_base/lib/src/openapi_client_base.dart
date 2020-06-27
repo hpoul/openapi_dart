@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
-import 'package:openapi_base/openapi_base.dart';
+import 'package:openapi_base/src/openapi_base.dart';
 import 'package:uri/uri.dart';
 
 import 'package:logging/logging.dart';
@@ -84,6 +84,35 @@ extension SecuritySchemeClient<T extends SecuritySchemeData>
   }
 }
 
+abstract class OpenApiClientRequestBody {
+  bool get isBytes;
+  String encodeToString();
+  List<int> encodeToBytes() => throw UnimplementedError();
+}
+
+class OpenApiClientRequestBodyJson extends OpenApiClientRequestBody {
+  OpenApiClientRequestBodyJson(this.jsonMap);
+  final Map<String, dynamic> jsonMap;
+
+  @override
+  String encodeToString() => json.encode(jsonMap);
+
+  @override
+  bool get isBytes => true;
+}
+
+class OpenApiClientRequestBodyText extends OpenApiClientRequestBody {
+  OpenApiClientRequestBodyText(this.body);
+
+  final String body;
+
+  @override
+  String encodeToString() => body;
+
+  @override
+  bool get isBytes => true;
+}
+
 class OpenApiClientRequest {
   OpenApiClientRequest(this.operation, this.path, this.securityRequirement);
 
@@ -94,8 +123,9 @@ class OpenApiClientRequest {
   final Map<String, List<String>> paramCookie = {};
   final Map<String, List<String>> paramPath = {};
   final Map<String, List<String>> paramQuery = {};
-  Map<String, dynamic> jsonBody;
+  OpenApiClientRequestBody body;
 
+  void setHeader(String name, String value) => paramHeader[name] = [value];
   void addHeaderParameter(String name, Iterable<String> value) =>
       _addParam(paramHeader, name, value);
   void addCookieParameter(String name, Iterable<String> value) =>
@@ -111,8 +141,8 @@ class OpenApiClientRequest {
     paramMap[name] = value.toList();
   }
 
-  void setJsonBody(Map<String, dynamic> json) {
-    jsonBody = json;
+  void setBody(OpenApiClientRequestBody body) {
+    this.body = body;
   }
 
   Uri resolveUri(Uri baseUri) {
@@ -149,8 +179,11 @@ class HttpRequestSender extends OpenApiRequestSender {
         ' (baseUri: $baseUri)');
 
     final req = Request(request.operation, uri);
-    if (request.jsonBody != null) {
-      req.body = json.encode(request.jsonBody);
+    if (request.body != null) {
+      if (request.body.isBytes) {
+        req.bodyBytes = request.body.encodeToBytes();
+      }
+      req.body = request.body.encodeToString();
     }
     request.paramHeader.forEach((key, value) {
       req.headers[key] = value?.first;
@@ -187,7 +220,6 @@ abstract class HasSuccessResponse<BODY_TYPE> implements OpenApiResponse {
   BODY_TYPE requireSuccess();
 }
 
-extension HasSuccessFuture<BODY_TYPE, T extends HasSuccessResponse<BODY_TYPE>>
-    on Future<T> {
+extension HasSuccessFuture<BODY_TYPE> on Future<HasSuccessResponse<BODY_TYPE>> {
   Future<BODY_TYPE> requireSuccess() => then((value) => value.requireSuccess());
 }

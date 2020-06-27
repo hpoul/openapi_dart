@@ -18,6 +18,7 @@ abstract class OpenApiRequest {
   Future<Map<String, String>> readUrlEncodedBodyFlat() async =>
       (await readUrlEncodedBody())
           .map((key, value) => MapEntry(key, value.first));
+  Future<String> readBodyString();
 }
 
 abstract class OpenApiResponseBodyJson {
