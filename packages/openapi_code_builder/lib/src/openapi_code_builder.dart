@@ -60,8 +60,8 @@ class OpenApiLibraryGenerator {
       refer('OpenApiClientBase', 'package:openapi_base/openapi_base.dart');
   final _hasSuccessResponse =
       refer('HasSuccessResponse', 'package:openapi_base/openapi_base.dart');
-  final _openApiHttpHeaders =
-      refer('OpenApiHttpHeaders', 'package:openapi_base/openapi_base.dart');
+//  final _openApiHttpHeaders =
+//      refer('OpenApiHttpHeaders', 'package:openapi_base/openapi_base.dart');
   final _openApiClientRequestBodyJson = refer(
       'OpenApiClientRequestBodyJson', 'package:openapi_base/openapi_base.dart');
   final _openApiClientRequestBodyText = refer(
@@ -660,9 +660,13 @@ class OpenApiLibraryGenerator {
 
     void _addRequestBody(
         Reference bodyType, Expression encodeBody, Expression decodeBody) {
-      mb.requiredParameters.add(Parameter((pb) => pb
-        ..name = 'body'
-        ..type = bodyType));
+      mb.addDartDoc(reqBody.schema.description, prefix: '[body]:');
+      mb.requiredParameters.add(
+        Parameter((pb) => pb
+          ..name = 'body'
+          ..type = bodyType),
+      );
+      clientMethod.addDartDoc(reqBody.schema.description, prefix: '[body]:');
       clientMethod.requiredParameters.add(Parameter((pb) => pb
         ..name = 'body'
         ..type = bodyType));
@@ -1062,9 +1066,13 @@ extension on Reference {
 
 extension on MethodBuilder {
   /// adds the given helpText as `docs` if it is not null.
-  void addDartDoc(String helpText) {
+  void addDartDoc(String helpText, {String prefix}) {
     if (helpText != null) {
-      docs.add('/// $helpText');
+      if (prefix == null) {
+        docs.add('/// $helpText');
+      } else {
+        docs.add('/// $prefix $helpText');
+      }
     }
   }
 }
