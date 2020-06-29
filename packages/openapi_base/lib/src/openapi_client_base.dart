@@ -85,7 +85,7 @@ extension SecuritySchemeClient<T extends SecuritySchemeData>
 }
 
 abstract class OpenApiClientRequestBody {
-  bool get isBytes;
+  bool get isBytes => false;
   String encodeToString();
   List<int> encodeToBytes() => throw UnimplementedError();
 }
@@ -96,9 +96,6 @@ class OpenApiClientRequestBodyJson extends OpenApiClientRequestBody {
 
   @override
   String encodeToString() => json.encode(jsonMap);
-
-  @override
-  bool get isBytes => true;
 }
 
 class OpenApiClientRequestBodyText extends OpenApiClientRequestBody {
@@ -108,9 +105,6 @@ class OpenApiClientRequestBodyText extends OpenApiClientRequestBody {
 
   @override
   String encodeToString() => body;
-
-  @override
-  bool get isBytes => true;
 }
 
 class OpenApiClientRequest {
