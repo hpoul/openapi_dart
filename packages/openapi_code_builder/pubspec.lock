@@ -37,7 +37,7 @@ packages:
     source: hosted
     version: "1.3.0"
   built_collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: built_collection
       url: "https://pub.dartlang.org"

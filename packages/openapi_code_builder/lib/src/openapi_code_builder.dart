@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:build/build.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:code_builder/src/visitors.dart'; // ignore: implementation_imports
 import 'package:dart_style/dart_style.dart';
@@ -161,8 +162,10 @@ class OpenApiLibraryGenerator {
                   RegExp(r'[{}]'),
                   '')
               .camelCase;
-          final operationName = '$pathName'
-              '${operation.key.pascalCase}';
+          final operationName = operation.value.id == null
+              ? '$pathName'
+                  '${operation.key.pascalCase}'
+              : operation.value.id.camelCase;
 
           final responseClass = ClassBuilder();
           responseClass
@@ -212,7 +215,7 @@ class OpenApiLibraryGenerator {
             final constructor = Constructor((cb) {
               cb
                 ..name = 'response$codeName'
-                ..docs.add('/// ${response.value.description}');
+                ..docs.addDartDoc('/// ${response.value.description}');
 
               refer(cb.name);
               if (statusAsParameter) {
@@ -785,7 +788,7 @@ class OpenApiLibraryGenerator {
   Class _createSchemaClass(String className, APISchemaObject obj) {
     final properties = obj.properties?.entries ?? [];
     final fields = properties.map((e) => Field((fb) => fb
-      ..docs.add('/// ${e.value.description}')
+      ..addDartDoc(e.value.description)
       ..annotations.add(jsonKey([], {'name': literalString(e.key)}))
       ..name = e.key.camelCase
       ..modifier = FieldModifier.final$
@@ -796,7 +799,7 @@ class OpenApiLibraryGenerator {
         ..annotations.add(jsonSerializable([]))
         ..name = className
         ..implements.add(_openApiContent)
-        ..docs.add('/// ${obj.description ?? ''}')
+        ..docs.addDartDoc(obj.description)
         ..constructors.add(Constructor((cb) => cb
           ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb
 //            ..docs.addAll(f.docs)
@@ -884,6 +887,9 @@ class OpenApiLibraryGenerator {
       case APIType.string:
         if (schema.enumerated != null && schema.enumerated.isNotEmpty) {
           return _createEnum(parent.pascalCase, schema.enumerated);
+        }
+        if (schema.format == 'date-time') {
+          return refer('DateTime');
         }
         return refer('String');
       case APIType.number:
@@ -1064,17 +1070,29 @@ extension on Reference {
   }
 }
 
-extension on MethodBuilder {
+extension on ListBuilder<String> {
   /// adds the given helpText as `docs` if it is not null.
   void addDartDoc(String helpText, {String prefix}) {
     if (helpText != null) {
       if (prefix == null) {
-        docs.add('/// $helpText');
+        add('/// $helpText');
       } else {
-        docs.add('/// $prefix $helpText');
+        add('/// $prefix $helpText');
       }
     }
   }
+}
+
+extension on FieldBuilder {
+  /// adds the given helpText as `docs` if it is not null.
+  void addDartDoc(String helpText, {String prefix}) =>
+      docs.addDartDoc(helpText, prefix: prefix);
+}
+
+extension on MethodBuilder {
+  /// adds the given helpText as `docs` if it is not null.
+  void addDartDoc(String helpText, {String prefix}) =>
+      docs.addDartDoc(helpText, prefix: prefix);
 }
 
 extension on ParameterBuilder {
