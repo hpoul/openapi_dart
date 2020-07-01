@@ -14,6 +14,8 @@ typedef ResponseMap<T> = void Function(T response);
 typedef ResponseParser<T extends OpenApiResponse> = Future<T> Function(
     OpenApiClientResponse response);
 
+/// Api sender implementing the actual HTTP protocol.
+/// See [HttpRequestSender].
 abstract class OpenApiRequestSender {
   Future<OpenApiClientResponse> sendRequest(
       Uri baseUri, OpenApiClientRequest request);
@@ -30,6 +32,7 @@ mixin OpenApiUrlEncodeMixin {
   List<String> encodeBool(bool value) => ['$value'];
 }
 
+/// Base class for generated client classes for OpenAPI apis.
 abstract class OpenApiClient {
   Map<SecurityScheme, SecuritySchemeData> get _securitySchemeData;
   void setAuth<U extends SecuritySchemeData, T extends SecurityScheme<U>>(
@@ -160,6 +163,8 @@ abstract class OpenApiClientResponse {
   Future<String> responseBodyString();
 }
 
+/// [OpenApiRequestSender] implementation based on package:http for
+/// cross platform compatibility.
 class HttpRequestSender extends OpenApiRequestSender {
   Client _client;
 

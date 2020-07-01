@@ -1,3 +1,5 @@
+/// Represents the content type header describing content encoding for
+/// request and responses.
 class OpenApiContentType {
   const OpenApiContentType._(this.contentType);
 
