@@ -23,13 +23,16 @@ abstract class OpenApiRequestSender {
 
 mixin OpenApiUrlEncodeMixin {
   @protected
-  List<String> encodeString(String value) => [value];
+  List<String> encodeString(String value) => value == null ? null : [value];
 
   @protected
-  List<String> encodeInt(int value) => ['$value'];
+  List<String> encodeInt(int value) => encodeObject(value);
 
   @protected
-  List<String> encodeBool(bool value) => ['$value'];
+  List<String> encodeBool(bool value) => encodeObject(value);
+
+  List<String> encodeObject(Object value) =>
+      value == null ? null : [value.toString()];
 }
 
 /// Base class for generated client classes for OpenAPI apis.
@@ -135,6 +138,9 @@ class OpenApiClientRequest {
   void _addParam(
       Map<String, List<String>> paramMap, String name, Iterable<String> value) {
     // TODO add it, if it already exists?
+    if (value == null) {
+      return;
+    }
     paramMap[name] = value.toList();
   }
 
