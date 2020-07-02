@@ -277,6 +277,12 @@ class OpenApiLibraryGenerator {
                       OpenApiContentType.parse(responseContent.key);
                   final bodyType = _toDartType('${responseCodeClass}Content',
                       responseContent.value.schema);
+                  if (response.key.startsWith('2') ||
+                      (response.key == 'default' &&
+                          successResponseBodyType == null)) {
+                    successResponseCodeType = refer(responseCodeClass.name);
+                    successResponseBodyType = bodyType;
+                  }
                   checkState(
                       responseContent.value.schema.type == APIType.string,
                       message:
