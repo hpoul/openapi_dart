@@ -103,6 +103,21 @@ abstract class OpenApiServerRouterBase {
   }
 
   @protected
+  T param<T>(
+      {bool isRequired,
+      String name,
+      List<String> value,
+      T Function(List<String> value) decode}) {
+    if (value == null || value.isEmpty) {
+      if (isRequired) {
+        throw StateError('Parameter "$name" is required.');
+      }
+      return null;
+    }
+    return decode(value);
+  }
+
+  @protected
   int paramToInt(List<String> value) {
     return int.parse(value.first);
   }

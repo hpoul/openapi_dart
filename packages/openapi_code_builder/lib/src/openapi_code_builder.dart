@@ -441,7 +441,8 @@ class OpenApiLibraryGenerator {
                 ..named = true);
               mb.optionalParameters.add(p);
               clientMethod.optionalParameters.add(p);
-              final decodeParameter = (Expression expression) {
+              final decodeParameterFrom =
+                  (APIParameter param, Expression expression) {
                 switch (param.schema.type) {
                   case APIType.string:
                     return refer('paramToString')([expression]);
@@ -477,6 +478,21 @@ class OpenApiLibraryGenerator {
                 }
                 throw StateError('Invalid schema type ${param.schema.type}}');
               };
+              final decodeParameter =
+                  (APIParameter param, Expression expression) {
+                return refer('param')([], {
+                  'isRequired': literalBool(param.isRequired),
+                  'name': literalString(param.name),
+                  'value': expression,
+                  'decode': Method((mb) => mb
+                        ..lambda = true
+                        ..requiredParameters
+                            .add(Parameter((pb) => pb..name = 'value'))
+                        ..body =
+                            decodeParameterFrom(param, refer('value')).code)
+                      .closure,
+                });
+              };
               final encodeParameter = (Expression expression) {
                 switch (param.schema.type) {
                   case APIType.string:
@@ -510,6 +526,7 @@ class OpenApiLibraryGenerator {
               switch (param.location) {
                 case APIParameterLocation.query:
                   routerParamsNamed[paramName] = decodeParameter(
+                      param,
                       refer('request').property('queryParameter')(
                           [literalString(param.name)]));
                   clientCode.add(clientCodeRequest
@@ -521,6 +538,7 @@ class OpenApiLibraryGenerator {
                   break;
                 case APIParameterLocation.header:
                   routerParamsNamed[paramName] = decodeParameter(
+                      param,
                       refer('request').property('headerParameter')(
                           [literalString(param.name)]));
                   clientCode.add(clientCodeRequest
@@ -532,6 +550,7 @@ class OpenApiLibraryGenerator {
                   break;
                 case APIParameterLocation.path:
                   routerParamsNamed[paramName] = decodeParameter(
+                      param,
                       refer('request').property('pathParameter')(
                           [literalString(param.name)]));
                   clientCode.add(clientCodeRequest
@@ -543,6 +562,7 @@ class OpenApiLibraryGenerator {
                   break;
                 case APIParameterLocation.cookie:
                   routerParamsNamed[paramName] = decodeParameter(
+                      param,
                       refer('request').property('cookieParameter')(
                           [literalString(param.name)]));
                   clientCode.add(clientCodeRequest
