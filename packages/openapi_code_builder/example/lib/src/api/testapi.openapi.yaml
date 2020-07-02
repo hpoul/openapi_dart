@@ -42,6 +42,13 @@ paths:
           type: string
     get:
       summary: Say Hello World to {name}
+      parameters:
+        - name: salutation
+          description: Optional salutation
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: OK

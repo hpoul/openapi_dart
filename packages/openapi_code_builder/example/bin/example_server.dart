@@ -26,10 +26,11 @@ class TestApiImpl extends TestApi {
   }
 
   @override
-  Future<HelloNameGetResponse> helloNameGet({String name}) async {
-    _logger.info('Saying hi to $name');
+  Future<HelloNameGetResponse> helloNameGet(
+      {String name, String salutation}) async {
+    _logger.info('Saying hi to $name (salutation: $salutation)');
     return HelloNameGetResponse.response200(
-        HelloResponse(message: 'Hello $name'));
+        HelloResponse(message: 'Hello ${salutation ?? 'Dear'} $name'));
   }
 
   @override

@@ -11,7 +11,9 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
     id: json['id'] as int,
     petId: json['petId'] as int,
     quantity: json['quantity'] as int,
-    shipDate: json['shipDate'] as String,
+    shipDate: json['shipDate'] == null
+        ? null
+        : DateTime.parse(json['shipDate'] as String),
     status: _$enumDecodeNullable(_$OrderStatusEnumMap, json['status']),
     complete: json['complete'] as bool,
   );
@@ -21,7 +23,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'id': instance.id,
       'petId': instance.petId,
       'quantity': instance.quantity,
-      'shipDate': instance.shipDate,
+      'shipDate': instance.shipDate?.toIso8601String(),
       'status': _$OrderStatusEnumMap[instance.status],
       'complete': instance.complete,
     };
@@ -157,22 +159,22 @@ Map<String, dynamic> _$ApiResponseToJson(ApiResponse instance) =>
       'message': instance.message,
     };
 
-PetFindByStatusGetResponseBody200 _$PetFindByStatusGetResponseBody200FromJson(
+FindPetsByStatusResponseBody200 _$FindPetsByStatusResponseBody200FromJson(
     Map<String, dynamic> json) {
-  return PetFindByStatusGetResponseBody200();
+  return FindPetsByStatusResponseBody200();
 }
 
-Map<String, dynamic> _$PetFindByStatusGetResponseBody200ToJson(
-        PetFindByStatusGetResponseBody200 instance) =>
+Map<String, dynamic> _$FindPetsByStatusResponseBody200ToJson(
+        FindPetsByStatusResponseBody200 instance) =>
     <String, dynamic>{};
 
-PetFindByTagsGetResponseBody200 _$PetFindByTagsGetResponseBody200FromJson(
+FindPetsByTagsResponseBody200 _$FindPetsByTagsResponseBody200FromJson(
     Map<String, dynamic> json) {
-  return PetFindByTagsGetResponseBody200();
+  return FindPetsByTagsResponseBody200();
 }
 
-Map<String, dynamic> _$PetFindByTagsGetResponseBody200ToJson(
-        PetFindByTagsGetResponseBody200 instance) =>
+Map<String, dynamic> _$FindPetsByTagsResponseBody200ToJson(
+        FindPetsByTagsResponseBody200 instance) =>
     <String, dynamic>{};
 
 PetPetIdSchema _$PetPetIdSchemaFromJson(Map<String, dynamic> json) {
@@ -197,13 +199,13 @@ Map<String, dynamic> _$PetPetIdUploadImageSchemaToJson(
         PetPetIdUploadImageSchema instance) =>
     <String, dynamic>{};
 
-StoreInventoryGetResponseBody200 _$StoreInventoryGetResponseBody200FromJson(
+GetInventoryResponseBody200 _$GetInventoryResponseBody200FromJson(
     Map<String, dynamic> json) {
-  return StoreInventoryGetResponseBody200();
+  return GetInventoryResponseBody200();
 }
 
-Map<String, dynamic> _$StoreInventoryGetResponseBody200ToJson(
-        StoreInventoryGetResponseBody200 instance) =>
+Map<String, dynamic> _$GetInventoryResponseBody200ToJson(
+        GetInventoryResponseBody200 instance) =>
     <String, dynamic>{};
 
 UserCreateWithArraySchema _$UserCreateWithArraySchemaFromJson(
@@ -215,11 +217,11 @@ Map<String, dynamic> _$UserCreateWithArraySchemaToJson(
         UserCreateWithArraySchema instance) =>
     <String, dynamic>{};
 
-UserLoginGetResponseBody200 _$UserLoginGetResponseBody200FromJson(
+LoginUserResponseBody200 _$LoginUserResponseBody200FromJson(
     Map<String, dynamic> json) {
-  return UserLoginGetResponseBody200();
+  return LoginUserResponseBody200();
 }
 
-Map<String, dynamic> _$UserLoginGetResponseBody200ToJson(
-        UserLoginGetResponseBody200 instance) =>
+Map<String, dynamic> _$LoginUserResponseBody200ToJson(
+        LoginUserResponseBody200 instance) =>
     <String, dynamic>{};

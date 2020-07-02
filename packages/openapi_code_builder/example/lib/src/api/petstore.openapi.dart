@@ -26,7 +26,6 @@ extension OrderStatusExt on OrderStatus {
   String get name => toString().substring(12);
 }
 
-///
 @_i1.JsonSerializable()
 class Order implements _i2.OpenApiContent {
   Order(
@@ -40,27 +39,22 @@ class Order implements _i2.OpenApiContent {
   factory Order.fromJson(Map<String, dynamic> jsonMap) =>
       _$OrderFromJson(jsonMap);
 
-  /// null
   @_i1.JsonKey(name: 'id')
   final int id;
 
-  /// null
   @_i1.JsonKey(name: 'petId')
   final int petId;
 
-  /// null
   @_i1.JsonKey(name: 'quantity')
   final int quantity;
 
-  /// null
   @_i1.JsonKey(name: 'shipDate')
-  final String shipDate;
+  final DateTime shipDate;
 
   /// Order Status
   @_i1.JsonKey(name: 'status')
   final OrderStatus status;
 
-  /// null
   @_i1.JsonKey(name: 'complete')
   final bool complete;
 
@@ -69,7 +63,6 @@ class Order implements _i2.OpenApiContent {
   String toString() => toJson().toString();
 }
 
-///
 @_i1.JsonSerializable()
 class Category implements _i2.OpenApiContent {
   Category({this.id, this.name});
@@ -77,11 +70,9 @@ class Category implements _i2.OpenApiContent {
   factory Category.fromJson(Map<String, dynamic> jsonMap) =>
       _$CategoryFromJson(jsonMap);
 
-  /// null
   @_i1.JsonKey(name: 'id')
   final int id;
 
-  /// null
   @_i1.JsonKey(name: 'name')
   final String name;
 
@@ -90,7 +81,6 @@ class Category implements _i2.OpenApiContent {
   String toString() => toJson().toString();
 }
 
-///
 @_i1.JsonSerializable()
 class User implements _i2.OpenApiContent {
   User(
@@ -106,31 +96,24 @@ class User implements _i2.OpenApiContent {
   factory User.fromJson(Map<String, dynamic> jsonMap) =>
       _$UserFromJson(jsonMap);
 
-  /// null
   @_i1.JsonKey(name: 'id')
   final int id;
 
-  /// null
   @_i1.JsonKey(name: 'username')
   final String username;
 
-  /// null
   @_i1.JsonKey(name: 'firstName')
   final String firstName;
 
-  /// null
   @_i1.JsonKey(name: 'lastName')
   final String lastName;
 
-  /// null
   @_i1.JsonKey(name: 'email')
   final String email;
 
-  /// null
   @_i1.JsonKey(name: 'password')
   final String password;
 
-  /// null
   @_i1.JsonKey(name: 'phone')
   final String phone;
 
@@ -143,18 +126,15 @@ class User implements _i2.OpenApiContent {
   String toString() => toJson().toString();
 }
 
-///
 @_i1.JsonSerializable()
 class Tag implements _i2.OpenApiContent {
   Tag({this.id, this.name});
 
   factory Tag.fromJson(Map<String, dynamic> jsonMap) => _$TagFromJson(jsonMap);
 
-  /// null
   @_i1.JsonKey(name: 'id')
   final int id;
 
-  /// null
   @_i1.JsonKey(name: 'name')
   final String name;
 
@@ -182,7 +162,6 @@ extension PetStatusExt on PetStatus {
   String get name => toString().substring(10);
 }
 
-///
 @_i1.JsonSerializable()
 class Pet implements _i2.OpenApiContent {
   Pet(
@@ -191,27 +170,24 @@ class Pet implements _i2.OpenApiContent {
       @_i3.required this.name,
       @_i3.required this.photoUrls,
       this.tags,
-      this.status});
+      this.status})
+      : assert(name != null),
+        assert(photoUrls != null);
 
   factory Pet.fromJson(Map<String, dynamic> jsonMap) => _$PetFromJson(jsonMap);
 
-  /// null
   @_i1.JsonKey(name: 'id')
   final int id;
 
-  /// null
   @_i1.JsonKey(name: 'category')
   final Category category;
 
-  /// null
   @_i1.JsonKey(name: 'name')
   final String name;
 
-  /// null
   @_i1.JsonKey(name: 'photoUrls')
   final List<String> photoUrls;
 
-  /// null
   @_i1.JsonKey(name: 'tags')
   final List<Tag> tags;
 
@@ -224,7 +200,6 @@ class Pet implements _i2.OpenApiContent {
   String toString() => toJson().toString();
 }
 
-///
 @_i1.JsonSerializable()
 class ApiResponse implements _i2.OpenApiContent {
   ApiResponse({this.code, this.type, this.message});
@@ -232,15 +207,12 @@ class ApiResponse implements _i2.OpenApiContent {
   factory ApiResponse.fromJson(Map<String, dynamic> jsonMap) =>
       _$ApiResponseFromJson(jsonMap);
 
-  /// null
   @_i1.JsonKey(name: 'code')
   final int code;
 
-  /// null
   @_i1.JsonKey(name: 'type')
   final String type;
 
-  /// null
   @_i1.JsonKey(name: 'message')
   final String message;
 
@@ -249,9 +221,9 @@ class ApiResponse implements _i2.OpenApiContent {
   String toString() => toJson().toString();
 }
 
-class _PetPutResponse400 extends PetPutResponse {
-  /// Invalid ID supplied
-  _PetPutResponse400.response400() : status = 400;
+class _UpdatePetResponse400 extends UpdatePetResponse {
+  /// /// Invalid ID supplied
+  _UpdatePetResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -264,9 +236,9 @@ class _PetPutResponse400 extends PetPutResponse {
       {'status': status, 'contentType': contentType};
 }
 
-class _PetPutResponse404 extends PetPutResponse {
-  /// Pet not found
-  _PetPutResponse404.response404() : status = 404;
+class _UpdatePetResponse404 extends UpdatePetResponse {
+  /// /// Pet not found
+  _UpdatePetResponse404.response404() : status = 404;
 
   @override
   final int status;
@@ -279,9 +251,9 @@ class _PetPutResponse404 extends PetPutResponse {
       {'status': status, 'contentType': contentType};
 }
 
-class _PetPutResponse405 extends PetPutResponse {
-  /// Validation exception
-  _PetPutResponse405.response405() : status = 405;
+class _UpdatePetResponse405 extends UpdatePetResponse {
+  /// /// Validation exception
+  _UpdatePetResponse405.response405() : status = 405;
 
   @override
   final int status;
@@ -294,37 +266,40 @@ class _PetPutResponse405 extends PetPutResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPutResponse extends _i2.OpenApiResponse {
-  PetPutResponse();
+abstract class UpdatePetResponse extends _i2.OpenApiResponse {
+  UpdatePetResponse();
 
-  /// Invalid ID supplied
-  factory PetPutResponse.response400() => _PetPutResponse400.response400();
+  /// /// Invalid ID supplied
+  factory UpdatePetResponse.response400() =>
+      _UpdatePetResponse400.response400();
 
-  /// Pet not found
-  factory PetPutResponse.response404() => _PetPutResponse404.response404();
+  /// /// Pet not found
+  factory UpdatePetResponse.response404() =>
+      _UpdatePetResponse404.response404();
 
-  /// Validation exception
-  factory PetPutResponse.response405() => _PetPutResponse405.response405();
+  /// /// Validation exception
+  factory UpdatePetResponse.response405() =>
+      _UpdatePetResponse405.response405();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_PetPutResponse400> on400,
-      @_i3.required _i2.ResponseMap<_PetPutResponse404> on404,
-      @_i3.required _i2.ResponseMap<_PetPutResponse405> on405}) {
-    if (this is _PetPutResponse400) {
-      on400((this as _PetPutResponse400));
-    } else if (this is _PetPutResponse404) {
-      on404((this as _PetPutResponse404));
-    } else if (this is _PetPutResponse405) {
-      on405((this as _PetPutResponse405));
+      {@_i3.required _i2.ResponseMap<_UpdatePetResponse400> on400,
+      @_i3.required _i2.ResponseMap<_UpdatePetResponse404> on404,
+      @_i3.required _i2.ResponseMap<_UpdatePetResponse405> on405}) {
+    if (this is _UpdatePetResponse400) {
+      on400((this as _UpdatePetResponse400));
+    } else if (this is _UpdatePetResponse404) {
+      on404((this as _UpdatePetResponse404));
+    } else if (this is _UpdatePetResponse405) {
+      on405((this as _UpdatePetResponse405));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-class _PetPostResponse405 extends PetPostResponse {
-  /// Invalid input
-  _PetPostResponse405.response405() : status = 405;
+class _AddPetResponse405 extends AddPetResponse {
+  /// /// Invalid input
+  _AddPetResponse405.response405() : status = 405;
 
   @override
   final int status;
@@ -337,47 +312,46 @@ class _PetPostResponse405 extends PetPostResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPostResponse extends _i2.OpenApiResponse {
-  PetPostResponse();
+abstract class AddPetResponse extends _i2.OpenApiResponse {
+  AddPetResponse();
 
-  /// Invalid input
-  factory PetPostResponse.response405() => _PetPostResponse405.response405();
+  /// /// Invalid input
+  factory AddPetResponse.response405() => _AddPetResponse405.response405();
 
-  void map({@_i3.required _i2.ResponseMap<_PetPostResponse405> on405}) {
-    if (this is _PetPostResponse405) {
-      on405((this as _PetPostResponse405));
+  void map({@_i3.required _i2.ResponseMap<_AddPetResponse405> on405}) {
+    if (this is _AddPetResponse405) {
+      on405((this as _AddPetResponse405));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-///
 @_i1.JsonSerializable()
-class PetFindByStatusGetResponseBody200 implements _i2.OpenApiContent {
-  PetFindByStatusGetResponseBody200();
+class FindPetsByStatusResponseBody200 implements _i2.OpenApiContent {
+  FindPetsByStatusResponseBody200();
 
-  factory PetFindByStatusGetResponseBody200.fromJson(
+  factory FindPetsByStatusResponseBody200.fromJson(
           Map<String, dynamic> jsonMap) =>
-      _$PetFindByStatusGetResponseBody200FromJson(jsonMap);
+      _$FindPetsByStatusResponseBody200FromJson(jsonMap);
 
   Map<String, dynamic> toJson() =>
-      _$PetFindByStatusGetResponseBody200ToJson(this);
+      _$FindPetsByStatusResponseBody200ToJson(this);
   @override
   String toString() => toJson().toString();
 }
 
-class _PetFindByStatusGetResponse200 extends PetFindByStatusGetResponse
+class _FindPetsByStatusResponse200 extends FindPetsByStatusResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// successful operation
-  _PetFindByStatusGetResponse200.response200(this.body)
+  /// /// successful operation
+  _FindPetsByStatusResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
 
   @override
   final int status;
 
-  final PetFindByStatusGetResponseBody200 body;
+  final FindPetsByStatusResponseBody200 body;
 
   @override
   final Map<String, dynamic> bodyJson;
@@ -395,9 +369,9 @@ class _PetFindByStatusGetResponse200 extends PetFindByStatusGetResponse
       };
 }
 
-class _PetFindByStatusGetResponse400 extends PetFindByStatusGetResponse {
-  /// Invalid status value
-  _PetFindByStatusGetResponse400.response400() : status = 400;
+class _FindPetsByStatusResponse400 extends FindPetsByStatusResponse {
+  /// /// Invalid status value
+  _FindPetsByStatusResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -410,42 +384,42 @@ class _PetFindByStatusGetResponse400 extends PetFindByStatusGetResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetFindByStatusGetResponse extends _i2.OpenApiResponse
-    implements _i2.HasSuccessResponse<PetFindByStatusGetResponseBody200> {
-  PetFindByStatusGetResponse();
+abstract class FindPetsByStatusResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<FindPetsByStatusResponseBody200> {
+  FindPetsByStatusResponse();
 
-  /// successful operation
-  factory PetFindByStatusGetResponse.response200(
-          PetFindByStatusGetResponseBody200 body) =>
-      _PetFindByStatusGetResponse200.response200(body);
+  /// /// successful operation
+  factory FindPetsByStatusResponse.response200(
+          FindPetsByStatusResponseBody200 body) =>
+      _FindPetsByStatusResponse200.response200(body);
 
-  /// Invalid status value
-  factory PetFindByStatusGetResponse.response400() =>
-      _PetFindByStatusGetResponse400.response400();
+  /// /// Invalid status value
+  factory FindPetsByStatusResponse.response400() =>
+      _FindPetsByStatusResponse400.response400();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_PetFindByStatusGetResponse200> on200,
-      @_i3.required _i2.ResponseMap<_PetFindByStatusGetResponse400> on400}) {
-    if (this is _PetFindByStatusGetResponse200) {
-      on200((this as _PetFindByStatusGetResponse200));
-    } else if (this is _PetFindByStatusGetResponse400) {
-      on400((this as _PetFindByStatusGetResponse400));
+      {@_i3.required _i2.ResponseMap<_FindPetsByStatusResponse200> on200,
+      @_i3.required _i2.ResponseMap<_FindPetsByStatusResponse400> on400}) {
+    if (this is _FindPetsByStatusResponse200) {
+      on200((this as _FindPetsByStatusResponse200));
+    } else if (this is _FindPetsByStatusResponse400) {
+      on400((this as _FindPetsByStatusResponse400));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 
   @override
-  PetFindByStatusGetResponseBody200 requireSuccess() {
-    if (this is _PetFindByStatusGetResponse200) {
-      return (this as _PetFindByStatusGetResponse200).body;
+  FindPetsByStatusResponseBody200 requireSuccess() {
+    if (this is _FindPetsByStatusResponse200) {
+      return (this as _FindPetsByStatusResponse200).body;
     } else {
       throw StateError('Expected success response, but got $this');
     }
   }
 }
 
-enum PetFindByStatusGet {
+enum FindPetsByStatus {
   @_i1.JsonValue('available')
   available,
   @_i1.JsonValue('pending')
@@ -454,42 +428,40 @@ enum PetFindByStatusGet {
   sold,
 }
 
-extension PetFindByStatusGetExt on PetFindByStatusGet {
-  static final Map<String, PetFindByStatusGet> _names = {
-    'available': PetFindByStatusGet.available,
-    'pending': PetFindByStatusGet.pending,
-    'sold': PetFindByStatusGet.sold
+extension FindPetsByStatusExt on FindPetsByStatus {
+  static final Map<String, FindPetsByStatus> _names = {
+    'available': FindPetsByStatus.available,
+    'pending': FindPetsByStatus.pending,
+    'sold': FindPetsByStatus.sold
   };
-  static PetFindByStatusGet fromName(String name) => _names[name];
-  String get name => toString().substring(19);
+  static FindPetsByStatus fromName(String name) => _names[name];
+  String get name => toString().substring(17);
 }
 
-///
 @_i1.JsonSerializable()
-class PetFindByTagsGetResponseBody200 implements _i2.OpenApiContent {
-  PetFindByTagsGetResponseBody200();
+class FindPetsByTagsResponseBody200 implements _i2.OpenApiContent {
+  FindPetsByTagsResponseBody200();
 
-  factory PetFindByTagsGetResponseBody200.fromJson(
+  factory FindPetsByTagsResponseBody200.fromJson(
           Map<String, dynamic> jsonMap) =>
-      _$PetFindByTagsGetResponseBody200FromJson(jsonMap);
+      _$FindPetsByTagsResponseBody200FromJson(jsonMap);
 
-  Map<String, dynamic> toJson() =>
-      _$PetFindByTagsGetResponseBody200ToJson(this);
+  Map<String, dynamic> toJson() => _$FindPetsByTagsResponseBody200ToJson(this);
   @override
   String toString() => toJson().toString();
 }
 
-class _PetFindByTagsGetResponse200 extends PetFindByTagsGetResponse
+class _FindPetsByTagsResponse200 extends FindPetsByTagsResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// successful operation
-  _PetFindByTagsGetResponse200.response200(this.body)
+  /// /// successful operation
+  _FindPetsByTagsResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
 
   @override
   final int status;
 
-  final PetFindByTagsGetResponseBody200 body;
+  final FindPetsByTagsResponseBody200 body;
 
   @override
   final Map<String, dynamic> bodyJson;
@@ -507,9 +479,9 @@ class _PetFindByTagsGetResponse200 extends PetFindByTagsGetResponse
       };
 }
 
-class _PetFindByTagsGetResponse400 extends PetFindByTagsGetResponse {
-  /// Invalid tag value
-  _PetFindByTagsGetResponse400.response400() : status = 400;
+class _FindPetsByTagsResponse400 extends FindPetsByTagsResponse {
+  /// /// Invalid tag value
+  _FindPetsByTagsResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -522,45 +494,45 @@ class _PetFindByTagsGetResponse400 extends PetFindByTagsGetResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetFindByTagsGetResponse extends _i2.OpenApiResponse
-    implements _i2.HasSuccessResponse<PetFindByTagsGetResponseBody200> {
-  PetFindByTagsGetResponse();
+abstract class FindPetsByTagsResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<FindPetsByTagsResponseBody200> {
+  FindPetsByTagsResponse();
 
-  /// successful operation
-  factory PetFindByTagsGetResponse.response200(
-          PetFindByTagsGetResponseBody200 body) =>
-      _PetFindByTagsGetResponse200.response200(body);
+  /// /// successful operation
+  factory FindPetsByTagsResponse.response200(
+          FindPetsByTagsResponseBody200 body) =>
+      _FindPetsByTagsResponse200.response200(body);
 
-  /// Invalid tag value
-  factory PetFindByTagsGetResponse.response400() =>
-      _PetFindByTagsGetResponse400.response400();
+  /// /// Invalid tag value
+  factory FindPetsByTagsResponse.response400() =>
+      _FindPetsByTagsResponse400.response400();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_PetFindByTagsGetResponse200> on200,
-      @_i3.required _i2.ResponseMap<_PetFindByTagsGetResponse400> on400}) {
-    if (this is _PetFindByTagsGetResponse200) {
-      on200((this as _PetFindByTagsGetResponse200));
-    } else if (this is _PetFindByTagsGetResponse400) {
-      on400((this as _PetFindByTagsGetResponse400));
+      {@_i3.required _i2.ResponseMap<_FindPetsByTagsResponse200> on200,
+      @_i3.required _i2.ResponseMap<_FindPetsByTagsResponse400> on400}) {
+    if (this is _FindPetsByTagsResponse200) {
+      on200((this as _FindPetsByTagsResponse200));
+    } else if (this is _FindPetsByTagsResponse400) {
+      on400((this as _FindPetsByTagsResponse400));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 
   @override
-  PetFindByTagsGetResponseBody200 requireSuccess() {
-    if (this is _PetFindByTagsGetResponse200) {
-      return (this as _PetFindByTagsGetResponse200).body;
+  FindPetsByTagsResponseBody200 requireSuccess() {
+    if (this is _FindPetsByTagsResponse200) {
+      return (this as _FindPetsByTagsResponse200).body;
     } else {
       throw StateError('Expected success response, but got $this');
     }
   }
 }
 
-class _PetPetIdGetResponse200 extends PetPetIdGetResponse
+class _GetPetByIdResponse200 extends GetPetByIdResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// successful operation
-  _PetPetIdGetResponse200.response200(this.body)
+  /// /// successful operation
+  _GetPetByIdResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
 
@@ -585,9 +557,9 @@ class _PetPetIdGetResponse200 extends PetPetIdGetResponse
       };
 }
 
-class _PetPetIdGetResponse400 extends PetPetIdGetResponse {
-  /// Invalid ID supplied
-  _PetPetIdGetResponse400.response400() : status = 400;
+class _GetPetByIdResponse400 extends GetPetByIdResponse {
+  /// /// Invalid ID supplied
+  _GetPetByIdResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -600,9 +572,9 @@ class _PetPetIdGetResponse400 extends PetPetIdGetResponse {
       {'status': status, 'contentType': contentType};
 }
 
-class _PetPetIdGetResponse404 extends PetPetIdGetResponse {
-  /// Pet not found
-  _PetPetIdGetResponse404.response404() : status = 404;
+class _GetPetByIdResponse404 extends GetPetByIdResponse {
+  /// /// Pet not found
+  _GetPetByIdResponse404.response404() : status = 404;
 
   @override
   final int status;
@@ -615,32 +587,32 @@ class _PetPetIdGetResponse404 extends PetPetIdGetResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPetIdGetResponse extends _i2.OpenApiResponse
+abstract class GetPetByIdResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<Pet> {
-  PetPetIdGetResponse();
+  GetPetByIdResponse();
 
-  /// successful operation
-  factory PetPetIdGetResponse.response200(Pet body) =>
-      _PetPetIdGetResponse200.response200(body);
+  /// /// successful operation
+  factory GetPetByIdResponse.response200(Pet body) =>
+      _GetPetByIdResponse200.response200(body);
 
-  /// Invalid ID supplied
-  factory PetPetIdGetResponse.response400() =>
-      _PetPetIdGetResponse400.response400();
+  /// /// Invalid ID supplied
+  factory GetPetByIdResponse.response400() =>
+      _GetPetByIdResponse400.response400();
 
-  /// Pet not found
-  factory PetPetIdGetResponse.response404() =>
-      _PetPetIdGetResponse404.response404();
+  /// /// Pet not found
+  factory GetPetByIdResponse.response404() =>
+      _GetPetByIdResponse404.response404();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_PetPetIdGetResponse200> on200,
-      @_i3.required _i2.ResponseMap<_PetPetIdGetResponse400> on400,
-      @_i3.required _i2.ResponseMap<_PetPetIdGetResponse404> on404}) {
-    if (this is _PetPetIdGetResponse200) {
-      on200((this as _PetPetIdGetResponse200));
-    } else if (this is _PetPetIdGetResponse400) {
-      on400((this as _PetPetIdGetResponse400));
-    } else if (this is _PetPetIdGetResponse404) {
-      on404((this as _PetPetIdGetResponse404));
+      {@_i3.required _i2.ResponseMap<_GetPetByIdResponse200> on200,
+      @_i3.required _i2.ResponseMap<_GetPetByIdResponse400> on400,
+      @_i3.required _i2.ResponseMap<_GetPetByIdResponse404> on404}) {
+    if (this is _GetPetByIdResponse200) {
+      on200((this as _GetPetByIdResponse200));
+    } else if (this is _GetPetByIdResponse400) {
+      on400((this as _GetPetByIdResponse400));
+    } else if (this is _GetPetByIdResponse404) {
+      on404((this as _GetPetByIdResponse404));
     } else {
       throw StateError('Invalid instance type $this');
     }
@@ -648,17 +620,17 @@ abstract class PetPetIdGetResponse extends _i2.OpenApiResponse
 
   @override
   Pet requireSuccess() {
-    if (this is _PetPetIdGetResponse200) {
-      return (this as _PetPetIdGetResponse200).body;
+    if (this is _GetPetByIdResponse200) {
+      return (this as _GetPetByIdResponse200).body;
     } else {
       throw StateError('Expected success response, but got $this');
     }
   }
 }
 
-class _PetPetIdPostResponse405 extends PetPetIdPostResponse {
-  /// Invalid input
-  _PetPetIdPostResponse405.response405() : status = 405;
+class _UpdatePetWithFormResponse405 extends UpdatePetWithFormResponse {
+  /// /// Invalid input
+  _UpdatePetWithFormResponse405.response405() : status = 405;
 
   @override
   final int status;
@@ -671,23 +643,23 @@ class _PetPetIdPostResponse405 extends PetPetIdPostResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPetIdPostResponse extends _i2.OpenApiResponse {
-  PetPetIdPostResponse();
+abstract class UpdatePetWithFormResponse extends _i2.OpenApiResponse {
+  UpdatePetWithFormResponse();
 
-  /// Invalid input
-  factory PetPetIdPostResponse.response405() =>
-      _PetPetIdPostResponse405.response405();
+  /// /// Invalid input
+  factory UpdatePetWithFormResponse.response405() =>
+      _UpdatePetWithFormResponse405.response405();
 
-  void map({@_i3.required _i2.ResponseMap<_PetPetIdPostResponse405> on405}) {
-    if (this is _PetPetIdPostResponse405) {
-      on405((this as _PetPetIdPostResponse405));
+  void map(
+      {@_i3.required _i2.ResponseMap<_UpdatePetWithFormResponse405> on405}) {
+    if (this is _UpdatePetWithFormResponse405) {
+      on405((this as _UpdatePetWithFormResponse405));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-///
 @_i1.JsonSerializable()
 class PetPetIdSchema implements _i2.OpenApiContent {
   PetPetIdSchema({this.name, this.status});
@@ -708,9 +680,9 @@ class PetPetIdSchema implements _i2.OpenApiContent {
   String toString() => toJson().toString();
 }
 
-class _PetPetIdDeleteResponse400 extends PetPetIdDeleteResponse {
-  /// Invalid ID supplied
-  _PetPetIdDeleteResponse400.response400() : status = 400;
+class _DeletePetResponse400 extends DeletePetResponse {
+  /// /// Invalid ID supplied
+  _DeletePetResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -723,9 +695,9 @@ class _PetPetIdDeleteResponse400 extends PetPetIdDeleteResponse {
       {'status': status, 'contentType': contentType};
 }
 
-class _PetPetIdDeleteResponse404 extends PetPetIdDeleteResponse {
-  /// Pet not found
-  _PetPetIdDeleteResponse404.response404() : status = 404;
+class _DeletePetResponse404 extends DeletePetResponse {
+  /// /// Pet not found
+  _DeletePetResponse404.response404() : status = 404;
 
   @override
   final int status;
@@ -738,35 +710,34 @@ class _PetPetIdDeleteResponse404 extends PetPetIdDeleteResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class PetPetIdDeleteResponse extends _i2.OpenApiResponse {
-  PetPetIdDeleteResponse();
+abstract class DeletePetResponse extends _i2.OpenApiResponse {
+  DeletePetResponse();
 
-  /// Invalid ID supplied
-  factory PetPetIdDeleteResponse.response400() =>
-      _PetPetIdDeleteResponse400.response400();
+  /// /// Invalid ID supplied
+  factory DeletePetResponse.response400() =>
+      _DeletePetResponse400.response400();
 
-  /// Pet not found
-  factory PetPetIdDeleteResponse.response404() =>
-      _PetPetIdDeleteResponse404.response404();
+  /// /// Pet not found
+  factory DeletePetResponse.response404() =>
+      _DeletePetResponse404.response404();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_PetPetIdDeleteResponse400> on400,
-      @_i3.required _i2.ResponseMap<_PetPetIdDeleteResponse404> on404}) {
-    if (this is _PetPetIdDeleteResponse400) {
-      on400((this as _PetPetIdDeleteResponse400));
-    } else if (this is _PetPetIdDeleteResponse404) {
-      on404((this as _PetPetIdDeleteResponse404));
+      {@_i3.required _i2.ResponseMap<_DeletePetResponse400> on400,
+      @_i3.required _i2.ResponseMap<_DeletePetResponse404> on404}) {
+    if (this is _DeletePetResponse400) {
+      on400((this as _DeletePetResponse400));
+    } else if (this is _DeletePetResponse404) {
+      on404((this as _DeletePetResponse404));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-class _PetPetIdUploadImagePostResponse200
-    extends PetPetIdUploadImagePostResponse
+class _UploadFileResponse200 extends UploadFileResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// successful operation
-  _PetPetIdUploadImagePostResponse200.response200(this.body)
+  /// /// successful operation
+  _UploadFileResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
 
@@ -791,19 +762,17 @@ class _PetPetIdUploadImagePostResponse200
       };
 }
 
-abstract class PetPetIdUploadImagePostResponse extends _i2.OpenApiResponse
+abstract class UploadFileResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<ApiResponse> {
-  PetPetIdUploadImagePostResponse();
+  UploadFileResponse();
 
-  /// successful operation
-  factory PetPetIdUploadImagePostResponse.response200(ApiResponse body) =>
-      _PetPetIdUploadImagePostResponse200.response200(body);
+  /// /// successful operation
+  factory UploadFileResponse.response200(ApiResponse body) =>
+      _UploadFileResponse200.response200(body);
 
-  void map(
-      {@_i3.required
-          _i2.ResponseMap<_PetPetIdUploadImagePostResponse200> on200}) {
-    if (this is _PetPetIdUploadImagePostResponse200) {
-      on200((this as _PetPetIdUploadImagePostResponse200));
+  void map({@_i3.required _i2.ResponseMap<_UploadFileResponse200> on200}) {
+    if (this is _UploadFileResponse200) {
+      on200((this as _UploadFileResponse200));
     } else {
       throw StateError('Invalid instance type $this');
     }
@@ -811,15 +780,14 @@ abstract class PetPetIdUploadImagePostResponse extends _i2.OpenApiResponse
 
   @override
   ApiResponse requireSuccess() {
-    if (this is _PetPetIdUploadImagePostResponse200) {
-      return (this as _PetPetIdUploadImagePostResponse200).body;
+    if (this is _UploadFileResponse200) {
+      return (this as _UploadFileResponse200).body;
     } else {
       throw StateError('Expected success response, but got $this');
     }
   }
 }
 
-///
 @_i1.JsonSerializable()
 class PetPetIdUploadImageSchema implements _i2.OpenApiContent {
   PetPetIdUploadImageSchema();
@@ -832,32 +800,29 @@ class PetPetIdUploadImageSchema implements _i2.OpenApiContent {
   String toString() => toJson().toString();
 }
 
-///
 @_i1.JsonSerializable()
-class StoreInventoryGetResponseBody200 implements _i2.OpenApiContent {
-  StoreInventoryGetResponseBody200();
+class GetInventoryResponseBody200 implements _i2.OpenApiContent {
+  GetInventoryResponseBody200();
 
-  factory StoreInventoryGetResponseBody200.fromJson(
-          Map<String, dynamic> jsonMap) =>
-      _$StoreInventoryGetResponseBody200FromJson(jsonMap);
+  factory GetInventoryResponseBody200.fromJson(Map<String, dynamic> jsonMap) =>
+      _$GetInventoryResponseBody200FromJson(jsonMap);
 
-  Map<String, dynamic> toJson() =>
-      _$StoreInventoryGetResponseBody200ToJson(this);
+  Map<String, dynamic> toJson() => _$GetInventoryResponseBody200ToJson(this);
   @override
   String toString() => toJson().toString();
 }
 
-class _StoreInventoryGetResponse200 extends StoreInventoryGetResponse
+class _GetInventoryResponse200 extends GetInventoryResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// successful operation
-  _StoreInventoryGetResponse200.response200(this.body)
+  /// /// successful operation
+  _GetInventoryResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
 
   @override
   final int status;
 
-  final StoreInventoryGetResponseBody200 body;
+  final GetInventoryResponseBody200 body;
 
   @override
   final Map<String, dynamic> bodyJson;
@@ -875,115 +840,36 @@ class _StoreInventoryGetResponse200 extends StoreInventoryGetResponse
       };
 }
 
-abstract class StoreInventoryGetResponse extends _i2.OpenApiResponse
-    implements _i2.HasSuccessResponse<StoreInventoryGetResponseBody200> {
-  StoreInventoryGetResponse();
+abstract class GetInventoryResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<GetInventoryResponseBody200> {
+  GetInventoryResponse();
 
-  /// successful operation
-  factory StoreInventoryGetResponse.response200(
-          StoreInventoryGetResponseBody200 body) =>
-      _StoreInventoryGetResponse200.response200(body);
+  /// /// successful operation
+  factory GetInventoryResponse.response200(GetInventoryResponseBody200 body) =>
+      _GetInventoryResponse200.response200(body);
 
-  void map(
-      {@_i3.required _i2.ResponseMap<_StoreInventoryGetResponse200> on200}) {
-    if (this is _StoreInventoryGetResponse200) {
-      on200((this as _StoreInventoryGetResponse200));
+  void map({@_i3.required _i2.ResponseMap<_GetInventoryResponse200> on200}) {
+    if (this is _GetInventoryResponse200) {
+      on200((this as _GetInventoryResponse200));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 
   @override
-  StoreInventoryGetResponseBody200 requireSuccess() {
-    if (this is _StoreInventoryGetResponse200) {
-      return (this as _StoreInventoryGetResponse200).body;
+  GetInventoryResponseBody200 requireSuccess() {
+    if (this is _GetInventoryResponse200) {
+      return (this as _GetInventoryResponse200).body;
     } else {
       throw StateError('Expected success response, but got $this');
     }
   }
 }
 
-class _StoreOrderPostResponse200 extends StoreOrderPostResponse
+class _PlaceOrderResponse200 extends PlaceOrderResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// successful operation
-  _StoreOrderPostResponse200.response200(this.body)
-      : status = 200,
-        bodyJson = body.toJson();
-
-  @override
-  final int status;
-
-  final Order body;
-
-  @override
-  final Map<String, dynamic> bodyJson;
-
-  @override
-  final _i2.OpenApiContentType contentType =
-      _i2.OpenApiContentType.parse('application/json');
-
-  @override
-  Map<String, Object> propertiesToString() => {
-        'status': status,
-        'body': body,
-        'bodyJson': bodyJson,
-        'contentType': contentType
-      };
-}
-
-class _StoreOrderPostResponse400 extends StoreOrderPostResponse {
-  /// Invalid Order
-  _StoreOrderPostResponse400.response400() : status = 400;
-
-  @override
-  final int status;
-
-  @override
-  final _i2.OpenApiContentType contentType = null;
-
-  @override
-  Map<String, Object> propertiesToString() =>
-      {'status': status, 'contentType': contentType};
-}
-
-abstract class StoreOrderPostResponse extends _i2.OpenApiResponse
-    implements _i2.HasSuccessResponse<Order> {
-  StoreOrderPostResponse();
-
-  /// successful operation
-  factory StoreOrderPostResponse.response200(Order body) =>
-      _StoreOrderPostResponse200.response200(body);
-
-  /// Invalid Order
-  factory StoreOrderPostResponse.response400() =>
-      _StoreOrderPostResponse400.response400();
-
-  void map(
-      {@_i3.required _i2.ResponseMap<_StoreOrderPostResponse200> on200,
-      @_i3.required _i2.ResponseMap<_StoreOrderPostResponse400> on400}) {
-    if (this is _StoreOrderPostResponse200) {
-      on200((this as _StoreOrderPostResponse200));
-    } else if (this is _StoreOrderPostResponse400) {
-      on400((this as _StoreOrderPostResponse400));
-    } else {
-      throw StateError('Invalid instance type $this');
-    }
-  }
-
-  @override
-  Order requireSuccess() {
-    if (this is _StoreOrderPostResponse200) {
-      return (this as _StoreOrderPostResponse200).body;
-    } else {
-      throw StateError('Expected success response, but got $this');
-    }
-  }
-}
-
-class _StoreOrderOrderIdGetResponse200 extends StoreOrderOrderIdGetResponse
-    implements _i2.OpenApiResponseBodyJson {
-  /// successful operation
-  _StoreOrderOrderIdGetResponse200.response200(this.body)
+  /// /// successful operation
+  _PlaceOrderResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
 
@@ -1008,9 +894,9 @@ class _StoreOrderOrderIdGetResponse200 extends StoreOrderOrderIdGetResponse
       };
 }
 
-class _StoreOrderOrderIdGetResponse400 extends StoreOrderOrderIdGetResponse {
-  /// Invalid ID supplied
-  _StoreOrderOrderIdGetResponse400.response400() : status = 400;
+class _PlaceOrderResponse400 extends PlaceOrderResponse {
+  /// /// Invalid Order
+  _PlaceOrderResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -1023,47 +909,25 @@ class _StoreOrderOrderIdGetResponse400 extends StoreOrderOrderIdGetResponse {
       {'status': status, 'contentType': contentType};
 }
 
-class _StoreOrderOrderIdGetResponse404 extends StoreOrderOrderIdGetResponse {
-  /// Order not found
-  _StoreOrderOrderIdGetResponse404.response404() : status = 404;
-
-  @override
-  final int status;
-
-  @override
-  final _i2.OpenApiContentType contentType = null;
-
-  @override
-  Map<String, Object> propertiesToString() =>
-      {'status': status, 'contentType': contentType};
-}
-
-abstract class StoreOrderOrderIdGetResponse extends _i2.OpenApiResponse
+abstract class PlaceOrderResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<Order> {
-  StoreOrderOrderIdGetResponse();
+  PlaceOrderResponse();
 
-  /// successful operation
-  factory StoreOrderOrderIdGetResponse.response200(Order body) =>
-      _StoreOrderOrderIdGetResponse200.response200(body);
+  /// /// successful operation
+  factory PlaceOrderResponse.response200(Order body) =>
+      _PlaceOrderResponse200.response200(body);
 
-  /// Invalid ID supplied
-  factory StoreOrderOrderIdGetResponse.response400() =>
-      _StoreOrderOrderIdGetResponse400.response400();
-
-  /// Order not found
-  factory StoreOrderOrderIdGetResponse.response404() =>
-      _StoreOrderOrderIdGetResponse404.response404();
+  /// /// Invalid Order
+  factory PlaceOrderResponse.response400() =>
+      _PlaceOrderResponse400.response400();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_StoreOrderOrderIdGetResponse200> on200,
-      @_i3.required _i2.ResponseMap<_StoreOrderOrderIdGetResponse400> on400,
-      @_i3.required _i2.ResponseMap<_StoreOrderOrderIdGetResponse404> on404}) {
-    if (this is _StoreOrderOrderIdGetResponse200) {
-      on200((this as _StoreOrderOrderIdGetResponse200));
-    } else if (this is _StoreOrderOrderIdGetResponse400) {
-      on400((this as _StoreOrderOrderIdGetResponse400));
-    } else if (this is _StoreOrderOrderIdGetResponse404) {
-      on404((this as _StoreOrderOrderIdGetResponse404));
+      {@_i3.required _i2.ResponseMap<_PlaceOrderResponse200> on200,
+      @_i3.required _i2.ResponseMap<_PlaceOrderResponse400> on400}) {
+    if (this is _PlaceOrderResponse200) {
+      on200((this as _PlaceOrderResponse200));
+    } else if (this is _PlaceOrderResponse400) {
+      on400((this as _PlaceOrderResponse400));
     } else {
       throw StateError('Invalid instance type $this');
     }
@@ -1071,18 +935,45 @@ abstract class StoreOrderOrderIdGetResponse extends _i2.OpenApiResponse
 
   @override
   Order requireSuccess() {
-    if (this is _StoreOrderOrderIdGetResponse200) {
-      return (this as _StoreOrderOrderIdGetResponse200).body;
+    if (this is _PlaceOrderResponse200) {
+      return (this as _PlaceOrderResponse200).body;
     } else {
       throw StateError('Expected success response, but got $this');
     }
   }
 }
 
-class _StoreOrderOrderIdDeleteResponse400
-    extends StoreOrderOrderIdDeleteResponse {
-  /// Invalid ID supplied
-  _StoreOrderOrderIdDeleteResponse400.response400() : status = 400;
+class _GetOrderByIdResponse200 extends GetOrderByIdResponse
+    implements _i2.OpenApiResponseBodyJson {
+  /// /// successful operation
+  _GetOrderByIdResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
+
+  @override
+  final int status;
+
+  final Order body;
+
+  @override
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final _i2.OpenApiContentType contentType =
+      _i2.OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
+}
+
+class _GetOrderByIdResponse400 extends GetOrderByIdResponse {
+  /// /// Invalid ID supplied
+  _GetOrderByIdResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -1095,10 +986,9 @@ class _StoreOrderOrderIdDeleteResponse400
       {'status': status, 'contentType': contentType};
 }
 
-class _StoreOrderOrderIdDeleteResponse404
-    extends StoreOrderOrderIdDeleteResponse {
-  /// Order not found
-  _StoreOrderOrderIdDeleteResponse404.response404() : status = 404;
+class _GetOrderByIdResponse404 extends GetOrderByIdResponse {
+  /// /// Order not found
+  _GetOrderByIdResponse404.response404() : status = 404;
 
   @override
   final int status;
@@ -1111,35 +1001,104 @@ class _StoreOrderOrderIdDeleteResponse404
       {'status': status, 'contentType': contentType};
 }
 
-abstract class StoreOrderOrderIdDeleteResponse extends _i2.OpenApiResponse {
-  StoreOrderOrderIdDeleteResponse();
+abstract class GetOrderByIdResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<Order> {
+  GetOrderByIdResponse();
 
-  /// Invalid ID supplied
-  factory StoreOrderOrderIdDeleteResponse.response400() =>
-      _StoreOrderOrderIdDeleteResponse400.response400();
+  /// /// successful operation
+  factory GetOrderByIdResponse.response200(Order body) =>
+      _GetOrderByIdResponse200.response200(body);
 
-  /// Order not found
-  factory StoreOrderOrderIdDeleteResponse.response404() =>
-      _StoreOrderOrderIdDeleteResponse404.response404();
+  /// /// Invalid ID supplied
+  factory GetOrderByIdResponse.response400() =>
+      _GetOrderByIdResponse400.response400();
+
+  /// /// Order not found
+  factory GetOrderByIdResponse.response404() =>
+      _GetOrderByIdResponse404.response404();
 
   void map(
-      {@_i3.required
-          _i2.ResponseMap<_StoreOrderOrderIdDeleteResponse400> on400,
-      @_i3.required
-          _i2.ResponseMap<_StoreOrderOrderIdDeleteResponse404> on404}) {
-    if (this is _StoreOrderOrderIdDeleteResponse400) {
-      on400((this as _StoreOrderOrderIdDeleteResponse400));
-    } else if (this is _StoreOrderOrderIdDeleteResponse404) {
-      on404((this as _StoreOrderOrderIdDeleteResponse404));
+      {@_i3.required _i2.ResponseMap<_GetOrderByIdResponse200> on200,
+      @_i3.required _i2.ResponseMap<_GetOrderByIdResponse400> on400,
+      @_i3.required _i2.ResponseMap<_GetOrderByIdResponse404> on404}) {
+    if (this is _GetOrderByIdResponse200) {
+      on200((this as _GetOrderByIdResponse200));
+    } else if (this is _GetOrderByIdResponse400) {
+      on400((this as _GetOrderByIdResponse400));
+    } else if (this is _GetOrderByIdResponse404) {
+      on404((this as _GetOrderByIdResponse404));
+    } else {
+      throw StateError('Invalid instance type $this');
+    }
+  }
+
+  @override
+  Order requireSuccess() {
+    if (this is _GetOrderByIdResponse200) {
+      return (this as _GetOrderByIdResponse200).body;
+    } else {
+      throw StateError('Expected success response, but got $this');
+    }
+  }
+}
+
+class _DeleteOrderResponse400 extends DeleteOrderResponse {
+  /// /// Invalid ID supplied
+  _DeleteOrderResponse400.response400() : status = 400;
+
+  @override
+  final int status;
+
+  @override
+  final _i2.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
+}
+
+class _DeleteOrderResponse404 extends DeleteOrderResponse {
+  /// /// Order not found
+  _DeleteOrderResponse404.response404() : status = 404;
+
+  @override
+  final int status;
+
+  @override
+  final _i2.OpenApiContentType contentType = null;
+
+  @override
+  Map<String, Object> propertiesToString() =>
+      {'status': status, 'contentType': contentType};
+}
+
+abstract class DeleteOrderResponse extends _i2.OpenApiResponse {
+  DeleteOrderResponse();
+
+  /// /// Invalid ID supplied
+  factory DeleteOrderResponse.response400() =>
+      _DeleteOrderResponse400.response400();
+
+  /// /// Order not found
+  factory DeleteOrderResponse.response404() =>
+      _DeleteOrderResponse404.response404();
+
+  void map(
+      {@_i3.required _i2.ResponseMap<_DeleteOrderResponse400> on400,
+      @_i3.required _i2.ResponseMap<_DeleteOrderResponse404> on404}) {
+    if (this is _DeleteOrderResponse400) {
+      on400((this as _DeleteOrderResponse400));
+    } else if (this is _DeleteOrderResponse404) {
+      on404((this as _DeleteOrderResponse404));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-class _UserPostResponseDefault extends UserPostResponse {
-  /// successful operation
-  _UserPostResponseDefault.responseDefault(int status) : status = status;
+class _CreateUserResponseDefault extends CreateUserResponse {
+  /// /// successful operation
+  _CreateUserResponseDefault.responseDefault(int status) : status = status;
 
   @override
   final int status;
@@ -1152,27 +1111,27 @@ class _UserPostResponseDefault extends UserPostResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserPostResponse extends _i2.OpenApiResponse {
-  UserPostResponse();
+abstract class CreateUserResponse extends _i2.OpenApiResponse {
+  CreateUserResponse();
 
-  /// successful operation
-  factory UserPostResponse.responseDefault(int status) =>
-      _UserPostResponseDefault.responseDefault(status);
+  /// /// successful operation
+  factory CreateUserResponse.responseDefault(int status) =>
+      _CreateUserResponseDefault.responseDefault(status);
 
   void map(
-      {@_i3.required _i2.ResponseMap<_UserPostResponseDefault> onDefault}) {
-    if (this is _UserPostResponseDefault) {
-      onDefault((this as _UserPostResponseDefault));
+      {@_i3.required _i2.ResponseMap<_CreateUserResponseDefault> onDefault}) {
+    if (this is _CreateUserResponseDefault) {
+      onDefault((this as _CreateUserResponseDefault));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-class _UserCreateWithArrayPostResponseDefault
-    extends UserCreateWithArrayPostResponse {
-  /// successful operation
-  _UserCreateWithArrayPostResponseDefault.responseDefault(int status)
+class _CreateUsersWithArrayInputResponseDefault
+    extends CreateUsersWithArrayInputResponse {
+  /// /// successful operation
+  _CreateUsersWithArrayInputResponseDefault.responseDefault(int status)
       : status = status;
 
   @override
@@ -1186,25 +1145,25 @@ class _UserCreateWithArrayPostResponseDefault
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserCreateWithArrayPostResponse extends _i2.OpenApiResponse {
-  UserCreateWithArrayPostResponse();
+abstract class CreateUsersWithArrayInputResponse extends _i2.OpenApiResponse {
+  CreateUsersWithArrayInputResponse();
 
-  /// successful operation
-  factory UserCreateWithArrayPostResponse.responseDefault(int status) =>
-      _UserCreateWithArrayPostResponseDefault.responseDefault(status);
+  /// /// successful operation
+  factory CreateUsersWithArrayInputResponse.responseDefault(int status) =>
+      _CreateUsersWithArrayInputResponseDefault.responseDefault(status);
 
   void map(
       {@_i3.required
-          _i2.ResponseMap<_UserCreateWithArrayPostResponseDefault> onDefault}) {
-    if (this is _UserCreateWithArrayPostResponseDefault) {
-      onDefault((this as _UserCreateWithArrayPostResponseDefault));
+          _i2.ResponseMap<_CreateUsersWithArrayInputResponseDefault>
+              onDefault}) {
+    if (this is _CreateUsersWithArrayInputResponseDefault) {
+      onDefault((this as _CreateUsersWithArrayInputResponseDefault));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-///
 @_i1.JsonSerializable()
 class UserCreateWithArraySchema implements _i2.OpenApiContent {
   UserCreateWithArraySchema();
@@ -1217,10 +1176,10 @@ class UserCreateWithArraySchema implements _i2.OpenApiContent {
   String toString() => toJson().toString();
 }
 
-class _UserCreateWithListPostResponseDefault
-    extends UserCreateWithListPostResponse {
-  /// successful operation
-  _UserCreateWithListPostResponseDefault.responseDefault(int status)
+class _CreateUsersWithListInputResponseDefault
+    extends CreateUsersWithListInputResponse {
+  /// /// successful operation
+  _CreateUsersWithListInputResponseDefault.responseDefault(int status)
       : status = status;
 
   @override
@@ -1234,48 +1193,48 @@ class _UserCreateWithListPostResponseDefault
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserCreateWithListPostResponse extends _i2.OpenApiResponse {
-  UserCreateWithListPostResponse();
+abstract class CreateUsersWithListInputResponse extends _i2.OpenApiResponse {
+  CreateUsersWithListInputResponse();
 
-  /// successful operation
-  factory UserCreateWithListPostResponse.responseDefault(int status) =>
-      _UserCreateWithListPostResponseDefault.responseDefault(status);
+  /// /// successful operation
+  factory CreateUsersWithListInputResponse.responseDefault(int status) =>
+      _CreateUsersWithListInputResponseDefault.responseDefault(status);
 
   void map(
       {@_i3.required
-          _i2.ResponseMap<_UserCreateWithListPostResponseDefault> onDefault}) {
-    if (this is _UserCreateWithListPostResponseDefault) {
-      onDefault((this as _UserCreateWithListPostResponseDefault));
+          _i2.ResponseMap<_CreateUsersWithListInputResponseDefault>
+              onDefault}) {
+    if (this is _CreateUsersWithListInputResponseDefault) {
+      onDefault((this as _CreateUsersWithListInputResponseDefault));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-///
 @_i1.JsonSerializable()
-class UserLoginGetResponseBody200 implements _i2.OpenApiContent {
-  UserLoginGetResponseBody200();
+class LoginUserResponseBody200 implements _i2.OpenApiContent {
+  LoginUserResponseBody200();
 
-  factory UserLoginGetResponseBody200.fromJson(Map<String, dynamic> jsonMap) =>
-      _$UserLoginGetResponseBody200FromJson(jsonMap);
+  factory LoginUserResponseBody200.fromJson(Map<String, dynamic> jsonMap) =>
+      _$LoginUserResponseBody200FromJson(jsonMap);
 
-  Map<String, dynamic> toJson() => _$UserLoginGetResponseBody200ToJson(this);
+  Map<String, dynamic> toJson() => _$LoginUserResponseBody200ToJson(this);
   @override
   String toString() => toJson().toString();
 }
 
-class _UserLoginGetResponse200 extends UserLoginGetResponse
+class _LoginUserResponse200 extends LoginUserResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// successful operation
-  _UserLoginGetResponse200.response200(this.body)
+  /// /// successful operation
+  _LoginUserResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
 
   @override
   final int status;
 
-  final UserLoginGetResponseBody200 body;
+  final LoginUserResponseBody200 body;
 
   @override
   final Map<String, dynamic> bodyJson;
@@ -1293,9 +1252,9 @@ class _UserLoginGetResponse200 extends UserLoginGetResponse
       };
 }
 
-class _UserLoginGetResponse400 extends UserLoginGetResponse {
-  /// Invalid username/password supplied
-  _UserLoginGetResponse400.response400() : status = 400;
+class _LoginUserResponse400 extends LoginUserResponse {
+  /// /// Invalid username/password supplied
+  _LoginUserResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -1308,43 +1267,43 @@ class _UserLoginGetResponse400 extends UserLoginGetResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserLoginGetResponse extends _i2.OpenApiResponse
-    implements _i2.HasSuccessResponse<UserLoginGetResponseBody200> {
-  UserLoginGetResponse();
+abstract class LoginUserResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<LoginUserResponseBody200> {
+  LoginUserResponse();
 
-  /// successful operation
-  factory UserLoginGetResponse.response200(UserLoginGetResponseBody200 body) =>
-      _UserLoginGetResponse200.response200(body);
+  /// /// successful operation
+  factory LoginUserResponse.response200(LoginUserResponseBody200 body) =>
+      _LoginUserResponse200.response200(body);
 
-  /// Invalid username/password supplied
-  factory UserLoginGetResponse.response400() =>
-      _UserLoginGetResponse400.response400();
+  /// /// Invalid username/password supplied
+  factory LoginUserResponse.response400() =>
+      _LoginUserResponse400.response400();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_UserLoginGetResponse200> on200,
-      @_i3.required _i2.ResponseMap<_UserLoginGetResponse400> on400}) {
-    if (this is _UserLoginGetResponse200) {
-      on200((this as _UserLoginGetResponse200));
-    } else if (this is _UserLoginGetResponse400) {
-      on400((this as _UserLoginGetResponse400));
+      {@_i3.required _i2.ResponseMap<_LoginUserResponse200> on200,
+      @_i3.required _i2.ResponseMap<_LoginUserResponse400> on400}) {
+    if (this is _LoginUserResponse200) {
+      on200((this as _LoginUserResponse200));
+    } else if (this is _LoginUserResponse400) {
+      on400((this as _LoginUserResponse400));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 
   @override
-  UserLoginGetResponseBody200 requireSuccess() {
-    if (this is _UserLoginGetResponse200) {
-      return (this as _UserLoginGetResponse200).body;
+  LoginUserResponseBody200 requireSuccess() {
+    if (this is _LoginUserResponse200) {
+      return (this as _LoginUserResponse200).body;
     } else {
       throw StateError('Expected success response, but got $this');
     }
   }
 }
 
-class _UserLogoutGetResponseDefault extends UserLogoutGetResponse {
-  /// successful operation
-  _UserLogoutGetResponseDefault.responseDefault(int status) : status = status;
+class _LogoutUserResponseDefault extends LogoutUserResponse {
+  /// /// successful operation
+  _LogoutUserResponseDefault.responseDefault(int status) : status = status;
 
   @override
   final int status;
@@ -1357,28 +1316,27 @@ class _UserLogoutGetResponseDefault extends UserLogoutGetResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserLogoutGetResponse extends _i2.OpenApiResponse {
-  UserLogoutGetResponse();
+abstract class LogoutUserResponse extends _i2.OpenApiResponse {
+  LogoutUserResponse();
 
-  /// successful operation
-  factory UserLogoutGetResponse.responseDefault(int status) =>
-      _UserLogoutGetResponseDefault.responseDefault(status);
+  /// /// successful operation
+  factory LogoutUserResponse.responseDefault(int status) =>
+      _LogoutUserResponseDefault.responseDefault(status);
 
   void map(
-      {@_i3.required
-          _i2.ResponseMap<_UserLogoutGetResponseDefault> onDefault}) {
-    if (this is _UserLogoutGetResponseDefault) {
-      onDefault((this as _UserLogoutGetResponseDefault));
+      {@_i3.required _i2.ResponseMap<_LogoutUserResponseDefault> onDefault}) {
+    if (this is _LogoutUserResponseDefault) {
+      onDefault((this as _LogoutUserResponseDefault));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-class _UserUsernameGetResponse200 extends UserUsernameGetResponse
+class _GetUserByNameResponse200 extends GetUserByNameResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// successful operation
-  _UserUsernameGetResponse200.response200(this.body)
+  /// /// successful operation
+  _GetUserByNameResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
 
@@ -1403,9 +1361,9 @@ class _UserUsernameGetResponse200 extends UserUsernameGetResponse
       };
 }
 
-class _UserUsernameGetResponse400 extends UserUsernameGetResponse {
-  /// Invalid username supplied
-  _UserUsernameGetResponse400.response400() : status = 400;
+class _GetUserByNameResponse400 extends GetUserByNameResponse {
+  /// /// Invalid username supplied
+  _GetUserByNameResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -1418,9 +1376,9 @@ class _UserUsernameGetResponse400 extends UserUsernameGetResponse {
       {'status': status, 'contentType': contentType};
 }
 
-class _UserUsernameGetResponse404 extends UserUsernameGetResponse {
-  /// User not found
-  _UserUsernameGetResponse404.response404() : status = 404;
+class _GetUserByNameResponse404 extends GetUserByNameResponse {
+  /// /// User not found
+  _GetUserByNameResponse404.response404() : status = 404;
 
   @override
   final int status;
@@ -1433,32 +1391,32 @@ class _UserUsernameGetResponse404 extends UserUsernameGetResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserUsernameGetResponse extends _i2.OpenApiResponse
+abstract class GetUserByNameResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<User> {
-  UserUsernameGetResponse();
+  GetUserByNameResponse();
 
-  /// successful operation
-  factory UserUsernameGetResponse.response200(User body) =>
-      _UserUsernameGetResponse200.response200(body);
+  /// /// successful operation
+  factory GetUserByNameResponse.response200(User body) =>
+      _GetUserByNameResponse200.response200(body);
 
-  /// Invalid username supplied
-  factory UserUsernameGetResponse.response400() =>
-      _UserUsernameGetResponse400.response400();
+  /// /// Invalid username supplied
+  factory GetUserByNameResponse.response400() =>
+      _GetUserByNameResponse400.response400();
 
-  /// User not found
-  factory UserUsernameGetResponse.response404() =>
-      _UserUsernameGetResponse404.response404();
+  /// /// User not found
+  factory GetUserByNameResponse.response404() =>
+      _GetUserByNameResponse404.response404();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_UserUsernameGetResponse200> on200,
-      @_i3.required _i2.ResponseMap<_UserUsernameGetResponse400> on400,
-      @_i3.required _i2.ResponseMap<_UserUsernameGetResponse404> on404}) {
-    if (this is _UserUsernameGetResponse200) {
-      on200((this as _UserUsernameGetResponse200));
-    } else if (this is _UserUsernameGetResponse400) {
-      on400((this as _UserUsernameGetResponse400));
-    } else if (this is _UserUsernameGetResponse404) {
-      on404((this as _UserUsernameGetResponse404));
+      {@_i3.required _i2.ResponseMap<_GetUserByNameResponse200> on200,
+      @_i3.required _i2.ResponseMap<_GetUserByNameResponse400> on400,
+      @_i3.required _i2.ResponseMap<_GetUserByNameResponse404> on404}) {
+    if (this is _GetUserByNameResponse200) {
+      on200((this as _GetUserByNameResponse200));
+    } else if (this is _GetUserByNameResponse400) {
+      on400((this as _GetUserByNameResponse400));
+    } else if (this is _GetUserByNameResponse404) {
+      on404((this as _GetUserByNameResponse404));
     } else {
       throw StateError('Invalid instance type $this');
     }
@@ -1466,17 +1424,17 @@ abstract class UserUsernameGetResponse extends _i2.OpenApiResponse
 
   @override
   User requireSuccess() {
-    if (this is _UserUsernameGetResponse200) {
-      return (this as _UserUsernameGetResponse200).body;
+    if (this is _GetUserByNameResponse200) {
+      return (this as _GetUserByNameResponse200).body;
     } else {
       throw StateError('Expected success response, but got $this');
     }
   }
 }
 
-class _UserUsernamePutResponse400 extends UserUsernamePutResponse {
-  /// Invalid user supplied
-  _UserUsernamePutResponse400.response400() : status = 400;
+class _UpdateUserResponse400 extends UpdateUserResponse {
+  /// /// Invalid user supplied
+  _UpdateUserResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -1489,9 +1447,9 @@ class _UserUsernamePutResponse400 extends UserUsernamePutResponse {
       {'status': status, 'contentType': contentType};
 }
 
-class _UserUsernamePutResponse404 extends UserUsernamePutResponse {
-  /// User not found
-  _UserUsernamePutResponse404.response404() : status = 404;
+class _UpdateUserResponse404 extends UpdateUserResponse {
+  /// /// User not found
+  _UpdateUserResponse404.response404() : status = 404;
 
   @override
   final int status;
@@ -1504,33 +1462,33 @@ class _UserUsernamePutResponse404 extends UserUsernamePutResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserUsernamePutResponse extends _i2.OpenApiResponse {
-  UserUsernamePutResponse();
+abstract class UpdateUserResponse extends _i2.OpenApiResponse {
+  UpdateUserResponse();
 
-  /// Invalid user supplied
-  factory UserUsernamePutResponse.response400() =>
-      _UserUsernamePutResponse400.response400();
+  /// /// Invalid user supplied
+  factory UpdateUserResponse.response400() =>
+      _UpdateUserResponse400.response400();
 
-  /// User not found
-  factory UserUsernamePutResponse.response404() =>
-      _UserUsernamePutResponse404.response404();
+  /// /// User not found
+  factory UpdateUserResponse.response404() =>
+      _UpdateUserResponse404.response404();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_UserUsernamePutResponse400> on400,
-      @_i3.required _i2.ResponseMap<_UserUsernamePutResponse404> on404}) {
-    if (this is _UserUsernamePutResponse400) {
-      on400((this as _UserUsernamePutResponse400));
-    } else if (this is _UserUsernamePutResponse404) {
-      on404((this as _UserUsernamePutResponse404));
+      {@_i3.required _i2.ResponseMap<_UpdateUserResponse400> on400,
+      @_i3.required _i2.ResponseMap<_UpdateUserResponse404> on404}) {
+    if (this is _UpdateUserResponse400) {
+      on400((this as _UpdateUserResponse400));
+    } else if (this is _UpdateUserResponse404) {
+      on404((this as _UpdateUserResponse404));
     } else {
       throw StateError('Invalid instance type $this');
     }
   }
 }
 
-class _UserUsernameDeleteResponse400 extends UserUsernameDeleteResponse {
-  /// Invalid username supplied
-  _UserUsernameDeleteResponse400.response400() : status = 400;
+class _DeleteUserResponse400 extends DeleteUserResponse {
+  /// /// Invalid username supplied
+  _DeleteUserResponse400.response400() : status = 400;
 
   @override
   final int status;
@@ -1543,9 +1501,9 @@ class _UserUsernameDeleteResponse400 extends UserUsernameDeleteResponse {
       {'status': status, 'contentType': contentType};
 }
 
-class _UserUsernameDeleteResponse404 extends UserUsernameDeleteResponse {
-  /// User not found
-  _UserUsernameDeleteResponse404.response404() : status = 404;
+class _DeleteUserResponse404 extends DeleteUserResponse {
+  /// /// User not found
+  _DeleteUserResponse404.response404() : status = 404;
 
   @override
   final int status;
@@ -1558,24 +1516,24 @@ class _UserUsernameDeleteResponse404 extends UserUsernameDeleteResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserUsernameDeleteResponse extends _i2.OpenApiResponse {
-  UserUsernameDeleteResponse();
+abstract class DeleteUserResponse extends _i2.OpenApiResponse {
+  DeleteUserResponse();
 
-  /// Invalid username supplied
-  factory UserUsernameDeleteResponse.response400() =>
-      _UserUsernameDeleteResponse400.response400();
+  /// /// Invalid username supplied
+  factory DeleteUserResponse.response400() =>
+      _DeleteUserResponse400.response400();
 
-  /// User not found
-  factory UserUsernameDeleteResponse.response404() =>
-      _UserUsernameDeleteResponse404.response404();
+  /// /// User not found
+  factory DeleteUserResponse.response404() =>
+      _DeleteUserResponse404.response404();
 
   void map(
-      {@_i3.required _i2.ResponseMap<_UserUsernameDeleteResponse400> on400,
-      @_i3.required _i2.ResponseMap<_UserUsernameDeleteResponse404> on404}) {
-    if (this is _UserUsernameDeleteResponse400) {
-      on400((this as _UserUsernameDeleteResponse400));
-    } else if (this is _UserUsernameDeleteResponse404) {
-      on404((this as _UserUsernameDeleteResponse404));
+      {@_i3.required _i2.ResponseMap<_DeleteUserResponse400> on400,
+      @_i3.required _i2.ResponseMap<_DeleteUserResponse404> on404}) {
+    if (this is _DeleteUserResponse400) {
+      on400((this as _DeleteUserResponse400));
+    } else if (this is _DeleteUserResponse404) {
+      on404((this as _DeleteUserResponse404));
     } else {
       throw StateError('Invalid instance type $this');
     }
@@ -1585,106 +1543,100 @@ abstract class UserUsernameDeleteResponse extends _i2.OpenApiResponse {
 abstract class Petstore implements _i2.ApiEndpoint {
   /// Update an existing pet
   /// put: /pet
-  Future<PetPutResponse> petPut(Pet body);
+  Future<UpdatePetResponse> updatePet(Pet body);
 
   /// Add a new pet to the store
   /// post: /pet
-  Future<PetPostResponse> petPost(Pet body);
+  Future<AddPetResponse> addPet(Pet body);
 
   /// Finds Pets by status
   /// Multiple status values can be provided with comma separated strings
   /// get: /pet/findByStatus
-  Future<PetFindByStatusGetResponse> petFindByStatusGet(
-      {@_i3.required List<PetFindByStatusGet> status});
+  Future<FindPetsByStatusResponse> findPetsByStatus(
+      {@_i3.required List<FindPetsByStatus> status});
 
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
   /// get: /pet/findByTags
-  Future<PetFindByTagsGetResponse> petFindByTagsGet(
+  Future<FindPetsByTagsResponse> findPetsByTags(
       {@_i3.required List<String> tags});
 
   /// Find pet by ID
   /// Returns a single pet
   /// get: /pet/{petId}
-  Future<PetPetIdGetResponse> petPetIdGet({@_i3.required int petId});
+  Future<GetPetByIdResponse> getPetById({@_i3.required int petId});
 
   /// Updates a pet in the store with form data
   /// post: /pet/{petId}
-  Future<PetPetIdPostResponse> petPetIdPost(PetPetIdSchema body,
+  Future<UpdatePetWithFormResponse> updatePetWithForm(PetPetIdSchema body,
       {@_i3.required int petId});
 
   /// Deletes a pet
   /// delete: /pet/{petId}
-  Future<PetPetIdDeleteResponse> petPetIdDelete(
-      {String apiKey, @_i3.required int petId});
+  Future<DeletePetResponse> deletePet({String apiKey, @_i3.required int petId});
 
   /// uploads an image
   /// post: /pet/{petId}/uploadImage
-  Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(
-      PetPetIdUploadImageSchema body,
+  Future<UploadFileResponse> uploadFile(PetPetIdUploadImageSchema body,
       {@_i3.required int petId});
 
   /// Returns pet inventories by status
   /// Returns a map of status codes to quantities
   /// get: /store/inventory
-  Future<StoreInventoryGetResponse> storeInventoryGet();
+  Future<GetInventoryResponse> getInventory();
 
   /// Place an order for a pet
   /// post: /store/order
-  Future<StoreOrderPostResponse> storeOrderPost(Order body);
+  Future<PlaceOrderResponse> placeOrder(Order body);
 
   /// Find purchase order by ID
   /// For valid response try integer IDs with value >= 1 and <= 10.\ \ Other values will generated exceptions
   /// get: /store/order/{orderId}
-  Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(
-      {@_i3.required int orderId});
+  Future<GetOrderByIdResponse> getOrderById({@_i3.required int orderId});
 
   /// Delete purchase order by ID
   /// For valid response try integer IDs with positive integer value.\ \ Negative or non-integer values will generate API errors
   /// delete: /store/order/{orderId}
-  Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(
-      {@_i3.required int orderId});
+  Future<DeleteOrderResponse> deleteOrder({@_i3.required int orderId});
 
   /// Create user
   /// This can only be done by the logged in user.
   /// post: /user
-  Future<UserPostResponse> userPost(User body);
+  Future<CreateUserResponse> createUser(User body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithArray
-  Future<UserCreateWithArrayPostResponse> userCreateWithArrayPost(
+  Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
       UserCreateWithArraySchema body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
-  Future<UserCreateWithListPostResponse> userCreateWithListPost(
+  Future<CreateUsersWithListInputResponse> createUsersWithListInput(
       UserCreateWithArraySchema body);
 
   /// Logs user into the system
   /// get: /user/login
-  Future<UserLoginGetResponse> userLoginGet(
+  Future<LoginUserResponse> loginUser(
       {@_i3.required String username, @_i3.required String password});
 
   /// Logs out current logged in user session
   /// get: /user/logout
-  Future<UserLogoutGetResponse> userLogoutGet();
+  Future<LogoutUserResponse> logoutUser();
 
   /// Get user by user name
   /// get: /user/{username}
-  Future<UserUsernameGetResponse> userUsernameGet(
-      {@_i3.required String username});
+  Future<GetUserByNameResponse> getUserByName({@_i3.required String username});
 
   /// Updated user
   /// This can only be done by the logged in user.
   /// put: /user/{username}
-  Future<UserUsernamePutResponse> userUsernamePut(User body,
+  Future<UpdateUserResponse> updateUser(User body,
       {@_i3.required String username});
 
   /// Delete user
   /// This can only be done by the logged in user.
   /// delete: /user/{username}
-  Future<UserUsernameDeleteResponse> userUsernameDelete(
-      {@_i3.required String username});
+  Future<DeleteUserResponse> deleteUser({@_i3.required String username});
 }
 
 abstract class PetstoreClient implements _i2.OpenApiClient {
@@ -1694,27 +1646,27 @@ abstract class PetstoreClient implements _i2.OpenApiClient {
   /// Update an existing pet
   /// put: /pet
   ///
-  Future<PetPutResponse> petPut(Pet body);
+  Future<UpdatePetResponse> updatePet(Pet body);
 
   /// Add a new pet to the store
   /// post: /pet
   ///
-  Future<PetPostResponse> petPost(Pet body);
+  Future<AddPetResponse> addPet(Pet body);
 
   /// Finds Pets by status
   /// Multiple status values can be provided with comma separated strings
   /// get: /pet/findByStatus
   ///
   /// * [status]: Status values that need to be considered for filter
-  Future<PetFindByStatusGetResponse> petFindByStatusGet(
-      {@_i3.required List<PetFindByStatusGet> status});
+  Future<FindPetsByStatusResponse> findPetsByStatus(
+      {@_i3.required List<FindPetsByStatus> status});
 
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
   /// get: /pet/findByTags
   ///
   /// * [tags]: Tags to filter by
-  Future<PetFindByTagsGetResponse> petFindByTagsGet(
+  Future<FindPetsByTagsResponse> findPetsByTags(
       {@_i3.required List<String> tags});
 
   /// Find pet by ID
@@ -1722,73 +1674,69 @@ abstract class PetstoreClient implements _i2.OpenApiClient {
   /// get: /pet/{petId}
   ///
   /// * [petId]: ID of pet to return
-  Future<PetPetIdGetResponse> petPetIdGet({@_i3.required int petId});
+  Future<GetPetByIdResponse> getPetById({@_i3.required int petId});
 
   /// Updates a pet in the store with form data
   /// post: /pet/{petId}
   ///
   /// * [petId]: ID of pet that needs to be updated
-  Future<PetPetIdPostResponse> petPetIdPost(PetPetIdSchema body,
+  Future<UpdatePetWithFormResponse> updatePetWithForm(PetPetIdSchema body,
       {@_i3.required int petId});
 
   /// Deletes a pet
   /// delete: /pet/{petId}
   ///
   /// * [petId]: Pet id to delete
-  Future<PetPetIdDeleteResponse> petPetIdDelete(
-      {String apiKey, @_i3.required int petId});
+  Future<DeletePetResponse> deletePet({String apiKey, @_i3.required int petId});
 
   /// uploads an image
   /// post: /pet/{petId}/uploadImage
   ///
   /// * [petId]: ID of pet to update
-  Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(
-      PetPetIdUploadImageSchema body,
+  Future<UploadFileResponse> uploadFile(PetPetIdUploadImageSchema body,
       {@_i3.required int petId});
 
   /// Returns pet inventories by status
   /// Returns a map of status codes to quantities
   /// get: /store/inventory
   ///
-  Future<StoreInventoryGetResponse> storeInventoryGet();
+  Future<GetInventoryResponse> getInventory();
 
   /// Place an order for a pet
   /// post: /store/order
   ///
-  Future<StoreOrderPostResponse> storeOrderPost(Order body);
+  Future<PlaceOrderResponse> placeOrder(Order body);
 
   /// Find purchase order by ID
   /// For valid response try integer IDs with value >= 1 and <= 10.\ \ Other values will generated exceptions
   /// get: /store/order/{orderId}
   ///
   /// * [orderId]: ID of pet that needs to be fetched
-  Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(
-      {@_i3.required int orderId});
+  Future<GetOrderByIdResponse> getOrderById({@_i3.required int orderId});
 
   /// Delete purchase order by ID
   /// For valid response try integer IDs with positive integer value.\ \ Negative or non-integer values will generate API errors
   /// delete: /store/order/{orderId}
   ///
   /// * [orderId]: ID of the order that needs to be deleted
-  Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(
-      {@_i3.required int orderId});
+  Future<DeleteOrderResponse> deleteOrder({@_i3.required int orderId});
 
   /// Create user
   /// This can only be done by the logged in user.
   /// post: /user
   ///
-  Future<UserPostResponse> userPost(User body);
+  Future<CreateUserResponse> createUser(User body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithArray
   ///
-  Future<UserCreateWithArrayPostResponse> userCreateWithArrayPost(
+  Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
       UserCreateWithArraySchema body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
   ///
-  Future<UserCreateWithListPostResponse> userCreateWithListPost(
+  Future<CreateUsersWithListInputResponse> createUsersWithListInput(
       UserCreateWithArraySchema body);
 
   /// Logs user into the system
@@ -1796,27 +1744,26 @@ abstract class PetstoreClient implements _i2.OpenApiClient {
   ///
   /// * [username]: The user name for login
   /// * [password]: The password for login in clear text
-  Future<UserLoginGetResponse> userLoginGet(
+  Future<LoginUserResponse> loginUser(
       {@_i3.required String username, @_i3.required String password});
 
   /// Logs out current logged in user session
   /// get: /user/logout
   ///
-  Future<UserLogoutGetResponse> userLogoutGet();
+  Future<LogoutUserResponse> logoutUser();
 
   /// Get user by user name
   /// get: /user/{username}
   ///
   /// * [username]: The name that needs to be fetched. Use user1 for testing.
-  Future<UserUsernameGetResponse> userUsernameGet(
-      {@_i3.required String username});
+  Future<GetUserByNameResponse> getUserByName({@_i3.required String username});
 
   /// Updated user
   /// This can only be done by the logged in user.
   /// put: /user/{username}
   ///
   /// * [username]: name that need to be updated
-  Future<UserUsernamePutResponse> userUsernamePut(User body,
+  Future<UpdateUserResponse> updateUser(User body,
       {@_i3.required String username});
 
   /// Delete user
@@ -1824,8 +1771,7 @@ abstract class PetstoreClient implements _i2.OpenApiClient {
   /// delete: /user/{username}
   ///
   /// * [username]: The name that needs to be deleted
-  Future<UserUsernameDeleteResponse> userUsernameDelete(
-      {@_i3.required String username});
+  Future<DeleteUserResponse> deleteUser({@_i3.required String username});
 }
 
 class _PetstoreClientImpl extends _i2.OpenApiClientBase
@@ -1842,17 +1788,17 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// put: /pet
   ///
   @override
-  Future<PetPutResponse> petPut(Pet body) async {
+  Future<UpdatePetResponse> updatePet(Pet body) async {
     final request = _i2.OpenApiClientRequest('put', '/pet', []);
     request.setHeader('content-type', 'application/json');
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
-          _PetPutResponse400.response400(),
+          _UpdatePetResponse400.response400(),
       '404': (_i2.OpenApiClientResponse response) async =>
-          _PetPutResponse404.response404(),
+          _UpdatePetResponse404.response404(),
       '405': (_i2.OpenApiClientResponse response) async =>
-          _PetPutResponse405.response405()
+          _UpdatePetResponse405.response405()
     });
   }
 
@@ -1860,13 +1806,13 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// post: /pet
   ///
   @override
-  Future<PetPostResponse> petPost(Pet body) async {
+  Future<AddPetResponse> addPet(Pet body) async {
     final request = _i2.OpenApiClientRequest('post', '/pet', []);
     request.setHeader('content-type', 'application/json');
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '405': (_i2.OpenApiClientResponse response) async =>
-          _PetPostResponse405.response405()
+          _AddPetResponse405.response405()
     });
   }
 
@@ -1876,17 +1822,17 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [status]: Status values that need to be considered for filter
   @override
-  Future<PetFindByStatusGetResponse> petFindByStatusGet(
-      {@_i3.required List<PetFindByStatusGet> status}) async {
+  Future<FindPetsByStatusResponse> findPetsByStatus(
+      {@_i3.required List<FindPetsByStatus> status}) async {
     final request = _i2.OpenApiClientRequest('get', '/pet/findByStatus', []);
     request.addQueryParameter('status', status.map((e) => e.name));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
-          _PetFindByStatusGetResponse200.response200(
-              PetFindByStatusGetResponseBody200.fromJson(
+          _FindPetsByStatusResponse200.response200(
+              FindPetsByStatusResponseBody200.fromJson(
                   await response.responseBodyJson())),
       '400': (_i2.OpenApiClientResponse response) async =>
-          _PetFindByStatusGetResponse400.response400()
+          _FindPetsByStatusResponse400.response400()
     });
   }
 
@@ -1896,17 +1842,17 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [tags]: Tags to filter by
   @override
-  Future<PetFindByTagsGetResponse> petFindByTagsGet(
+  Future<FindPetsByTagsResponse> findPetsByTags(
       {@_i3.required List<String> tags}) async {
     final request = _i2.OpenApiClientRequest('get', '/pet/findByTags', []);
     request.addQueryParameter('tags', tags);
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
-          _PetFindByTagsGetResponse200.response200(
-              PetFindByTagsGetResponseBody200.fromJson(
+          _FindPetsByTagsResponse200.response200(
+              FindPetsByTagsResponseBody200.fromJson(
                   await response.responseBodyJson())),
       '400': (_i2.OpenApiClientResponse response) async =>
-          _PetFindByTagsGetResponse400.response400()
+          _FindPetsByTagsResponse400.response400()
     });
   }
 
@@ -1916,17 +1862,17 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [petId]: ID of pet to return
   @override
-  Future<PetPetIdGetResponse> petPetIdGet({@_i3.required int petId}) async {
+  Future<GetPetByIdResponse> getPetById({@_i3.required int petId}) async {
     final request = _i2.OpenApiClientRequest('get', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
-          _PetPetIdGetResponse200.response200(
+          _GetPetByIdResponse200.response200(
               Pet.fromJson(await response.responseBodyJson())),
       '400': (_i2.OpenApiClientResponse response) async =>
-          _PetPetIdGetResponse400.response400(),
+          _GetPetByIdResponse400.response400(),
       '404': (_i2.OpenApiClientResponse response) async =>
-          _PetPetIdGetResponse404.response404()
+          _GetPetByIdResponse404.response404()
     });
   }
 
@@ -1935,7 +1881,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [petId]: ID of pet that needs to be updated
   @override
-  Future<PetPetIdPostResponse> petPetIdPost(PetPetIdSchema body,
+  Future<UpdatePetWithFormResponse> updatePetWithForm(PetPetIdSchema body,
       {@_i3.required int petId}) async {
     final request = _i2.OpenApiClientRequest('post', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
@@ -1943,7 +1889,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '405': (_i2.OpenApiClientResponse response) async =>
-          _PetPetIdPostResponse405.response405()
+          _UpdatePetWithFormResponse405.response405()
     });
   }
 
@@ -1952,16 +1898,16 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [petId]: Pet id to delete
   @override
-  Future<PetPetIdDeleteResponse> petPetIdDelete(
+  Future<DeletePetResponse> deletePet(
       {String apiKey, @_i3.required int petId}) async {
     final request = _i2.OpenApiClientRequest('delete', '/pet/{petId}', []);
     request.addHeaderParameter('api_key', encodeString(apiKey));
     request.addPathParameter('petId', encodeInt(petId));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
-          _PetPetIdDeleteResponse400.response400(),
+          _DeletePetResponse400.response400(),
       '404': (_i2.OpenApiClientResponse response) async =>
-          _PetPetIdDeleteResponse404.response404()
+          _DeletePetResponse404.response404()
     });
   }
 
@@ -1970,8 +1916,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [petId]: ID of pet to update
   @override
-  Future<PetPetIdUploadImagePostResponse> petPetIdUploadImagePost(
-      PetPetIdUploadImageSchema body,
+  Future<UploadFileResponse> uploadFile(PetPetIdUploadImageSchema body,
       {@_i3.required int petId}) async {
     final request =
         _i2.OpenApiClientRequest('post', '/pet/{petId}/uploadImage', []);
@@ -1980,7 +1925,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
-          _PetPetIdUploadImagePostResponse200.response200(
+          _UploadFileResponse200.response200(
               ApiResponse.fromJson(await response.responseBodyJson()))
     });
   }
@@ -1990,12 +1935,12 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// get: /store/inventory
   ///
   @override
-  Future<StoreInventoryGetResponse> storeInventoryGet() async {
+  Future<GetInventoryResponse> getInventory() async {
     final request = _i2.OpenApiClientRequest('get', '/store/inventory', []);
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
-          _StoreInventoryGetResponse200.response200(
-              StoreInventoryGetResponseBody200.fromJson(
+          _GetInventoryResponse200.response200(
+              GetInventoryResponseBody200.fromJson(
                   await response.responseBodyJson()))
     });
   }
@@ -2004,16 +1949,16 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// post: /store/order
   ///
   @override
-  Future<StoreOrderPostResponse> storeOrderPost(Order body) async {
+  Future<PlaceOrderResponse> placeOrder(Order body) async {
     final request = _i2.OpenApiClientRequest('post', '/store/order', []);
     request.setHeader('content-type', 'application/json');
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
-          _StoreOrderPostResponse200.response200(
+          _PlaceOrderResponse200.response200(
               Order.fromJson(await response.responseBodyJson())),
       '400': (_i2.OpenApiClientResponse response) async =>
-          _StoreOrderPostResponse400.response400()
+          _PlaceOrderResponse400.response400()
     });
   }
 
@@ -2023,19 +1968,18 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [orderId]: ID of pet that needs to be fetched
   @override
-  Future<StoreOrderOrderIdGetResponse> storeOrderOrderIdGet(
-      {@_i3.required int orderId}) async {
+  Future<GetOrderByIdResponse> getOrderById({@_i3.required int orderId}) async {
     final request =
         _i2.OpenApiClientRequest('get', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
-          _StoreOrderOrderIdGetResponse200.response200(
+          _GetOrderByIdResponse200.response200(
               Order.fromJson(await response.responseBodyJson())),
       '400': (_i2.OpenApiClientResponse response) async =>
-          _StoreOrderOrderIdGetResponse400.response400(),
+          _GetOrderByIdResponse400.response400(),
       '404': (_i2.OpenApiClientResponse response) async =>
-          _StoreOrderOrderIdGetResponse404.response404()
+          _GetOrderByIdResponse404.response404()
     });
   }
 
@@ -2045,16 +1989,15 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [orderId]: ID of the order that needs to be deleted
   @override
-  Future<StoreOrderOrderIdDeleteResponse> storeOrderOrderIdDelete(
-      {@_i3.required int orderId}) async {
+  Future<DeleteOrderResponse> deleteOrder({@_i3.required int orderId}) async {
     final request =
         _i2.OpenApiClientRequest('delete', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
-          _StoreOrderOrderIdDeleteResponse400.response400(),
+          _DeleteOrderResponse400.response400(),
       '404': (_i2.OpenApiClientResponse response) async =>
-          _StoreOrderOrderIdDeleteResponse404.response404()
+          _DeleteOrderResponse404.response404()
     });
   }
 
@@ -2063,13 +2006,13 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// post: /user
   ///
   @override
-  Future<UserPostResponse> userPost(User body) async {
+  Future<CreateUserResponse> createUser(User body) async {
     final request = _i2.OpenApiClientRequest('post', '/user', []);
     request.setHeader('content-type', 'application/json');
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       'default': (_i2.OpenApiClientResponse response) async =>
-          _UserPostResponseDefault.responseDefault(response.status)
+          _CreateUserResponseDefault.responseDefault(response.status)
     });
   }
 
@@ -2077,7 +2020,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// post: /user/createWithArray
   ///
   @override
-  Future<UserCreateWithArrayPostResponse> userCreateWithArrayPost(
+  Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
       UserCreateWithArraySchema body) async {
     final request =
         _i2.OpenApiClientRequest('post', '/user/createWithArray', []);
@@ -2085,7 +2028,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       'default': (_i2.OpenApiClientResponse response) async =>
-          _UserCreateWithArrayPostResponseDefault.responseDefault(
+          _CreateUsersWithArrayInputResponseDefault.responseDefault(
               response.status)
     });
   }
@@ -2094,7 +2037,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// post: /user/createWithList
   ///
   @override
-  Future<UserCreateWithListPostResponse> userCreateWithListPost(
+  Future<CreateUsersWithListInputResponse> createUsersWithListInput(
       UserCreateWithArraySchema body) async {
     final request =
         _i2.OpenApiClientRequest('post', '/user/createWithList', []);
@@ -2102,7 +2045,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       'default': (_i2.OpenApiClientResponse response) async =>
-          _UserCreateWithListPostResponseDefault.responseDefault(
+          _CreateUsersWithListInputResponseDefault.responseDefault(
               response.status)
     });
   }
@@ -2113,18 +2056,17 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// * [username]: The user name for login
   /// * [password]: The password for login in clear text
   @override
-  Future<UserLoginGetResponse> userLoginGet(
+  Future<LoginUserResponse> loginUser(
       {@_i3.required String username, @_i3.required String password}) async {
     final request = _i2.OpenApiClientRequest('get', '/user/login', []);
     request.addQueryParameter('username', encodeString(username));
     request.addQueryParameter('password', encodeString(password));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
-          _UserLoginGetResponse200.response200(
-              UserLoginGetResponseBody200.fromJson(
-                  await response.responseBodyJson())),
+          _LoginUserResponse200.response200(LoginUserResponseBody200.fromJson(
+              await response.responseBodyJson())),
       '400': (_i2.OpenApiClientResponse response) async =>
-          _UserLoginGetResponse400.response400()
+          _LoginUserResponse400.response400()
     });
   }
 
@@ -2132,11 +2074,11 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   /// get: /user/logout
   ///
   @override
-  Future<UserLogoutGetResponse> userLogoutGet() async {
+  Future<LogoutUserResponse> logoutUser() async {
     final request = _i2.OpenApiClientRequest('get', '/user/logout', []);
     return await sendRequest(request, {
       'default': (_i2.OpenApiClientResponse response) async =>
-          _UserLogoutGetResponseDefault.responseDefault(response.status)
+          _LogoutUserResponseDefault.responseDefault(response.status)
     });
   }
 
@@ -2145,18 +2087,18 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [username]: The name that needs to be fetched. Use user1 for testing.
   @override
-  Future<UserUsernameGetResponse> userUsernameGet(
+  Future<GetUserByNameResponse> getUserByName(
       {@_i3.required String username}) async {
     final request = _i2.OpenApiClientRequest('get', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
-          _UserUsernameGetResponse200.response200(
+          _GetUserByNameResponse200.response200(
               User.fromJson(await response.responseBodyJson())),
       '400': (_i2.OpenApiClientResponse response) async =>
-          _UserUsernameGetResponse400.response400(),
+          _GetUserByNameResponse400.response400(),
       '404': (_i2.OpenApiClientResponse response) async =>
-          _UserUsernameGetResponse404.response404()
+          _GetUserByNameResponse404.response404()
     });
   }
 
@@ -2166,7 +2108,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [username]: name that need to be updated
   @override
-  Future<UserUsernamePutResponse> userUsernamePut(User body,
+  Future<UpdateUserResponse> updateUser(User body,
       {@_i3.required String username}) async {
     final request = _i2.OpenApiClientRequest('put', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
@@ -2174,9 +2116,9 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
-          _UserUsernamePutResponse400.response400(),
+          _UpdateUserResponse400.response400(),
       '404': (_i2.OpenApiClientResponse response) async =>
-          _UserUsernamePutResponse404.response404()
+          _UpdateUserResponse404.response404()
     });
   }
 
@@ -2186,15 +2128,14 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [username]: The name that needs to be deleted
   @override
-  Future<UserUsernameDeleteResponse> userUsernameDelete(
-      {@_i3.required String username}) async {
+  Future<DeleteUserResponse> deleteUser({@_i3.required String username}) async {
     final request = _i2.OpenApiClientRequest('delete', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
-          _UserUsernameDeleteResponse400.response400(),
+          _DeleteUserResponse400.response400(),
       '404': (_i2.OpenApiClientResponse response) async =>
-          _UserUsernameDeleteResponse404.response404()
+          _DeleteUserResponse404.response404()
     });
   }
 }
@@ -2203,7 +2144,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// Update an existing pet
   /// put: /pet
   ///
-  _i2.OpenApiClientRequest petPut() {
+  _i2.OpenApiClientRequest updatePet() {
     final request = _i2.OpenApiClientRequest('put', '/pet', []);
     return request;
   }
@@ -2211,7 +2152,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// Add a new pet to the store
   /// post: /pet
   ///
-  _i2.OpenApiClientRequest petPost() {
+  _i2.OpenApiClientRequest addPet() {
     final request = _i2.OpenApiClientRequest('post', '/pet', []);
     return request;
   }
@@ -2221,8 +2162,8 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// get: /pet/findByStatus
   ///
   /// * [status]: Status values that need to be considered for filter
-  _i2.OpenApiClientRequest petFindByStatusGet(
-      {@_i3.required List<PetFindByStatusGet> status}) {
+  _i2.OpenApiClientRequest findPetsByStatus(
+      {@_i3.required List<FindPetsByStatus> status}) {
     final request = _i2.OpenApiClientRequest('get', '/pet/findByStatus', []);
     request.addQueryParameter('status', status.map((e) => e.name));
     return request;
@@ -2233,7 +2174,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// get: /pet/findByTags
   ///
   /// * [tags]: Tags to filter by
-  _i2.OpenApiClientRequest petFindByTagsGet({@_i3.required List<String> tags}) {
+  _i2.OpenApiClientRequest findPetsByTags({@_i3.required List<String> tags}) {
     final request = _i2.OpenApiClientRequest('get', '/pet/findByTags', []);
     request.addQueryParameter('tags', tags);
     return request;
@@ -2244,7 +2185,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// get: /pet/{petId}
   ///
   /// * [petId]: ID of pet to return
-  _i2.OpenApiClientRequest petPetIdGet({@_i3.required int petId}) {
+  _i2.OpenApiClientRequest getPetById({@_i3.required int petId}) {
     final request = _i2.OpenApiClientRequest('get', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
     return request;
@@ -2254,7 +2195,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// post: /pet/{petId}
   ///
   /// * [petId]: ID of pet that needs to be updated
-  _i2.OpenApiClientRequest petPetIdPost({@_i3.required int petId}) {
+  _i2.OpenApiClientRequest updatePetWithForm({@_i3.required int petId}) {
     final request = _i2.OpenApiClientRequest('post', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
     return request;
@@ -2264,8 +2205,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// delete: /pet/{petId}
   ///
   /// * [petId]: Pet id to delete
-  _i2.OpenApiClientRequest petPetIdDelete(
-      {String apiKey, @_i3.required int petId}) {
+  _i2.OpenApiClientRequest deletePet({String apiKey, @_i3.required int petId}) {
     final request = _i2.OpenApiClientRequest('delete', '/pet/{petId}', []);
     request.addHeaderParameter('api_key', encodeString(apiKey));
     request.addPathParameter('petId', encodeInt(petId));
@@ -2276,7 +2216,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// post: /pet/{petId}/uploadImage
   ///
   /// * [petId]: ID of pet to update
-  _i2.OpenApiClientRequest petPetIdUploadImagePost({@_i3.required int petId}) {
+  _i2.OpenApiClientRequest uploadFile({@_i3.required int petId}) {
     final request =
         _i2.OpenApiClientRequest('post', '/pet/{petId}/uploadImage', []);
     request.addPathParameter('petId', encodeInt(petId));
@@ -2287,7 +2227,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// Returns a map of status codes to quantities
   /// get: /store/inventory
   ///
-  _i2.OpenApiClientRequest storeInventoryGet() {
+  _i2.OpenApiClientRequest getInventory() {
     final request = _i2.OpenApiClientRequest('get', '/store/inventory', []);
     return request;
   }
@@ -2295,7 +2235,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// Place an order for a pet
   /// post: /store/order
   ///
-  _i2.OpenApiClientRequest storeOrderPost() {
+  _i2.OpenApiClientRequest placeOrder() {
     final request = _i2.OpenApiClientRequest('post', '/store/order', []);
     return request;
   }
@@ -2305,7 +2245,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// get: /store/order/{orderId}
   ///
   /// * [orderId]: ID of pet that needs to be fetched
-  _i2.OpenApiClientRequest storeOrderOrderIdGet({@_i3.required int orderId}) {
+  _i2.OpenApiClientRequest getOrderById({@_i3.required int orderId}) {
     final request =
         _i2.OpenApiClientRequest('get', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
@@ -2317,8 +2257,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// delete: /store/order/{orderId}
   ///
   /// * [orderId]: ID of the order that needs to be deleted
-  _i2.OpenApiClientRequest storeOrderOrderIdDelete(
-      {@_i3.required int orderId}) {
+  _i2.OpenApiClientRequest deleteOrder({@_i3.required int orderId}) {
     final request =
         _i2.OpenApiClientRequest('delete', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
@@ -2329,7 +2268,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// This can only be done by the logged in user.
   /// post: /user
   ///
-  _i2.OpenApiClientRequest userPost() {
+  _i2.OpenApiClientRequest createUser() {
     final request = _i2.OpenApiClientRequest('post', '/user', []);
     return request;
   }
@@ -2337,7 +2276,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// Creates list of users with given input array
   /// post: /user/createWithArray
   ///
-  _i2.OpenApiClientRequest userCreateWithArrayPost() {
+  _i2.OpenApiClientRequest createUsersWithArrayInput() {
     final request =
         _i2.OpenApiClientRequest('post', '/user/createWithArray', []);
     return request;
@@ -2346,7 +2285,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// Creates list of users with given input array
   /// post: /user/createWithList
   ///
-  _i2.OpenApiClientRequest userCreateWithListPost() {
+  _i2.OpenApiClientRequest createUsersWithListInput() {
     final request =
         _i2.OpenApiClientRequest('post', '/user/createWithList', []);
     return request;
@@ -2357,7 +2296,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   ///
   /// * [username]: The user name for login
   /// * [password]: The password for login in clear text
-  _i2.OpenApiClientRequest userLoginGet(
+  _i2.OpenApiClientRequest loginUser(
       {@_i3.required String username, @_i3.required String password}) {
     final request = _i2.OpenApiClientRequest('get', '/user/login', []);
     request.addQueryParameter('username', encodeString(username));
@@ -2368,7 +2307,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// Logs out current logged in user session
   /// get: /user/logout
   ///
-  _i2.OpenApiClientRequest userLogoutGet() {
+  _i2.OpenApiClientRequest logoutUser() {
     final request = _i2.OpenApiClientRequest('get', '/user/logout', []);
     return request;
   }
@@ -2377,7 +2316,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// get: /user/{username}
   ///
   /// * [username]: The name that needs to be fetched. Use user1 for testing.
-  _i2.OpenApiClientRequest userUsernameGet({@_i3.required String username}) {
+  _i2.OpenApiClientRequest getUserByName({@_i3.required String username}) {
     final request = _i2.OpenApiClientRequest('get', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return request;
@@ -2388,7 +2327,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// put: /user/{username}
   ///
   /// * [username]: name that need to be updated
-  _i2.OpenApiClientRequest userUsernamePut({@_i3.required String username}) {
+  _i2.OpenApiClientRequest updateUser({@_i3.required String username}) {
     final request = _i2.OpenApiClientRequest('put', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return request;
@@ -2399,7 +2338,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// delete: /user/{username}
   ///
   /// * [username]: The name that needs to be deleted
-  _i2.OpenApiClientRequest userUsernameDelete({@_i3.required String username}) {
+  _i2.OpenApiClientRequest deleteUser({@_i3.required String username}) {
     final request = _i2.OpenApiClientRequest('delete', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
     return request;
@@ -2417,92 +2356,127 @@ class PetstoreRouter extends _i2.OpenApiServerRouterBase {
       return await impl.invoke(
           request,
           (Petstore impl) async =>
-              impl.petPut(Pet.fromJson(await request.readJsonBody())));
+              impl.updatePet(Pet.fromJson(await request.readJsonBody())));
     }, security: []);
     addRoute('/pet', 'post', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
           (Petstore impl) async =>
-              impl.petPost(Pet.fromJson(await request.readJsonBody())));
+              impl.addPet(Pet.fromJson(await request.readJsonBody())));
     }, security: []);
     addRoute('/pet/findByStatus', 'get', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.petFindByStatusGet(
-              status: request
-                  .queryParameter('status')
-                  .map((e) => PetFindByStatusGetExt.fromName(e))
-                  .toList()));
+          (Petstore impl) async => impl.findPetsByStatus(
+              status: param(
+                  isRequired: true,
+                  name: 'status',
+                  value: request.queryParameter('status'),
+                  decode: (value) => value
+                      .map((e) => FindPetsByStatusExt.fromName(e))
+                      .toList())));
     }, security: []);
     addRoute('/pet/findByTags', 'get', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async =>
-              impl.petFindByTagsGet(tags: request.queryParameter('tags')));
+          (Petstore impl) async => impl.findPetsByTags(
+              tags: param(
+                  isRequired: true,
+                  name: 'tags',
+                  value: request.queryParameter('tags'),
+                  decode: (value) => value)));
     }, security: []);
     addRoute('/pet/{petId}', 'get', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.petPetIdGet(
-              petId: paramToInt(request.pathParameter('petId'))));
+          (Petstore impl) async => impl.getPetById(
+              petId: param(
+                  isRequired: true,
+                  name: 'petId',
+                  value: request.pathParameter('petId'),
+                  decode: (value) => paramToInt(value))));
     }, security: []);
     addRoute('/pet/{petId}', 'post', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.petPetIdPost(
+          (Petstore impl) async => impl.updatePetWithForm(
               PetPetIdSchema.fromJson(await request.readUrlEncodedBodyFlat()),
-              petId: paramToInt(request.pathParameter('petId'))));
+              petId: param(
+                  isRequired: true,
+                  name: 'petId',
+                  value: request.pathParameter('petId'),
+                  decode: (value) => paramToInt(value))));
     }, security: []);
     addRoute('/pet/{petId}', 'delete', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.petPetIdDelete(
-              apiKey: paramToString(request.headerParameter('api_key')),
-              petId: paramToInt(request.pathParameter('petId'))));
+          (Petstore impl) async => impl.deletePet(
+              apiKey: param(
+                  isRequired: false,
+                  name: 'api_key',
+                  value: request.headerParameter('api_key'),
+                  decode: (value) => paramToString(value)),
+              petId: param(
+                  isRequired: true,
+                  name: 'petId',
+                  value: request.pathParameter('petId'),
+                  decode: (value) => paramToInt(value))));
     }, security: []);
     addRoute('/pet/{petId}/uploadImage', 'post',
         (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.petPetIdUploadImagePost(
+          (Petstore impl) async => impl.uploadFile(
               PetPetIdUploadImageSchema.fromJson(null),
-              petId: paramToInt(request.pathParameter('petId'))));
+              petId: param(
+                  isRequired: true,
+                  name: 'petId',
+                  value: request.pathParameter('petId'),
+                  decode: (value) => paramToInt(value))));
     }, security: []);
     addRoute('/store/inventory', 'get', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
-          request, (Petstore impl) async => impl.storeInventoryGet());
+          request, (Petstore impl) async => impl.getInventory());
     }, security: []);
     addRoute('/store/order', 'post', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl
-              .storeOrderPost(Order.fromJson(await request.readJsonBody())));
+          (Petstore impl) async =>
+              impl.placeOrder(Order.fromJson(await request.readJsonBody())));
     }, security: []);
     addRoute('/store/order/{orderId}', 'get',
         (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.storeOrderOrderIdGet(
-              orderId: paramToInt(request.pathParameter('orderId'))));
+          (Petstore impl) async => impl.getOrderById(
+              orderId: param(
+                  isRequired: true,
+                  name: 'orderId',
+                  value: request.pathParameter('orderId'),
+                  decode: (value) => paramToInt(value))));
     }, security: []);
     addRoute('/store/order/{orderId}', 'delete',
         (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.storeOrderOrderIdDelete(
-              orderId: paramToInt(request.pathParameter('orderId'))));
+          (Petstore impl) async => impl.deleteOrder(
+              orderId: param(
+                  isRequired: true,
+                  name: 'orderId',
+                  value: request.pathParameter('orderId'),
+                  decode: (value) => paramToInt(value))));
     }, security: []);
     addRoute('/user', 'post', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
           (Petstore impl) async =>
-              impl.userPost(User.fromJson(await request.readJsonBody())));
+              impl.createUser(User.fromJson(await request.readJsonBody())));
     }, security: []);
     addRoute('/user/createWithArray', 'post',
         (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.userCreateWithArrayPost(
+          (Petstore impl) async => impl.createUsersWithArrayInput(
               UserCreateWithArraySchema.fromJson(
                   await request.readJsonBody())));
     }, security: []);
@@ -2510,39 +2484,59 @@ class PetstoreRouter extends _i2.OpenApiServerRouterBase {
         (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.userCreateWithListPost(
+          (Petstore impl) async => impl.createUsersWithListInput(
               UserCreateWithArraySchema.fromJson(
                   await request.readJsonBody())));
     }, security: []);
     addRoute('/user/login', 'get', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.userLoginGet(
-              username: paramToString(request.queryParameter('username')),
-              password: paramToString(request.queryParameter('password'))));
+          (Petstore impl) async => impl.loginUser(
+              username: param(
+                  isRequired: true,
+                  name: 'username',
+                  value: request.queryParameter('username'),
+                  decode: (value) => paramToString(value)),
+              password: param(
+                  isRequired: true,
+                  name: 'password',
+                  value: request.queryParameter('password'),
+                  decode: (value) => paramToString(value))));
     }, security: []);
     addRoute('/user/logout', 'get', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
-          request, (Petstore impl) async => impl.userLogoutGet());
+          request, (Petstore impl) async => impl.logoutUser());
     }, security: []);
     addRoute('/user/{username}', 'get', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.userUsernameGet(
-              username: paramToString(request.pathParameter('username'))));
+          (Petstore impl) async => impl.getUserByName(
+              username: param(
+                  isRequired: true,
+                  name: 'username',
+                  value: request.pathParameter('username'),
+                  decode: (value) => paramToString(value))));
     }, security: []);
     addRoute('/user/{username}', 'put', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.userUsernamePut(
+          (Petstore impl) async => impl.updateUser(
               User.fromJson(await request.readJsonBody()),
-              username: paramToString(request.pathParameter('username'))));
+              username: param(
+                  isRequired: true,
+                  name: 'username',
+                  value: request.pathParameter('username'),
+                  decode: (value) => paramToString(value))));
     }, security: []);
     addRoute('/user/{username}', 'delete', (_i2.OpenApiRequest request) async {
       return await impl.invoke(
           request,
-          (Petstore impl) async => impl.userUsernameDelete(
-              username: paramToString(request.pathParameter('username'))));
+          (Petstore impl) async => impl.deleteUser(
+              username: param(
+                  isRequired: true,
+                  name: 'username',
+                  value: request.pathParameter('username'),
+                  decode: (value) => paramToString(value))));
     }, security: []);
   }
 }

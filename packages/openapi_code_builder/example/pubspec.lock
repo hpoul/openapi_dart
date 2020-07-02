@@ -259,7 +259,7 @@ packages:
       name: logging_appenders
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.2+2"
+    version: "0.4.2+3"
   matcher:
     dependency: transitive
     description:
@@ -308,7 +308,7 @@ packages:
       path: "../../openapi_base"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.1"
   openapi_code_builder:
     dependency: "direct dev"
     description:
@@ -385,7 +385,7 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.5"
+    version: "0.7.7"
   shelf_cookie:
     dependency: transitive
     description:
