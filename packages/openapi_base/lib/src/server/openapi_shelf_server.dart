@@ -66,6 +66,12 @@ class OpenApiShelfServer {
       if (match == null) {
         continue;
       }
+      // if only matches as prefix, ignore this match.
+      if (match.rest.path.isNotEmpty) {
+        _logger.fine('$url does not match ${config.uriParser}, '
+            'remaining path: {${match.rest.path}}: ${match.rest}');
+        continue;
+      }
       final shelfRequest = ShelfRequest(request, match);
       final response = await config.handler(shelfRequest);
 //      if (response.contentType.isJson) {
