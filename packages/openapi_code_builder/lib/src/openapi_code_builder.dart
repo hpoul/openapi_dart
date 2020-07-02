@@ -786,13 +786,22 @@ class OpenApiLibraryGenerator {
   }
 
   Class _createSchemaClass(String className, APISchemaObject obj) {
-    final properties = obj.properties?.entries ?? [];
-    final fields = properties.map((e) => Field((fb) => fb
-      ..addDartDoc(e.value.description)
-      ..annotations.add(jsonKey([], {'name': literalString(e.key)}))
-      ..name = e.key.camelCase
-      ..modifier = FieldModifier.final$
-      ..type = _toDartType('$className${e.key.pascalCase}', e.value)));
+    final properties = obj.properties ?? {};
+    final fields = properties.map((key, e) => MapEntry(
+        key,
+        Field((fb) => fb
+          ..addDartDoc(e.description)
+          ..annotations.add(jsonKey([], {'name': literalString(key)}))
+          ..name = key.camelCase
+          ..modifier = FieldModifier.final$
+          ..type = _toDartType('$className${key.pascalCase}', e))));
+    // ignore: avoid_function_literals_in_foreach_calls
+    obj.required?.forEach((element) {
+      if (fields[element] == null) {
+        throw StateError('Invalid required "$element" was not '
+            'defined as property of $className');
+      }
+    });
 
     final c = Class(
       (cb) => cb
@@ -800,13 +809,21 @@ class OpenApiLibraryGenerator {
         ..name = className
         ..implements.add(_openApiContent)
         ..docs.addDartDoc(obj.description)
-        ..constructors.add(Constructor((cb) => cb
-          ..optionalParameters.addAll(fields.map((f) => Parameter((pb) => pb
+        ..constructors.add(
+          Constructor(
+            (cb) => cb
+              ..optionalParameters
+                  .addAll(fields.entries.map((f) => Parameter((pb) => pb
 //            ..docs.addAll(f.docs)
-            ..name = f.name
-            ..asRequired(this, obj.required?.contains(f.name) ?? false)
-            ..named = true
-            ..toThis = true)))))
+                    ..name = f.value.name
+                    ..asRequired(this, obj.required?.contains(f.key) ?? false)
+                    ..named = true
+                    ..toThis = true)))
+              ..initializers.addAll(obj.required?.map((e) => refer('assert')(
+                      [refer(fields[e].name).notEqualTo(literalNull)]).code) ??
+                  []),
+          ),
+        )
         ..constructors.add(Constructor((cb) => cb
               ..name = 'fromJson'
               ..factory = true
@@ -830,7 +847,7 @@ class OpenApiLibraryGenerator {
 //              ]
 //            )
             ))
-        ..fields.addAll(fields)
+        ..fields.addAll(fields.values)
         ..methods.add(
           Method(
             (mb) => mb
