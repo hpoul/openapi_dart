@@ -184,6 +184,7 @@ class OpenApiLibraryGenerator {
           final mapCode = <Code>[];
           Reference /*?*/ successResponseBodyType;
           Reference /*?*/ successResponseCodeType;
+          MapEntry<String, APIResponse> /*?*/ successApiResponse;
           final clientResponseParse = <String, Expression>{};
           for (final response in operation.value.responses.entries) {
             final statusAsParameter = response.key == 'default';
@@ -237,16 +238,11 @@ class OpenApiLibraryGenerator {
               final content =
                   (response.value.content ?? {})[mediaTypeJson.contentType];
               OpenApiContentType responseContentType;
+              Reference bodyType;
               if (content != null) {
                 responseContentType = OpenApiContentType.json;
-                final bodyType = _schemaReference(
+                bodyType = _schemaReference(
                     '${responseClass.name}Body$codeName', content.schema);
-                if (response.key.startsWith('2') ||
-                    (response.key == 'default' &&
-                        successResponseBodyType == null)) {
-                  successResponseCodeType = refer(responseCodeClass.name);
-                  successResponseBodyType = bodyType;
-                }
                 responseCodeClass.fields.add(Field((fb) => fb
                   ..name = 'body'
                   ..type = bodyType
@@ -275,14 +271,8 @@ class OpenApiLibraryGenerator {
                   final responseContent = response.value.content.entries.first;
                   responseContentType =
                       OpenApiContentType.parse(responseContent.key);
-                  final bodyType = _toDartType('${responseCodeClass}Content',
+                  bodyType = _toDartType('${responseCodeClass}Content',
                       responseContent.value.schema);
-                  if (response.key.startsWith('2') ||
-                      (response.key == 'default' &&
-                          successResponseBodyType == null)) {
-                    successResponseCodeType = refer(responseCodeClass.name);
-                    successResponseBodyType = bodyType;
-                  }
                   checkState(
                       responseContent.value.schema.type == APIType.string,
                       message:
@@ -301,6 +291,13 @@ class OpenApiLibraryGenerator {
                       .property('responseBodyString')([])
                       .awaited);
                 }
+              }
+              if (response.key.startsWith('2') ||
+                  (response.key == 'default' &&
+                      successResponseBodyType == null)) {
+                successResponseCodeType = refer(responseCodeClass.name);
+                successResponseBodyType = bodyType ?? refer('void');
+                successApiResponse = response;
               }
               responseCodeClass.fields.add(Field((fb) => fb
                 ..name = 'contentType'
@@ -360,12 +357,16 @@ class OpenApiLibraryGenerator {
           mapMethod.body = Block.of(mapCode);
           responseClass.methods.add(mapMethod.build());
 
-          if (successResponseBodyType != null) {
+          if (successApiResponse != null) {
+            checkNotNull(successResponseBodyType);
+            checkNotNull(successResponseCodeType);
             responseClass.implements
                 .add(_hasSuccessResponse.addGenerics(successResponseBodyType));
             responseClass.methods.add(
               Method((mb) => mb
                 ..name = 'requireSuccess'
+                ..addDartDoc(successApiResponse.value.description,
+                    prefix: 'status ${successApiResponse.key}: ')
                 ..annotations.add(_override)
                 ..returns = successResponseBodyType
                 ..body = Block.of([
