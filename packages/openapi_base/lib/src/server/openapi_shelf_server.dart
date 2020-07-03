@@ -52,23 +52,23 @@ class OpenApiShelfServer {
 
   Future<shelf.Response> _handleRequest(shelf.Request request) async {
     final operation = operationFromString(request.method);
-    _logger.info('handling request.');
+    _logger.fine('handling request. ${request.method} ${request.url}');
     final url = request.url.replace(path: '/${request.url.path}');
     for (final config in router.configs) {
-      _logger.finest(
-          'Matching $operation to $config (${config.operation} vs. $operation)');
+//      _logger.finest(
+//          'Matching $operation to $config (${config.operation} vs. $operation)');
       if (config.operation != operation) {
         continue;
       }
       final match = config.uriParser.match(url);
-      _logger.finer('Matching $url against ${config.uriParser}: '
-          '$match');
+//      _logger.finest('Matching $url against ${config.uriParser}: '
+//          '$match');
       if (match == null) {
         continue;
       }
       // if only matches as prefix, ignore this match.
       if (match.rest.path.isNotEmpty) {
-        _logger.fine('$url does not match ${config.uriParser}, '
+        _logger.finest('$url does not match ${config.uriParser}, '
             'remaining path: {${match.rest.path}}: ${match.rest}');
         continue;
       }
