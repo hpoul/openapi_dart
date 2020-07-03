@@ -26,3 +26,13 @@ class UnauthorizedException extends OpenApiResponseException
   @override
   final String message;
 }
+
+class NotFoundException extends OpenApiResponseException {
+  NotFoundException(this.message);
+
+  @override
+  int get status => 404;
+
+  @override
+  final String message;
+}
