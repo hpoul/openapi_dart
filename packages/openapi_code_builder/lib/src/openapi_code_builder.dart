@@ -87,6 +87,7 @@ class OpenApiLibraryGenerator {
       refer('OpenApiContentType', 'package:openapi_base/openapi_base.dart');
   final _required = refer('required', 'package:meta/meta.dart');
   final _override = refer('override');
+  final _void = refer('void');
 
   static const mediaTypeJson = OpenApiContentType.json;
 
@@ -296,7 +297,7 @@ class OpenApiLibraryGenerator {
                   (response.key == 'default' &&
                       successResponseBodyType == null)) {
                 successResponseCodeType = refer(responseCodeClass.name);
-                successResponseBodyType = bodyType ?? refer('void');
+                successResponseBodyType = bodyType;
                 successApiResponse = response;
               }
               responseCodeClass.fields.add(Field((fb) => fb
@@ -358,26 +359,28 @@ class OpenApiLibraryGenerator {
           responseClass.methods.add(mapMethod.build());
 
           if (successApiResponse != null) {
-            checkNotNull(successResponseBodyType);
             checkNotNull(successResponseCodeType);
-            responseClass.implements
-                .add(_hasSuccessResponse.addGenerics(successResponseBodyType));
+            responseClass.implements.add(_hasSuccessResponse
+                .addGenerics(successResponseBodyType ?? _void));
             responseClass.methods.add(
               Method((mb) => mb
                 ..name = 'requireSuccess'
                 ..addDartDoc(successApiResponse.value.description,
                     prefix: 'status ${successApiResponse.key}: ')
                 ..annotations.add(_override)
-                ..returns = successResponseBodyType
+                ..returns = successResponseBodyType ?? _void
                 ..body = Block.of([
                   const Code('if (this is '),
                   successResponseCodeType.code,
                   const Code(') {'),
-                  refer('this')
-                      .asA(successResponseCodeType)
-                      .property('body')
-                      .returned
-                      .statement,
+                  successResponseBodyType == null
+                      // success, but no body.
+                      ? const Code('return;')
+                      : refer('this')
+                          .asA(successResponseCodeType)
+                          .property('body')
+                          .returned
+                          .statement,
                   const Code('} else {'),
                   const Code(
                       r'''throw StateError('Expected success response, but got $this');'''),
