@@ -115,6 +115,7 @@ class ShelfRequest extends OpenApiRequest {
             .map((key, value) => MapEntry(key, Uri.decodeComponent(value)));
 
   final shelf.Request _request;
+  // ignore: unused_field
   final UriMatch _match;
   final Map<String, String> _matchParametersDecoded;
 
