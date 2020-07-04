@@ -110,10 +110,13 @@ class OpenApiShelfServer {
 }
 
 class ShelfRequest extends OpenApiRequest {
-  ShelfRequest(this._request, this._match);
+  ShelfRequest(this._request, this._match)
+      : _matchParametersDecoded = _match.parameters
+            .map((key, value) => MapEntry(key, Uri.decodeComponent(value)));
 
   final shelf.Request _request;
   final UriMatch _match;
+  final Map<String, String> _matchParametersDecoded;
 
   List<String> _wrapValue(String value) {
     if (value == null) {
@@ -135,7 +138,7 @@ class ShelfRequest extends OpenApiRequest {
 
   @override
   List<String> pathParameter(String name) {
-    return _wrapValue(_match.parameters[name]);
+    return _wrapValue(_matchParametersDecoded[name]);
   }
 
   @override
