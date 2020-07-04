@@ -607,7 +607,7 @@ class OpenApiLibraryGenerator {
                 _createRequestBody(
                   contentType,
                   reqBody,
-                  pathName,
+                  operationName,
                   mb,
                   routerParams,
                   clientMethod,
@@ -684,7 +684,7 @@ class OpenApiLibraryGenerator {
   void _createRequestBody(
       OpenApiContentType contentType,
       APIMediaType reqBody,
-      String pathName,
+      String operationName,
       MethodBuilder mb,
       List<Expression> routerParams,
       MethodBuilder clientMethod,
@@ -725,7 +725,7 @@ class OpenApiLibraryGenerator {
       );
     } else {
       final reference =
-          _schemaReference('${pathName.pascalCase}Schema', reqBody.schema);
+          _schemaReference('${operationName.pascalCase}Schema', reqBody.schema);
 
       final mapExpression = contentType.matches(OpenApiContentType.json)
           ? refer('request').property('readJsonBody')([]).awaited
