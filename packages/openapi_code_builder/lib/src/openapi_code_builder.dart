@@ -8,7 +8,7 @@ import 'package:code_builder/src/visitors.dart'; // ignore: implementation_impor
 import 'package:dart_style/dart_style.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
-import 'package:open_api/v3.dart';
+import 'package:open_api_forked/v3.dart';
 import 'package:openapi_base/openapi_base.dart';
 import 'package:quiver/check.dart';
 import 'package:recase/recase.dart';
@@ -83,6 +83,8 @@ class OpenApiLibraryGenerator {
       refer('SecuritySchemeHttp', 'package:openapi_base/openapi_base.dart');
   final _securitySchemeHttpScheme = refer(
       'SecuritySchemeHttpScheme', 'package:openapi_base/openapi_base.dart');
+  final _securitySchemeApiKey =
+      refer('SecuritySchemeApiKey', 'package:openapi_base/openapi_base.dart');
   final _openApiContentType =
       refer('OpenApiContentType', 'package:openapi_base/openapi_base.dart');
   final _required = refer('required', 'package:meta/meta.dart');
@@ -488,8 +490,7 @@ class OpenApiLibraryGenerator {
                 }
                 throw StateError('Invalid schema type ${param.schema.type}}');
               };
-              final decodeParameter =
-                  (APIParameter param, Expression expression) {
+              final decodeParameter = (Expression expression) {
                 return refer('param')([], {
                   'isRequired': literalBool(param.isRequired),
                   'name': literalString(param.name),
@@ -533,56 +534,20 @@ class OpenApiLibraryGenerator {
                 }
                 throw StateError('Invalid schema type ${param.schema.type}}');
               };
-              switch (param.location) {
-                case APIParameterLocation.query:
-                  routerParamsNamed[paramName] = decodeParameter(
-                      param,
-                      refer('request').property('queryParameter')(
-                          [literalString(param.name)]));
-                  clientCode.add(clientCodeRequest
-                      .property('addQueryParameter')([
-                        literalString(param.name),
-                        encodeParameter(refer(paramName)),
-                      ])
-                      .statement);
-                  break;
-                case APIParameterLocation.header:
-                  routerParamsNamed[paramName] = decodeParameter(
-                      param,
-                      refer('request').property('headerParameter')(
-                          [literalString(param.name)]));
-                  clientCode.add(clientCodeRequest
-                      .property('addHeaderParameter')([
-                        literalString(param.name),
-                        encodeParameter(refer(paramName)),
-                      ])
-                      .statement);
-                  break;
-                case APIParameterLocation.path:
-                  routerParamsNamed[paramName] = decodeParameter(
-                      param,
-                      refer('request').property('pathParameter')(
-                          [literalString(param.name)]));
-                  clientCode.add(clientCodeRequest
-                      .property('addPathParameter')([
-                        literalString(param.name),
-                        encodeParameter(refer(paramName)),
-                      ])
-                      .statement);
-                  break;
-                case APIParameterLocation.cookie:
-                  routerParamsNamed[paramName] = decodeParameter(
-                      param,
-                      refer('request').property('cookieParameter')(
-                          [literalString(param.name)]));
-                  clientCode.add(clientCodeRequest
-                      .property('addCookieParameter')([
-                        literalString(param.name),
-                        encodeParameter(refer(paramName)),
-                      ])
-                      .statement);
-                  break;
-              }
+              routerParamsNamed[paramName] =
+                  decodeParameter(_readFromRequest(param.location, param.name));
+              clientCode.add(_writeToRequest(
+                clientCodeRequest,
+                param.location,
+                param.name,
+                encodeParameter(refer(paramName)),
+              ).statement);
+              clientCode.add(clientCodeRequest
+                  .property('addQueryParameter')([
+                    literalString(param.name),
+                    encodeParameter(refer(paramName)),
+                  ])
+                  .statement);
             }
             final urlResolverMethod = clientMethod.build().toBuilder()
               ..returns = _openApiClientRequest
@@ -679,6 +644,43 @@ class OpenApiLibraryGenerator {
 
 //       api.paths.map((key, value) => MapEntry(key, refer('ApiPathConfig').newInstance([value.])))
     return lb.build();
+  }
+
+  Expression _readFromRequest(APIParameterLocation location, String name) {
+    switch (location) {
+      case APIParameterLocation.query:
+        return refer('request')
+            .property('queryParameter')([literalString(name)]);
+      case APIParameterLocation.header:
+        return refer('request')
+            .property('headerParameter')([literalString(name)]);
+      case APIParameterLocation.path:
+        return refer('request')
+            .property('pathParameter')([literalString(name)]);
+      case APIParameterLocation.cookie:
+        return refer('request')
+            .property('cookieParameter')([literalString(name)]);
+    }
+    throw StateError('Invalid location: $location');
+  }
+
+  Expression _writeToRequest(Reference request, APIParameterLocation location,
+      String name, Expression value) {
+    switch (location) {
+      case APIParameterLocation.query:
+        return request
+            .property('addQueryParameter')([literalString(name), value]);
+      case APIParameterLocation.header:
+        return request
+            .property('addHeaderParameter')([literalString(name), value]);
+      case APIParameterLocation.path:
+        return request
+            .property('addPathParameter')([literalString(name), value]);
+      case APIParameterLocation.cookie:
+        return request
+            .property('addCookieParameter')([literalString(name), value]);
+    }
+    throw StateError('Invalid location: $location');
   }
 
   void _createRequestBody(
@@ -970,6 +972,31 @@ class OpenApiLibraryGenerator {
         );
         return refer(securitySchemesClass.name).property(name.camelCase);
       case APISecuritySchemeType.apiKey:
+        securitySchemesClass.fields.add(
+          Field((fb) => fb
+            ..name = name.camelCase
+            ..modifier = FieldModifier.final$
+            ..static = true
+            ..assignment = _securitySchemeApiKey.newInstance([], {
+              'name': literalString(value.name),
+              'readFromRequest': Method((mb) => mb
+                    ..requiredParameters.add(Parameter((pb) => pb
+                      ..name = 'request'
+                      ..type = _openApiRequest))
+                    ..body = _readFromRequest(value.location, value.name).code)
+                  .closure,
+              'writeToRequest': Method((mb) => mb
+                ..requiredParameters.add(Parameter((pb) => pb
+                  ..name = 'request'
+                  ..type = _openApiClientRequest))
+                ..requiredParameters.add(Parameter((pb) => pb
+                  ..name = 'value'
+                  ..type = refer('String')))
+                ..body = _writeToRequest(refer('request'), value.location,
+                    value.name, literalList([refer('value')])).code).closure,
+            }).code),
+        );
+        return refer(securitySchemesClass.name).property(name.camelCase);
       case APISecuritySchemeType.oauth2:
       case APISecuritySchemeType.openID:
         throw StateError('Unsupported security scheme ${value.type}');

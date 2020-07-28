@@ -196,7 +196,7 @@ packages:
       name: logging_appenders
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.2+2"
+    version: "0.4.2+3"
   matcher:
     dependency: transitive
     description:
@@ -225,20 +225,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
-  open_api:
+  open_api_forked:
     dependency: "direct main"
     description:
       path: "../../deps/open-api-dart"
       relative: true
     source: path
-    version: "2.0.1"
+    version: "2.0.1+1"
   openapi_base:
     dependency: "direct main"
     description:
       path: "../openapi_base"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.2"
   package_config:
     dependency: transitive
     description:
@@ -294,7 +294,7 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.5"
+    version: "0.7.7"
   shelf_cookie:
     dependency: transitive
     description:

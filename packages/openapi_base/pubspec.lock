@@ -99,13 +99,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.8"
-  open_api:
+  open_api_forked:
     dependency: "direct main"
     description:
-      name: open_api
+      name: open_api_forked
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.1+1"
   path:
     dependency: transitive
     description:

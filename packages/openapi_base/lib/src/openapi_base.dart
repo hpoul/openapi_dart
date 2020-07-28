@@ -235,3 +235,32 @@ class SecuritySchemeHttp extends SecurityScheme<SecuritySchemeHttpData> {
     return null;
   }
 }
+
+class SecuritySchemeApiKeyData extends SecuritySchemeData {
+  SecuritySchemeApiKeyData({@required this.apiKey});
+  final String apiKey;
+}
+
+class SecuritySchemeApiKey extends SecurityScheme<SecuritySchemeApiKeyData> {
+  SecuritySchemeApiKey({this.name, this.writeToRequest, this.readFromRequest});
+
+  final String name;
+  final void Function(OpenApiClientRequest request, String value)
+      writeToRequest;
+  final List<String> Function(OpenApiRequest request) readFromRequest;
+
+  @override
+  void applyToRequest(
+      OpenApiClientRequest request, SecuritySchemeApiKeyData data) {
+    writeToRequest(request, data.apiKey);
+  }
+
+  @override
+  SecuritySchemeApiKeyData fromRequest(OpenApiRequest request) {
+    final data = readFromRequest(request);
+    if (data != null && data.isNotEmpty) {
+      return SecuritySchemeApiKeyData(apiKey: data.first);
+    }
+    return null;
+  }
+}
