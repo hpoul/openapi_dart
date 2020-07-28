@@ -9,7 +9,7 @@ environment:
 dependencies:
 #  path: ^1.7.0
   meta: ^1.1.8
-  open_api: ^2.0.1
+  open_api_forked: ^2.0.1
   uri: ^0.11.3+1
   logging: ^0.11.4
   logging_appenders: ^0.4.2+3
