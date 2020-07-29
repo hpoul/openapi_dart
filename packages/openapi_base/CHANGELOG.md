@@ -1,3 +1,8 @@
+# 0.1.3
+
+* Create a `openapi_base_client` library which only exports
+  classes required for the client side. (Ie. no dart:io)
+
 # 0.1.2
 
 * Support for optional query parameters
