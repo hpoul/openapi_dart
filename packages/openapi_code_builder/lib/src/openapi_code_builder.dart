@@ -835,8 +835,34 @@ class OpenApiLibraryGenerator {
       }
     });
 
-    final c = Class(
-      (cb) => cb
+    final c = Class((cb) {
+      var toJsonExpression = refer('_\$${className}ToJson')([refer('this')]);
+      var fromJsonExpression =
+          refer('_\$${className}FromJson').call([refer('jsonMap')]);
+
+      if (obj.additionalPropertyPolicy ==
+          APISchemaAdditionalPropertyPolicy.freeForm) {
+        toJsonExpression = refer('Map')
+            .property('from')([refer('_additionalProperties')])
+            .cascade('addAll')([toJsonExpression]);
+        fromJsonExpression = fromJsonExpression
+            .cascade('_additionalProperties')
+            .property('addEntries')([
+          refer('jsonMap').property('entries').property('where')([
+            Method((mb) => mb
+              ..lambda = true
+              ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+              ..body = literalConstSet(
+                      fields.entries.map((e) => literalString(e.key)).toSet(),
+                      refer('String'))
+                  .property('contains')([refer('e').property('key')])
+                  .negate()
+                  .code).closure
+          ])
+        ]);
+      }
+
+      cb
         ..annotations.add(jsonSerializable([]))
         ..name = className
         ..implements.add(_openApiContent)
@@ -863,8 +889,7 @@ class OpenApiLibraryGenerator {
                 ..name = 'jsonMap'
                 ..type = refer('Map<String, dynamic>')))
               ..lambda = true
-              ..body =
-                  refer('_\$${className}FromJson').call([refer('jsonMap')]).code
+              ..body = fromJsonExpression.code
 //              ..body = Block.of([
 //                InvokeExpression.newOf(
 //                  refer(schemaEntry.key),
@@ -886,7 +911,7 @@ class OpenApiLibraryGenerator {
               ..name = 'toJson'
               ..returns = refer('Map<String, dynamic>')
               ..lambda = true
-              ..body = refer('_\$${className}ToJson')([refer('this')]).code,
+              ..body = toJsonExpression.code,
           ),
 //                ..methods.add(
 //                Method(
@@ -907,8 +932,46 @@ class OpenApiLibraryGenerator {
           ..returns = refer('String')
           ..annotations.add(_override)
           ..lambda = true
-          ..body = refer('toJson')([]).property('toString')([]).code)),
-    );
+          ..body = refer('toJson')([]).property('toString')([]).code));
+
+      if (obj.additionalPropertyPolicy ==
+          APISchemaAdditionalPropertyPolicy.freeForm) {
+        cb.fields.add(Field((fb) => fb
+          ..name = '_additionalProperties'
+          ..type = _referType(
+            'Map',
+            generics: [refer('String'), refer('Object')],
+          )
+          ..assignment = literalMap({}, refer('String'), refer('Object')).code
+          ..modifier = FieldModifier.final$));
+        cb.methods.add(
+          Method((mb) => mb
+            ..name = 'operator[]='
+            ..returns = refer('void')
+            ..requiredParameters.add(Parameter((pb) => pb
+              ..name = 'key'
+              ..type = refer('String')))
+            ..requiredParameters.add(Parameter((pb) => pb
+              ..name = 'value'
+              ..type = refer('Object')))
+            ..lambda = true
+            ..body = refer('_additionalProperties')
+                .index(refer('key'))
+                .assign(refer('value'))
+                .code),
+        );
+        cb.methods.add(
+          Method((mb) => mb
+            ..name = 'operator[]'
+            ..returns = refer('Object')
+            ..requiredParameters.add(Parameter((pb) => pb
+              ..name = 'key'
+              ..type = refer('String')))
+            ..lambda = true
+            ..body = refer('_additionalProperties').index(refer('key')).code),
+        );
+      }
+    });
     return c;
   }
 

@@ -72,9 +72,9 @@ class OpenApiShelfServer {
             'remaining path: {${match.rest.path}}: ${match.rest}');
         continue;
       }
+      // TODO handle security constraints.
       final shelfRequest = ShelfRequest(request, match);
       final response = await config.handler(shelfRequest);
-//      if (response.contentType.isJson) {
       if (response is OpenApiResponseBodyJson) {
         assert(response.contentType.isJson);
         final responseJson = response as OpenApiResponseBodyJson;
