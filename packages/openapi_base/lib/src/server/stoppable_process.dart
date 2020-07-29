@@ -3,9 +3,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:openapi_base/src/server/openapi_server_base.dart';
+
 typedef _StopProcess = Future Function(String reason);
 
-class StoppableProcess {
+class StoppableProcess extends StoppableProcessBase {
   StoppableProcess(Future<dynamic> Function(String reason) onStop)
       : _stop = onStop {
     final l1 = ProcessSignal.sigint.watch().listen((_) {
@@ -21,6 +23,7 @@ class StoppableProcess {
     }
   }
 
+  @override
   Future<int> get exitCode => _completer.future;
 
   final List<StreamSubscription> _listeners = [];
@@ -28,6 +31,7 @@ class StoppableProcess {
   final _StopProcess _stop;
   final Completer<int> _completer = Completer<int>();
 
+  @override
   Future stop(int exitCode, {String reason}) async {
     if (_completer.isCompleted) {
       return;

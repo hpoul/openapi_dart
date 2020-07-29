@@ -1,7 +1,7 @@
-# 0.1.3
+# 0.1.3+3
 
-* Create a `openapi_base_client` library which only exports
-  classes required for the client side. (Ie. no dart:io)
+* Allow usage without dart:io, server implementation
+  will not be available.
 
 # 0.1.2
 

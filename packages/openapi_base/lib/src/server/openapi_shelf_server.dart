@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
-import 'package:openapi_base/openapi_base.dart';
+import 'package:openapi_base/src/openapi_base.dart';
+import 'package:openapi_base/src/openapi_exception.dart';
+import 'package:openapi_base/src/server/openapi_server_base.dart';
 import 'package:openapi_base/src/server/stoppable_process.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
@@ -13,7 +15,7 @@ import 'package:uri/uri.dart';
 
 final _logger = Logger('openapi_shelf_server');
 
-class OpenApiShelfServer {
+class OpenApiShelfServer extends OpenApiServerBase {
   OpenApiShelfServer(this.router);
 
   final OpenApiServerRouterBase router;
@@ -24,6 +26,7 @@ class OpenApiShelfServer {
       .addMiddleware(shelf.logRequests())
       .addHandler(_handleRequestWithExceptions);
 
+  @override
   Future<StoppableProcess> startServer({
     String address = 'localhost',
     int port = 8080,
