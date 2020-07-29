@@ -7,7 +7,7 @@ This is a `build_runner` library meant to be included in the
 dart source files for client and server stubs for
 OpenAPI 3.0 schema files (Only yaml is supported right now).
 
-See [directory for an example usage](examples/).
+See [directory for an example usage](example/).
 
 You can also [try out the code generator
 right inside your browser](https://hpoul.github.io/openapi_dart/): https://hpoul.github.io/openapi_dart/
@@ -107,6 +107,7 @@ Future<void> main() async {
 # Implement Client
 
 ```dart
+Future<void> main() async {
   final requestSender = HttpRequestSender();
   final client = TestApiClient(
       Uri.parse('http://localhost:8000'),
@@ -117,6 +118,7 @@ Future<void> main() async {
   );
   _logger.info('Response: $blubb');
   requestSender.dispose();
+}
 ```
 
 # Try it out
