@@ -409,6 +409,7 @@ abstract class FindPetsByStatusResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  successful operation
   @override
   FindPetsByStatusResponseBody200 requireSuccess() {
     if (this is _FindPetsByStatusResponse200) {
@@ -519,6 +520,7 @@ abstract class FindPetsByTagsResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  successful operation
   @override
   FindPetsByTagsResponseBody200 requireSuccess() {
     if (this is _FindPetsByTagsResponse200) {
@@ -618,6 +620,7 @@ abstract class GetPetByIdResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  successful operation
   @override
   Pet requireSuccess() {
     if (this is _GetPetByIdResponse200) {
@@ -661,11 +664,11 @@ abstract class UpdatePetWithFormResponse extends _i2.OpenApiResponse {
 }
 
 @_i1.JsonSerializable()
-class PetPetIdSchema implements _i2.OpenApiContent {
-  PetPetIdSchema({this.name, this.status});
+class UpdatePetWithFormSchema implements _i2.OpenApiContent {
+  UpdatePetWithFormSchema({this.name, this.status});
 
-  factory PetPetIdSchema.fromJson(Map<String, dynamic> jsonMap) =>
-      _$PetPetIdSchemaFromJson(jsonMap);
+  factory UpdatePetWithFormSchema.fromJson(Map<String, dynamic> jsonMap) =>
+      _$UpdatePetWithFormSchemaFromJson(jsonMap);
 
   /// Updated name of the pet
   @_i1.JsonKey(name: 'name')
@@ -675,7 +678,7 @@ class PetPetIdSchema implements _i2.OpenApiContent {
   @_i1.JsonKey(name: 'status')
   final String status;
 
-  Map<String, dynamic> toJson() => _$PetPetIdSchemaToJson(this);
+  Map<String, dynamic> toJson() => _$UpdatePetWithFormSchemaToJson(this);
   @override
   String toString() => toJson().toString();
 }
@@ -778,6 +781,7 @@ abstract class UploadFileResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  successful operation
   @override
   ApiResponse requireSuccess() {
     if (this is _UploadFileResponse200) {
@@ -789,13 +793,13 @@ abstract class UploadFileResponse extends _i2.OpenApiResponse
 }
 
 @_i1.JsonSerializable()
-class PetPetIdUploadImageSchema implements _i2.OpenApiContent {
-  PetPetIdUploadImageSchema();
+class UploadFileSchema implements _i2.OpenApiContent {
+  UploadFileSchema();
 
-  factory PetPetIdUploadImageSchema.fromJson(Map<String, dynamic> jsonMap) =>
-      _$PetPetIdUploadImageSchemaFromJson(jsonMap);
+  factory UploadFileSchema.fromJson(Map<String, dynamic> jsonMap) =>
+      _$UploadFileSchemaFromJson(jsonMap);
 
-  Map<String, dynamic> toJson() => _$PetPetIdUploadImageSchemaToJson(this);
+  Map<String, dynamic> toJson() => _$UploadFileSchemaToJson(this);
   @override
   String toString() => toJson().toString();
 }
@@ -856,6 +860,7 @@ abstract class GetInventoryResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  successful operation
   @override
   GetInventoryResponseBody200 requireSuccess() {
     if (this is _GetInventoryResponse200) {
@@ -933,6 +938,7 @@ abstract class PlaceOrderResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  successful operation
   @override
   Order requireSuccess() {
     if (this is _PlaceOrderResponse200) {
@@ -1032,6 +1038,7 @@ abstract class GetOrderByIdResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  successful operation
   @override
   Order requireSuccess() {
     if (this is _GetOrderByIdResponse200) {
@@ -1111,7 +1118,8 @@ class _CreateUserResponseDefault extends CreateUserResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class CreateUserResponse extends _i2.OpenApiResponse {
+abstract class CreateUserResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<void> {
   CreateUserResponse();
 
   /// /// successful operation
@@ -1124,6 +1132,16 @@ abstract class CreateUserResponse extends _i2.OpenApiResponse {
       onDefault((this as _CreateUserResponseDefault));
     } else {
       throw StateError('Invalid instance type $this');
+    }
+  }
+
+  /// status default:  successful operation
+  @override
+  void requireSuccess() {
+    if (this is _CreateUserResponseDefault) {
+      return;
+    } else {
+      throw StateError('Expected success response, but got $this');
     }
   }
 }
@@ -1145,7 +1163,8 @@ class _CreateUsersWithArrayInputResponseDefault
       {'status': status, 'contentType': contentType};
 }
 
-abstract class CreateUsersWithArrayInputResponse extends _i2.OpenApiResponse {
+abstract class CreateUsersWithArrayInputResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<void> {
   CreateUsersWithArrayInputResponse();
 
   /// /// successful operation
@@ -1162,16 +1181,28 @@ abstract class CreateUsersWithArrayInputResponse extends _i2.OpenApiResponse {
       throw StateError('Invalid instance type $this');
     }
   }
+
+  /// status default:  successful operation
+  @override
+  void requireSuccess() {
+    if (this is _CreateUsersWithArrayInputResponseDefault) {
+      return;
+    } else {
+      throw StateError('Expected success response, but got $this');
+    }
+  }
 }
 
 @_i1.JsonSerializable()
-class UserCreateWithArraySchema implements _i2.OpenApiContent {
-  UserCreateWithArraySchema();
+class CreateUsersWithArrayInputSchema implements _i2.OpenApiContent {
+  CreateUsersWithArrayInputSchema();
 
-  factory UserCreateWithArraySchema.fromJson(Map<String, dynamic> jsonMap) =>
-      _$UserCreateWithArraySchemaFromJson(jsonMap);
+  factory CreateUsersWithArrayInputSchema.fromJson(
+          Map<String, dynamic> jsonMap) =>
+      _$CreateUsersWithArrayInputSchemaFromJson(jsonMap);
 
-  Map<String, dynamic> toJson() => _$UserCreateWithArraySchemaToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$CreateUsersWithArrayInputSchemaToJson(this);
   @override
   String toString() => toJson().toString();
 }
@@ -1193,7 +1224,8 @@ class _CreateUsersWithListInputResponseDefault
       {'status': status, 'contentType': contentType};
 }
 
-abstract class CreateUsersWithListInputResponse extends _i2.OpenApiResponse {
+abstract class CreateUsersWithListInputResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<void> {
   CreateUsersWithListInputResponse();
 
   /// /// successful operation
@@ -1208,6 +1240,16 @@ abstract class CreateUsersWithListInputResponse extends _i2.OpenApiResponse {
       onDefault((this as _CreateUsersWithListInputResponseDefault));
     } else {
       throw StateError('Invalid instance type $this');
+    }
+  }
+
+  /// status default:  successful operation
+  @override
+  void requireSuccess() {
+    if (this is _CreateUsersWithListInputResponseDefault) {
+      return;
+    } else {
+      throw StateError('Expected success response, but got $this');
     }
   }
 }
@@ -1291,6 +1333,7 @@ abstract class LoginUserResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  successful operation
   @override
   LoginUserResponseBody200 requireSuccess() {
     if (this is _LoginUserResponse200) {
@@ -1316,7 +1359,8 @@ class _LogoutUserResponseDefault extends LogoutUserResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class LogoutUserResponse extends _i2.OpenApiResponse {
+abstract class LogoutUserResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<void> {
   LogoutUserResponse();
 
   /// /// successful operation
@@ -1329,6 +1373,16 @@ abstract class LogoutUserResponse extends _i2.OpenApiResponse {
       onDefault((this as _LogoutUserResponseDefault));
     } else {
       throw StateError('Invalid instance type $this');
+    }
+  }
+
+  /// status default:  successful operation
+  @override
+  void requireSuccess() {
+    if (this is _LogoutUserResponseDefault) {
+      return;
+    } else {
+      throw StateError('Expected success response, but got $this');
     }
   }
 }
@@ -1422,6 +1476,7 @@ abstract class GetUserByNameResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  successful operation
   @override
   User requireSuccess() {
     if (this is _GetUserByNameResponse200) {
@@ -1568,7 +1623,8 @@ abstract class Petstore implements _i2.ApiEndpoint {
 
   /// Updates a pet in the store with form data
   /// post: /pet/{petId}
-  Future<UpdatePetWithFormResponse> updatePetWithForm(PetPetIdSchema body,
+  Future<UpdatePetWithFormResponse> updatePetWithForm(
+      UpdatePetWithFormSchema body,
       {@_i3.required int petId});
 
   /// Deletes a pet
@@ -1577,7 +1633,7 @@ abstract class Petstore implements _i2.ApiEndpoint {
 
   /// uploads an image
   /// post: /pet/{petId}/uploadImage
-  Future<UploadFileResponse> uploadFile(PetPetIdUploadImageSchema body,
+  Future<UploadFileResponse> uploadFile(UploadFileSchema body,
       {@_i3.required int petId});
 
   /// Returns pet inventories by status
@@ -1607,12 +1663,12 @@ abstract class Petstore implements _i2.ApiEndpoint {
   /// Creates list of users with given input array
   /// post: /user/createWithArray
   Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
-      UserCreateWithArraySchema body);
+      CreateUsersWithArrayInputSchema body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
   Future<CreateUsersWithListInputResponse> createUsersWithListInput(
-      UserCreateWithArraySchema body);
+      CreateUsersWithArrayInputSchema body);
 
   /// Logs user into the system
   /// get: /user/login
@@ -1680,7 +1736,8 @@ abstract class PetstoreClient implements _i2.OpenApiClient {
   /// post: /pet/{petId}
   ///
   /// * [petId]: ID of pet that needs to be updated
-  Future<UpdatePetWithFormResponse> updatePetWithForm(PetPetIdSchema body,
+  Future<UpdatePetWithFormResponse> updatePetWithForm(
+      UpdatePetWithFormSchema body,
       {@_i3.required int petId});
 
   /// Deletes a pet
@@ -1693,7 +1750,7 @@ abstract class PetstoreClient implements _i2.OpenApiClient {
   /// post: /pet/{petId}/uploadImage
   ///
   /// * [petId]: ID of pet to update
-  Future<UploadFileResponse> uploadFile(PetPetIdUploadImageSchema body,
+  Future<UploadFileResponse> uploadFile(UploadFileSchema body,
       {@_i3.required int petId});
 
   /// Returns pet inventories by status
@@ -1731,13 +1788,13 @@ abstract class PetstoreClient implements _i2.OpenApiClient {
   /// post: /user/createWithArray
   ///
   Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
-      UserCreateWithArraySchema body);
+      CreateUsersWithArrayInputSchema body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
   ///
   Future<CreateUsersWithListInputResponse> createUsersWithListInput(
-      UserCreateWithArraySchema body);
+      CreateUsersWithArrayInputSchema body);
 
   /// Logs user into the system
   /// get: /user/login
@@ -1826,6 +1883,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       {@_i3.required List<FindPetsByStatus> status}) async {
     final request = _i2.OpenApiClientRequest('get', '/pet/findByStatus', []);
     request.addQueryParameter('status', status.map((e) => e.name));
+    request.addQueryParameter('status', status.map((e) => e.name));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _FindPetsByStatusResponse200.response200(
@@ -1846,6 +1904,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       {@_i3.required List<String> tags}) async {
     final request = _i2.OpenApiClientRequest('get', '/pet/findByTags', []);
     request.addQueryParameter('tags', tags);
+    request.addQueryParameter('tags', tags);
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _FindPetsByTagsResponse200.response200(
@@ -1865,6 +1924,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   Future<GetPetByIdResponse> getPetById({@_i3.required int petId}) async {
     final request = _i2.OpenApiClientRequest('get', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
+    request.addQueryParameter('petId', encodeInt(petId));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _GetPetByIdResponse200.response200(
@@ -1881,10 +1941,12 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [petId]: ID of pet that needs to be updated
   @override
-  Future<UpdatePetWithFormResponse> updatePetWithForm(PetPetIdSchema body,
+  Future<UpdatePetWithFormResponse> updatePetWithForm(
+      UpdatePetWithFormSchema body,
       {@_i3.required int petId}) async {
     final request = _i2.OpenApiClientRequest('post', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
+    request.addQueryParameter('petId', encodeInt(petId));
     request.setHeader('content-type', 'application/x-www-form-urlencoded');
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
@@ -1902,7 +1964,9 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       {String apiKey, @_i3.required int petId}) async {
     final request = _i2.OpenApiClientRequest('delete', '/pet/{petId}', []);
     request.addHeaderParameter('api_key', encodeString(apiKey));
+    request.addQueryParameter('api_key', encodeString(apiKey));
     request.addPathParameter('petId', encodeInt(petId));
+    request.addQueryParameter('petId', encodeInt(petId));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
           _DeletePetResponse400.response400(),
@@ -1916,11 +1980,12 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   /// * [petId]: ID of pet to update
   @override
-  Future<UploadFileResponse> uploadFile(PetPetIdUploadImageSchema body,
+  Future<UploadFileResponse> uploadFile(UploadFileSchema body,
       {@_i3.required int petId}) async {
     final request =
         _i2.OpenApiClientRequest('post', '/pet/{petId}/uploadImage', []);
     request.addPathParameter('petId', encodeInt(petId));
+    request.addQueryParameter('petId', encodeInt(petId));
     request.setHeader('content-type', 'application/octet-stream');
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
@@ -1972,6 +2037,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
     final request =
         _i2.OpenApiClientRequest('get', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
+    request.addQueryParameter('orderId', encodeInt(orderId));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _GetOrderByIdResponse200.response200(
@@ -1993,6 +2059,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
     final request =
         _i2.OpenApiClientRequest('delete', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
+    request.addQueryParameter('orderId', encodeInt(orderId));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
           _DeleteOrderResponse400.response400(),
@@ -2021,7 +2088,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   @override
   Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
-      UserCreateWithArraySchema body) async {
+      CreateUsersWithArrayInputSchema body) async {
     final request =
         _i2.OpenApiClientRequest('post', '/user/createWithArray', []);
     request.setHeader('content-type', 'application/json');
@@ -2038,7 +2105,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   ///
   @override
   Future<CreateUsersWithListInputResponse> createUsersWithListInput(
-      UserCreateWithArraySchema body) async {
+      CreateUsersWithArrayInputSchema body) async {
     final request =
         _i2.OpenApiClientRequest('post', '/user/createWithList', []);
     request.setHeader('content-type', 'application/json');
@@ -2060,6 +2127,8 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       {@_i3.required String username, @_i3.required String password}) async {
     final request = _i2.OpenApiClientRequest('get', '/user/login', []);
     request.addQueryParameter('username', encodeString(username));
+    request.addQueryParameter('username', encodeString(username));
+    request.addQueryParameter('password', encodeString(password));
     request.addQueryParameter('password', encodeString(password));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
@@ -2091,6 +2160,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       {@_i3.required String username}) async {
     final request = _i2.OpenApiClientRequest('get', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
+    request.addQueryParameter('username', encodeString(username));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _GetUserByNameResponse200.response200(
@@ -2112,6 +2182,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
       {@_i3.required String username}) async {
     final request = _i2.OpenApiClientRequest('put', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
+    request.addQueryParameter('username', encodeString(username));
     request.setHeader('content-type', 'application/json');
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
@@ -2131,6 +2202,7 @@ class _PetstoreClientImpl extends _i2.OpenApiClientBase
   Future<DeleteUserResponse> deleteUser({@_i3.required String username}) async {
     final request = _i2.OpenApiClientRequest('delete', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
+    request.addQueryParameter('username', encodeString(username));
     return await sendRequest(request, {
       '400': (_i2.OpenApiClientResponse response) async =>
           _DeleteUserResponse400.response400(),
@@ -2166,6 +2238,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
       {@_i3.required List<FindPetsByStatus> status}) {
     final request = _i2.OpenApiClientRequest('get', '/pet/findByStatus', []);
     request.addQueryParameter('status', status.map((e) => e.name));
+    request.addQueryParameter('status', status.map((e) => e.name));
     return request;
   }
 
@@ -2176,6 +2249,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// * [tags]: Tags to filter by
   _i2.OpenApiClientRequest findPetsByTags({@_i3.required List<String> tags}) {
     final request = _i2.OpenApiClientRequest('get', '/pet/findByTags', []);
+    request.addQueryParameter('tags', tags);
     request.addQueryParameter('tags', tags);
     return request;
   }
@@ -2188,6 +2262,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   _i2.OpenApiClientRequest getPetById({@_i3.required int petId}) {
     final request = _i2.OpenApiClientRequest('get', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
+    request.addQueryParameter('petId', encodeInt(petId));
     return request;
   }
 
@@ -2198,6 +2273,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   _i2.OpenApiClientRequest updatePetWithForm({@_i3.required int petId}) {
     final request = _i2.OpenApiClientRequest('post', '/pet/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
+    request.addQueryParameter('petId', encodeInt(petId));
     return request;
   }
 
@@ -2208,7 +2284,9 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   _i2.OpenApiClientRequest deletePet({String apiKey, @_i3.required int petId}) {
     final request = _i2.OpenApiClientRequest('delete', '/pet/{petId}', []);
     request.addHeaderParameter('api_key', encodeString(apiKey));
+    request.addQueryParameter('api_key', encodeString(apiKey));
     request.addPathParameter('petId', encodeInt(petId));
+    request.addQueryParameter('petId', encodeInt(petId));
     return request;
   }
 
@@ -2220,6 +2298,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
     final request =
         _i2.OpenApiClientRequest('post', '/pet/{petId}/uploadImage', []);
     request.addPathParameter('petId', encodeInt(petId));
+    request.addQueryParameter('petId', encodeInt(petId));
     return request;
   }
 
@@ -2249,6 +2328,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
     final request =
         _i2.OpenApiClientRequest('get', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
+    request.addQueryParameter('orderId', encodeInt(orderId));
     return request;
   }
 
@@ -2261,6 +2341,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
     final request =
         _i2.OpenApiClientRequest('delete', '/store/order/{orderId}', []);
     request.addPathParameter('orderId', encodeInt(orderId));
+    request.addQueryParameter('orderId', encodeInt(orderId));
     return request;
   }
 
@@ -2300,6 +2381,8 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
       {@_i3.required String username, @_i3.required String password}) {
     final request = _i2.OpenApiClientRequest('get', '/user/login', []);
     request.addQueryParameter('username', encodeString(username));
+    request.addQueryParameter('username', encodeString(username));
+    request.addQueryParameter('password', encodeString(password));
     request.addQueryParameter('password', encodeString(password));
     return request;
   }
@@ -2319,6 +2402,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   _i2.OpenApiClientRequest getUserByName({@_i3.required String username}) {
     final request = _i2.OpenApiClientRequest('get', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
+    request.addQueryParameter('username', encodeString(username));
     return request;
   }
 
@@ -2330,6 +2414,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   _i2.OpenApiClientRequest updateUser({@_i3.required String username}) {
     final request = _i2.OpenApiClientRequest('put', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
+    request.addQueryParameter('username', encodeString(username));
     return request;
   }
 
@@ -2341,6 +2426,7 @@ class PetstoreUrlResolve with _i2.OpenApiUrlEncodeMixin {
   _i2.OpenApiClientRequest deleteUser({@_i3.required String username}) {
     final request = _i2.OpenApiClientRequest('delete', '/user/{username}', []);
     request.addPathParameter('username', encodeString(username));
+    request.addQueryParameter('username', encodeString(username));
     return request;
   }
 }
@@ -2400,7 +2486,8 @@ class PetstoreRouter extends _i2.OpenApiServerRouterBase {
       return await impl.invoke(
           request,
           (Petstore impl) async => impl.updatePetWithForm(
-              PetPetIdSchema.fromJson(await request.readUrlEncodedBodyFlat()),
+              UpdatePetWithFormSchema.fromJson(
+                  await request.readUrlEncodedBodyFlat()),
               petId: param(
                   isRequired: true,
                   name: 'petId',
@@ -2427,7 +2514,7 @@ class PetstoreRouter extends _i2.OpenApiServerRouterBase {
       return await impl.invoke(
           request,
           (Petstore impl) async => impl.uploadFile(
-              PetPetIdUploadImageSchema.fromJson(null),
+              UploadFileSchema.fromJson(null),
               petId: param(
                   isRequired: true,
                   name: 'petId',
@@ -2477,7 +2564,7 @@ class PetstoreRouter extends _i2.OpenApiServerRouterBase {
       return await impl.invoke(
           request,
           (Petstore impl) async => impl.createUsersWithArrayInput(
-              UserCreateWithArraySchema.fromJson(
+              CreateUsersWithArrayInputSchema.fromJson(
                   await request.readJsonBody())));
     }, security: []);
     addRoute('/user/createWithList', 'post',
@@ -2485,7 +2572,7 @@ class PetstoreRouter extends _i2.OpenApiServerRouterBase {
       return await impl.invoke(
           request,
           (Petstore impl) async => impl.createUsersWithListInput(
-              UserCreateWithArraySchema.fromJson(
+              CreateUsersWithArrayInputSchema.fromJson(
                   await request.readJsonBody())));
     }, security: []);
     addRoute('/user/login', 'get', (_i2.OpenApiRequest request) async {

@@ -219,7 +219,7 @@ class OpenApiLibraryGenerator {
             final constructor = Constructor((cb) {
               cb
                 ..name = 'response$codeName'
-                ..docs.addDartDoc('/// ${response.value.description}');
+                ..docs.addDartDoc(response.value.description);
 
               refer(cb.name);
               if (statusAsParameter) {
@@ -561,7 +561,7 @@ class OpenApiLibraryGenerator {
               final entry = body.content.entries.first;
 
               if (body.content.length > 1) {
-                _logger.warning('Right now we only support on request body, '
+                _logger.warning('Right now we only support one request body, '
                     'but found: ${body.content.keys}, only using $entry');
               }
 

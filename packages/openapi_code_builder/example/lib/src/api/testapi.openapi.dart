@@ -70,7 +70,8 @@ class _UserRegisterPostResponse200 extends UserRegisterPostResponse {
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserRegisterPostResponse extends _i2.OpenApiResponse {
+abstract class UserRegisterPostResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<void> {
   UserRegisterPostResponse();
 
   /// /// OK
@@ -83,6 +84,16 @@ abstract class UserRegisterPostResponse extends _i2.OpenApiResponse {
       on200((this as _UserRegisterPostResponse200));
     } else {
       throw StateError('Invalid instance type $this');
+    }
+  }
+
+  /// status 200:  OK
+  @override
+  void requireSuccess() {
+    if (this is _UserRegisterPostResponse200) {
+      return;
+    } else {
+      throw StateError('Expected success response, but got $this');
     }
   }
 }
@@ -107,7 +118,8 @@ class _HelloNameHtmlGetResponse200 extends HelloNameHtmlGetResponse
       {'status': status, 'body': body, 'contentType': contentType};
 }
 
-abstract class HelloNameHtmlGetResponse extends _i2.OpenApiResponse {
+abstract class HelloNameHtmlGetResponse extends _i2.OpenApiResponse
+    implements _i2.HasSuccessResponse<String> {
   HelloNameHtmlGetResponse();
 
   /// /// OK
@@ -120,6 +132,16 @@ abstract class HelloNameHtmlGetResponse extends _i2.OpenApiResponse {
       on200((this as _HelloNameHtmlGetResponse200));
     } else {
       throw StateError('Invalid instance type $this');
+    }
+  }
+
+  /// status 200:  OK
+  @override
+  String requireSuccess() {
+    if (this is _HelloNameHtmlGetResponse200) {
+      return (this as _HelloNameHtmlGetResponse200).body;
+    } else {
+      throw StateError('Expected success response, but got $this');
     }
   }
 }
@@ -168,6 +190,7 @@ abstract class HelloNameGetResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  OK
   @override
   HelloResponse requireSuccess() {
     if (this is _HelloNameGetResponse200) {
@@ -222,6 +245,7 @@ abstract class HelloNamePutResponse extends _i2.OpenApiResponse
     }
   }
 
+  /// status 200:  OK
   @override
   HelloResponse requireSuccess() {
     if (this is _HelloNamePutResponse200) {
@@ -315,6 +339,7 @@ class _TestApiClientImpl extends _i2.OpenApiClientBase
       {@_i3.required String name}) async {
     final request = _i2.OpenApiClientRequest('get', '/hello/{name}/html', []);
     request.addPathParameter('name', encodeString(name));
+    request.addQueryParameter('name', encodeString(name));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
           _HelloNameHtmlGetResponse200.response200(
@@ -331,6 +356,8 @@ class _TestApiClientImpl extends _i2.OpenApiClientBase
       {@_i3.required String name, String salutation}) async {
     final request = _i2.OpenApiClientRequest('get', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
+    request.addQueryParameter('name', encodeString(name));
+    request.addQueryParameter('salutation', encodeString(salutation));
     request.addQueryParameter('salutation', encodeString(salutation));
     return await sendRequest(request, {
       '200': (_i2.OpenApiClientResponse response) async =>
@@ -347,6 +374,7 @@ class _TestApiClientImpl extends _i2.OpenApiClientBase
       {@_i3.required String name}) async {
     final request = _i2.OpenApiClientRequest('put', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
+    request.addQueryParameter('name', encodeString(name));
     request.setHeader('content-type', 'application/json');
     request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
@@ -372,6 +400,7 @@ class TestApiUrlResolve with _i2.OpenApiUrlEncodeMixin {
   _i2.OpenApiClientRequest helloNameHtmlGet({@_i3.required String name}) {
     final request = _i2.OpenApiClientRequest('get', '/hello/{name}/html', []);
     request.addPathParameter('name', encodeString(name));
+    request.addQueryParameter('name', encodeString(name));
     return request;
   }
 
@@ -383,6 +412,8 @@ class TestApiUrlResolve with _i2.OpenApiUrlEncodeMixin {
       {@_i3.required String name, String salutation}) {
     final request = _i2.OpenApiClientRequest('get', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
+    request.addQueryParameter('name', encodeString(name));
+    request.addQueryParameter('salutation', encodeString(salutation));
     request.addQueryParameter('salutation', encodeString(salutation));
     return request;
   }
@@ -393,6 +424,7 @@ class TestApiUrlResolve with _i2.OpenApiUrlEncodeMixin {
   _i2.OpenApiClientRequest helloNamePut({@_i3.required String name}) {
     final request = _i2.OpenApiClientRequest('put', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
+    request.addQueryParameter('name', encodeString(name));
     return request;
   }
 }

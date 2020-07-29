@@ -177,26 +177,26 @@ Map<String, dynamic> _$FindPetsByTagsResponseBody200ToJson(
         FindPetsByTagsResponseBody200 instance) =>
     <String, dynamic>{};
 
-PetPetIdSchema _$PetPetIdSchemaFromJson(Map<String, dynamic> json) {
-  return PetPetIdSchema(
+UpdatePetWithFormSchema _$UpdatePetWithFormSchemaFromJson(
+    Map<String, dynamic> json) {
+  return UpdatePetWithFormSchema(
     name: json['name'] as String,
     status: json['status'] as String,
   );
 }
 
-Map<String, dynamic> _$PetPetIdSchemaToJson(PetPetIdSchema instance) =>
+Map<String, dynamic> _$UpdatePetWithFormSchemaToJson(
+        UpdatePetWithFormSchema instance) =>
     <String, dynamic>{
       'name': instance.name,
       'status': instance.status,
     };
 
-PetPetIdUploadImageSchema _$PetPetIdUploadImageSchemaFromJson(
-    Map<String, dynamic> json) {
-  return PetPetIdUploadImageSchema();
+UploadFileSchema _$UploadFileSchemaFromJson(Map<String, dynamic> json) {
+  return UploadFileSchema();
 }
 
-Map<String, dynamic> _$PetPetIdUploadImageSchemaToJson(
-        PetPetIdUploadImageSchema instance) =>
+Map<String, dynamic> _$UploadFileSchemaToJson(UploadFileSchema instance) =>
     <String, dynamic>{};
 
 GetInventoryResponseBody200 _$GetInventoryResponseBody200FromJson(
@@ -208,13 +208,13 @@ Map<String, dynamic> _$GetInventoryResponseBody200ToJson(
         GetInventoryResponseBody200 instance) =>
     <String, dynamic>{};
 
-UserCreateWithArraySchema _$UserCreateWithArraySchemaFromJson(
+CreateUsersWithArrayInputSchema _$CreateUsersWithArrayInputSchemaFromJson(
     Map<String, dynamic> json) {
-  return UserCreateWithArraySchema();
+  return CreateUsersWithArrayInputSchema();
 }
 
-Map<String, dynamic> _$UserCreateWithArraySchemaToJson(
-        UserCreateWithArraySchema instance) =>
+Map<String, dynamic> _$CreateUsersWithArrayInputSchemaToJson(
+        CreateUsersWithArrayInputSchema instance) =>
     <String, dynamic>{};
 
 LoginUserResponseBody200 _$LoginUserResponseBody200FromJson(
