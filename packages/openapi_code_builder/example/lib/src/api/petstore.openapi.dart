@@ -222,7 +222,7 @@ class ApiResponse implements _i2.OpenApiContent {
 }
 
 class _UpdatePetResponse400 extends UpdatePetResponse {
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   _UpdatePetResponse400.response400() : status = 400;
 
   @override
@@ -237,7 +237,7 @@ class _UpdatePetResponse400 extends UpdatePetResponse {
 }
 
 class _UpdatePetResponse404 extends UpdatePetResponse {
-  /// /// Pet not found
+  /// Pet not found
   _UpdatePetResponse404.response404() : status = 404;
 
   @override
@@ -252,7 +252,7 @@ class _UpdatePetResponse404 extends UpdatePetResponse {
 }
 
 class _UpdatePetResponse405 extends UpdatePetResponse {
-  /// /// Validation exception
+  /// Validation exception
   _UpdatePetResponse405.response405() : status = 405;
 
   @override
@@ -269,15 +269,15 @@ class _UpdatePetResponse405 extends UpdatePetResponse {
 abstract class UpdatePetResponse extends _i2.OpenApiResponse {
   UpdatePetResponse();
 
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   factory UpdatePetResponse.response400() =>
       _UpdatePetResponse400.response400();
 
-  /// /// Pet not found
+  /// Pet not found
   factory UpdatePetResponse.response404() =>
       _UpdatePetResponse404.response404();
 
-  /// /// Validation exception
+  /// Validation exception
   factory UpdatePetResponse.response405() =>
       _UpdatePetResponse405.response405();
 
@@ -298,7 +298,7 @@ abstract class UpdatePetResponse extends _i2.OpenApiResponse {
 }
 
 class _AddPetResponse405 extends AddPetResponse {
-  /// /// Invalid input
+  /// Invalid input
   _AddPetResponse405.response405() : status = 405;
 
   @override
@@ -315,7 +315,7 @@ class _AddPetResponse405 extends AddPetResponse {
 abstract class AddPetResponse extends _i2.OpenApiResponse {
   AddPetResponse();
 
-  /// /// Invalid input
+  /// Invalid input
   factory AddPetResponse.response405() => _AddPetResponse405.response405();
 
   void map({@_i3.required _i2.ResponseMap<_AddPetResponse405> on405}) {
@@ -343,7 +343,7 @@ class FindPetsByStatusResponseBody200 implements _i2.OpenApiContent {
 
 class _FindPetsByStatusResponse200 extends FindPetsByStatusResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// successful operation
+  /// successful operation
   _FindPetsByStatusResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -370,7 +370,7 @@ class _FindPetsByStatusResponse200 extends FindPetsByStatusResponse
 }
 
 class _FindPetsByStatusResponse400 extends FindPetsByStatusResponse {
-  /// /// Invalid status value
+  /// Invalid status value
   _FindPetsByStatusResponse400.response400() : status = 400;
 
   @override
@@ -388,12 +388,12 @@ abstract class FindPetsByStatusResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<FindPetsByStatusResponseBody200> {
   FindPetsByStatusResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory FindPetsByStatusResponse.response200(
           FindPetsByStatusResponseBody200 body) =>
       _FindPetsByStatusResponse200.response200(body);
 
-  /// /// Invalid status value
+  /// Invalid status value
   factory FindPetsByStatusResponse.response400() =>
       _FindPetsByStatusResponse400.response400();
 
@@ -454,7 +454,7 @@ class FindPetsByTagsResponseBody200 implements _i2.OpenApiContent {
 
 class _FindPetsByTagsResponse200 extends FindPetsByTagsResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// successful operation
+  /// successful operation
   _FindPetsByTagsResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -481,7 +481,7 @@ class _FindPetsByTagsResponse200 extends FindPetsByTagsResponse
 }
 
 class _FindPetsByTagsResponse400 extends FindPetsByTagsResponse {
-  /// /// Invalid tag value
+  /// Invalid tag value
   _FindPetsByTagsResponse400.response400() : status = 400;
 
   @override
@@ -499,12 +499,12 @@ abstract class FindPetsByTagsResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<FindPetsByTagsResponseBody200> {
   FindPetsByTagsResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory FindPetsByTagsResponse.response200(
           FindPetsByTagsResponseBody200 body) =>
       _FindPetsByTagsResponse200.response200(body);
 
-  /// /// Invalid tag value
+  /// Invalid tag value
   factory FindPetsByTagsResponse.response400() =>
       _FindPetsByTagsResponse400.response400();
 
@@ -533,7 +533,7 @@ abstract class FindPetsByTagsResponse extends _i2.OpenApiResponse
 
 class _GetPetByIdResponse200 extends GetPetByIdResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// successful operation
+  /// successful operation
   _GetPetByIdResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -560,7 +560,7 @@ class _GetPetByIdResponse200 extends GetPetByIdResponse
 }
 
 class _GetPetByIdResponse400 extends GetPetByIdResponse {
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   _GetPetByIdResponse400.response400() : status = 400;
 
   @override
@@ -575,7 +575,7 @@ class _GetPetByIdResponse400 extends GetPetByIdResponse {
 }
 
 class _GetPetByIdResponse404 extends GetPetByIdResponse {
-  /// /// Pet not found
+  /// Pet not found
   _GetPetByIdResponse404.response404() : status = 404;
 
   @override
@@ -593,15 +593,15 @@ abstract class GetPetByIdResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<Pet> {
   GetPetByIdResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory GetPetByIdResponse.response200(Pet body) =>
       _GetPetByIdResponse200.response200(body);
 
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   factory GetPetByIdResponse.response400() =>
       _GetPetByIdResponse400.response400();
 
-  /// /// Pet not found
+  /// Pet not found
   factory GetPetByIdResponse.response404() =>
       _GetPetByIdResponse404.response404();
 
@@ -632,7 +632,7 @@ abstract class GetPetByIdResponse extends _i2.OpenApiResponse
 }
 
 class _UpdatePetWithFormResponse405 extends UpdatePetWithFormResponse {
-  /// /// Invalid input
+  /// Invalid input
   _UpdatePetWithFormResponse405.response405() : status = 405;
 
   @override
@@ -649,7 +649,7 @@ class _UpdatePetWithFormResponse405 extends UpdatePetWithFormResponse {
 abstract class UpdatePetWithFormResponse extends _i2.OpenApiResponse {
   UpdatePetWithFormResponse();
 
-  /// /// Invalid input
+  /// Invalid input
   factory UpdatePetWithFormResponse.response405() =>
       _UpdatePetWithFormResponse405.response405();
 
@@ -684,7 +684,7 @@ class UpdatePetWithFormSchema implements _i2.OpenApiContent {
 }
 
 class _DeletePetResponse400 extends DeletePetResponse {
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   _DeletePetResponse400.response400() : status = 400;
 
   @override
@@ -699,7 +699,7 @@ class _DeletePetResponse400 extends DeletePetResponse {
 }
 
 class _DeletePetResponse404 extends DeletePetResponse {
-  /// /// Pet not found
+  /// Pet not found
   _DeletePetResponse404.response404() : status = 404;
 
   @override
@@ -716,11 +716,11 @@ class _DeletePetResponse404 extends DeletePetResponse {
 abstract class DeletePetResponse extends _i2.OpenApiResponse {
   DeletePetResponse();
 
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   factory DeletePetResponse.response400() =>
       _DeletePetResponse400.response400();
 
-  /// /// Pet not found
+  /// Pet not found
   factory DeletePetResponse.response404() =>
       _DeletePetResponse404.response404();
 
@@ -739,7 +739,7 @@ abstract class DeletePetResponse extends _i2.OpenApiResponse {
 
 class _UploadFileResponse200 extends UploadFileResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// successful operation
+  /// successful operation
   _UploadFileResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -769,7 +769,7 @@ abstract class UploadFileResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<ApiResponse> {
   UploadFileResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory UploadFileResponse.response200(ApiResponse body) =>
       _UploadFileResponse200.response200(body);
 
@@ -818,7 +818,7 @@ class GetInventoryResponseBody200 implements _i2.OpenApiContent {
 
 class _GetInventoryResponse200 extends GetInventoryResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// successful operation
+  /// successful operation
   _GetInventoryResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -848,7 +848,7 @@ abstract class GetInventoryResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<GetInventoryResponseBody200> {
   GetInventoryResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory GetInventoryResponse.response200(GetInventoryResponseBody200 body) =>
       _GetInventoryResponse200.response200(body);
 
@@ -873,7 +873,7 @@ abstract class GetInventoryResponse extends _i2.OpenApiResponse
 
 class _PlaceOrderResponse200 extends PlaceOrderResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// successful operation
+  /// successful operation
   _PlaceOrderResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -900,7 +900,7 @@ class _PlaceOrderResponse200 extends PlaceOrderResponse
 }
 
 class _PlaceOrderResponse400 extends PlaceOrderResponse {
-  /// /// Invalid Order
+  /// Invalid Order
   _PlaceOrderResponse400.response400() : status = 400;
 
   @override
@@ -918,11 +918,11 @@ abstract class PlaceOrderResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<Order> {
   PlaceOrderResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory PlaceOrderResponse.response200(Order body) =>
       _PlaceOrderResponse200.response200(body);
 
-  /// /// Invalid Order
+  /// Invalid Order
   factory PlaceOrderResponse.response400() =>
       _PlaceOrderResponse400.response400();
 
@@ -951,7 +951,7 @@ abstract class PlaceOrderResponse extends _i2.OpenApiResponse
 
 class _GetOrderByIdResponse200 extends GetOrderByIdResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// successful operation
+  /// successful operation
   _GetOrderByIdResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -978,7 +978,7 @@ class _GetOrderByIdResponse200 extends GetOrderByIdResponse
 }
 
 class _GetOrderByIdResponse400 extends GetOrderByIdResponse {
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   _GetOrderByIdResponse400.response400() : status = 400;
 
   @override
@@ -993,7 +993,7 @@ class _GetOrderByIdResponse400 extends GetOrderByIdResponse {
 }
 
 class _GetOrderByIdResponse404 extends GetOrderByIdResponse {
-  /// /// Order not found
+  /// Order not found
   _GetOrderByIdResponse404.response404() : status = 404;
 
   @override
@@ -1011,15 +1011,15 @@ abstract class GetOrderByIdResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<Order> {
   GetOrderByIdResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory GetOrderByIdResponse.response200(Order body) =>
       _GetOrderByIdResponse200.response200(body);
 
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   factory GetOrderByIdResponse.response400() =>
       _GetOrderByIdResponse400.response400();
 
-  /// /// Order not found
+  /// Order not found
   factory GetOrderByIdResponse.response404() =>
       _GetOrderByIdResponse404.response404();
 
@@ -1050,7 +1050,7 @@ abstract class GetOrderByIdResponse extends _i2.OpenApiResponse
 }
 
 class _DeleteOrderResponse400 extends DeleteOrderResponse {
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   _DeleteOrderResponse400.response400() : status = 400;
 
   @override
@@ -1065,7 +1065,7 @@ class _DeleteOrderResponse400 extends DeleteOrderResponse {
 }
 
 class _DeleteOrderResponse404 extends DeleteOrderResponse {
-  /// /// Order not found
+  /// Order not found
   _DeleteOrderResponse404.response404() : status = 404;
 
   @override
@@ -1082,11 +1082,11 @@ class _DeleteOrderResponse404 extends DeleteOrderResponse {
 abstract class DeleteOrderResponse extends _i2.OpenApiResponse {
   DeleteOrderResponse();
 
-  /// /// Invalid ID supplied
+  /// Invalid ID supplied
   factory DeleteOrderResponse.response400() =>
       _DeleteOrderResponse400.response400();
 
-  /// /// Order not found
+  /// Order not found
   factory DeleteOrderResponse.response404() =>
       _DeleteOrderResponse404.response404();
 
@@ -1104,7 +1104,7 @@ abstract class DeleteOrderResponse extends _i2.OpenApiResponse {
 }
 
 class _CreateUserResponseDefault extends CreateUserResponse {
-  /// /// successful operation
+  /// successful operation
   _CreateUserResponseDefault.responseDefault(int status) : status = status;
 
   @override
@@ -1122,7 +1122,7 @@ abstract class CreateUserResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<void> {
   CreateUserResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory CreateUserResponse.responseDefault(int status) =>
       _CreateUserResponseDefault.responseDefault(status);
 
@@ -1148,7 +1148,7 @@ abstract class CreateUserResponse extends _i2.OpenApiResponse
 
 class _CreateUsersWithArrayInputResponseDefault
     extends CreateUsersWithArrayInputResponse {
-  /// /// successful operation
+  /// successful operation
   _CreateUsersWithArrayInputResponseDefault.responseDefault(int status)
       : status = status;
 
@@ -1167,7 +1167,7 @@ abstract class CreateUsersWithArrayInputResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<void> {
   CreateUsersWithArrayInputResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory CreateUsersWithArrayInputResponse.responseDefault(int status) =>
       _CreateUsersWithArrayInputResponseDefault.responseDefault(status);
 
@@ -1209,7 +1209,7 @@ class CreateUsersWithArrayInputSchema implements _i2.OpenApiContent {
 
 class _CreateUsersWithListInputResponseDefault
     extends CreateUsersWithListInputResponse {
-  /// /// successful operation
+  /// successful operation
   _CreateUsersWithListInputResponseDefault.responseDefault(int status)
       : status = status;
 
@@ -1228,7 +1228,7 @@ abstract class CreateUsersWithListInputResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<void> {
   CreateUsersWithListInputResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory CreateUsersWithListInputResponse.responseDefault(int status) =>
       _CreateUsersWithListInputResponseDefault.responseDefault(status);
 
@@ -1268,7 +1268,7 @@ class LoginUserResponseBody200 implements _i2.OpenApiContent {
 
 class _LoginUserResponse200 extends LoginUserResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// successful operation
+  /// successful operation
   _LoginUserResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -1295,7 +1295,7 @@ class _LoginUserResponse200 extends LoginUserResponse
 }
 
 class _LoginUserResponse400 extends LoginUserResponse {
-  /// /// Invalid username/password supplied
+  /// Invalid username/password supplied
   _LoginUserResponse400.response400() : status = 400;
 
   @override
@@ -1313,11 +1313,11 @@ abstract class LoginUserResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<LoginUserResponseBody200> {
   LoginUserResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory LoginUserResponse.response200(LoginUserResponseBody200 body) =>
       _LoginUserResponse200.response200(body);
 
-  /// /// Invalid username/password supplied
+  /// Invalid username/password supplied
   factory LoginUserResponse.response400() =>
       _LoginUserResponse400.response400();
 
@@ -1345,7 +1345,7 @@ abstract class LoginUserResponse extends _i2.OpenApiResponse
 }
 
 class _LogoutUserResponseDefault extends LogoutUserResponse {
-  /// /// successful operation
+  /// successful operation
   _LogoutUserResponseDefault.responseDefault(int status) : status = status;
 
   @override
@@ -1363,7 +1363,7 @@ abstract class LogoutUserResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<void> {
   LogoutUserResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory LogoutUserResponse.responseDefault(int status) =>
       _LogoutUserResponseDefault.responseDefault(status);
 
@@ -1389,7 +1389,7 @@ abstract class LogoutUserResponse extends _i2.OpenApiResponse
 
 class _GetUserByNameResponse200 extends GetUserByNameResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// successful operation
+  /// successful operation
   _GetUserByNameResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -1416,7 +1416,7 @@ class _GetUserByNameResponse200 extends GetUserByNameResponse
 }
 
 class _GetUserByNameResponse400 extends GetUserByNameResponse {
-  /// /// Invalid username supplied
+  /// Invalid username supplied
   _GetUserByNameResponse400.response400() : status = 400;
 
   @override
@@ -1431,7 +1431,7 @@ class _GetUserByNameResponse400 extends GetUserByNameResponse {
 }
 
 class _GetUserByNameResponse404 extends GetUserByNameResponse {
-  /// /// User not found
+  /// User not found
   _GetUserByNameResponse404.response404() : status = 404;
 
   @override
@@ -1449,15 +1449,15 @@ abstract class GetUserByNameResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<User> {
   GetUserByNameResponse();
 
-  /// /// successful operation
+  /// successful operation
   factory GetUserByNameResponse.response200(User body) =>
       _GetUserByNameResponse200.response200(body);
 
-  /// /// Invalid username supplied
+  /// Invalid username supplied
   factory GetUserByNameResponse.response400() =>
       _GetUserByNameResponse400.response400();
 
-  /// /// User not found
+  /// User not found
   factory GetUserByNameResponse.response404() =>
       _GetUserByNameResponse404.response404();
 
@@ -1488,7 +1488,7 @@ abstract class GetUserByNameResponse extends _i2.OpenApiResponse
 }
 
 class _UpdateUserResponse400 extends UpdateUserResponse {
-  /// /// Invalid user supplied
+  /// Invalid user supplied
   _UpdateUserResponse400.response400() : status = 400;
 
   @override
@@ -1503,7 +1503,7 @@ class _UpdateUserResponse400 extends UpdateUserResponse {
 }
 
 class _UpdateUserResponse404 extends UpdateUserResponse {
-  /// /// User not found
+  /// User not found
   _UpdateUserResponse404.response404() : status = 404;
 
   @override
@@ -1520,11 +1520,11 @@ class _UpdateUserResponse404 extends UpdateUserResponse {
 abstract class UpdateUserResponse extends _i2.OpenApiResponse {
   UpdateUserResponse();
 
-  /// /// Invalid user supplied
+  /// Invalid user supplied
   factory UpdateUserResponse.response400() =>
       _UpdateUserResponse400.response400();
 
-  /// /// User not found
+  /// User not found
   factory UpdateUserResponse.response404() =>
       _UpdateUserResponse404.response404();
 
@@ -1542,7 +1542,7 @@ abstract class UpdateUserResponse extends _i2.OpenApiResponse {
 }
 
 class _DeleteUserResponse400 extends DeleteUserResponse {
-  /// /// Invalid username supplied
+  /// Invalid username supplied
   _DeleteUserResponse400.response400() : status = 400;
 
   @override
@@ -1557,7 +1557,7 @@ class _DeleteUserResponse400 extends DeleteUserResponse {
 }
 
 class _DeleteUserResponse404 extends DeleteUserResponse {
-  /// /// User not found
+  /// User not found
   _DeleteUserResponse404.response404() : status = 404;
 
   @override
@@ -1574,11 +1574,11 @@ class _DeleteUserResponse404 extends DeleteUserResponse {
 abstract class DeleteUserResponse extends _i2.OpenApiResponse {
   DeleteUserResponse();
 
-  /// /// Invalid username supplied
+  /// Invalid username supplied
   factory DeleteUserResponse.response400() =>
       _DeleteUserResponse400.response400();
 
-  /// /// User not found
+  /// User not found
   factory DeleteUserResponse.response404() =>
       _DeleteUserResponse404.response404();
 

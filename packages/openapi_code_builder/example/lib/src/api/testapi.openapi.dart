@@ -56,7 +56,7 @@ class HelloResponse implements _i2.OpenApiContent {
 }
 
 class _UserRegisterPostResponse200 extends UserRegisterPostResponse {
-  /// /// OK
+  /// OK
   _UserRegisterPostResponse200.response200() : status = 200;
 
   @override
@@ -74,7 +74,7 @@ abstract class UserRegisterPostResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<void> {
   UserRegisterPostResponse();
 
-  /// /// OK
+  /// OK
   factory UserRegisterPostResponse.response200() =>
       _UserRegisterPostResponse200.response200();
 
@@ -100,7 +100,7 @@ abstract class UserRegisterPostResponse extends _i2.OpenApiResponse
 
 class _HelloNameHtmlGetResponse200 extends HelloNameHtmlGetResponse
     implements _i2.OpenApiResponseBodyString {
-  /// /// OK
+  /// OK
   _HelloNameHtmlGetResponse200.response200(this.body) : status = 200;
 
   @override
@@ -122,7 +122,7 @@ abstract class HelloNameHtmlGetResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<String> {
   HelloNameHtmlGetResponse();
 
-  /// /// OK
+  /// OK
   factory HelloNameHtmlGetResponse.response200(String body) =>
       _HelloNameHtmlGetResponse200.response200(body);
 
@@ -148,7 +148,7 @@ abstract class HelloNameHtmlGetResponse extends _i2.OpenApiResponse
 
 class _HelloNameGetResponse200 extends HelloNameGetResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// OK
+  /// OK
   _HelloNameGetResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -178,7 +178,7 @@ abstract class HelloNameGetResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<HelloResponse> {
   HelloNameGetResponse();
 
-  /// /// OK
+  /// OK
   factory HelloNameGetResponse.response200(HelloResponse body) =>
       _HelloNameGetResponse200.response200(body);
 
@@ -203,7 +203,7 @@ abstract class HelloNameGetResponse extends _i2.OpenApiResponse
 
 class _HelloNamePutResponse200 extends HelloNamePutResponse
     implements _i2.OpenApiResponseBodyJson {
-  /// /// OK
+  /// OK
   _HelloNamePutResponse200.response200(this.body)
       : status = 200,
         bodyJson = body.toJson();
@@ -233,7 +233,7 @@ abstract class HelloNamePutResponse extends _i2.OpenApiResponse
     implements _i2.HasSuccessResponse<HelloResponse> {
   HelloNamePutResponse();
 
-  /// /// OK
+  /// OK
   factory HelloNamePutResponse.response200(HelloResponse body) =>
       _HelloNamePutResponse200.response200(body);
 
