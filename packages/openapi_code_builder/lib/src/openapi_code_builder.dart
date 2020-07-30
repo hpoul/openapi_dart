@@ -10,6 +10,7 @@ import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:open_api_forked/v3.dart';
 import 'package:openapi_base/openapi_base.dart';
+import 'package:openapi_code_builder/src/custom_allocator.dart';
 import 'package:quiver/check.dart';
 import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
@@ -87,6 +88,9 @@ class OpenApiLibraryGenerator {
       refer('SecuritySchemeApiKey', 'package:openapi_base/openapi_base.dart');
   final _openApiContentType =
       refer('OpenApiContentType', 'package:openapi_base/openapi_base.dart');
+  final _apiUuid = refer('ApiUuid', 'package:openapi_base/openapi_base.dart');
+  final _apiUuidJsonConverter =
+      refer('ApiUuidJsonConverter', 'package:openapi_base/openapi_base.dart');
   final _required = refer('required', 'package:meta/meta.dart');
   final _override = refer('override');
   final _void = refer('void');
@@ -819,14 +823,17 @@ class OpenApiLibraryGenerator {
 
   Class _createSchemaClass(String className, APISchemaObject obj) {
     final properties = obj.properties ?? {};
-    final fields = properties.map((key, e) => MapEntry(
-        key,
-        Field((fb) => fb
-          ..addDartDoc(e.description)
-          ..annotations.add(jsonKey([], {'name': literalString(key)}))
-          ..name = key.camelCase
-          ..modifier = FieldModifier.final$
-          ..type = _toDartType('$className${key.pascalCase}', e))));
+    final fields = properties.map((key, e) => MapEntry(key, Field((fb) {
+          fb
+            ..addDartDoc(e.description)
+            ..annotations.add(jsonKey([], {'name': literalString(key)}))
+            ..name = key.camelCase
+            ..modifier = FieldModifier.final$
+            ..type = _toDartType('$className${key.pascalCase}', e);
+          if (fb.type == _apiUuid) {
+            fb.annotations.add(_apiUuidJsonConverter([]));
+          }
+        })));
     // ignore: avoid_function_literals_in_foreach_calls
     obj.required?.forEach((element) {
       if (fields[element] == null) {
@@ -1003,6 +1010,9 @@ class OpenApiLibraryGenerator {
         if (schema.format == 'date-time') {
           return refer('DateTime');
         }
+        if (schema.format == 'uuid') {
+          return _apiUuid;
+        }
         return refer('String');
       case APIType.number:
         return refer('num');
@@ -1133,8 +1143,8 @@ class OpenApiCodeBuilderUtils {
 
   static String formatLibrary(Library library,
       {bool orderDirectives = false, bool useNullSafetySyntax}) {
-    final emitter = DartEmitter(
-        Allocator.simplePrefixing(), orderDirectives, useNullSafetySyntax);
+    final emitter =
+        DartEmitter(CustomAllocator(), orderDirectives, useNullSafetySyntax);
     final libraryOutput =
         DartFormatter().format('// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
             '// ignore_for_file: prefer_initializing_formals\n\n'

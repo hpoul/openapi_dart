@@ -6,3 +6,4 @@ export 'src/openapi_exception.dart';
 export 'src/server/openapi_noop_server.dart'
     if (dart.library.io) 'src/server/openapi_shelf_server.dart';
 export 'src/server/openapi_server_base.dart';
+export 'src/util/uuid.dart';

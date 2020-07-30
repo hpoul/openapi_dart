@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Add support for `uuid` format.
+
 ## 0.1.2
 
 - Support for freeform `additionalProperties`
