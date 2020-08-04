@@ -794,26 +794,36 @@ class OpenApiLibraryGenerator {
     return componentName.pascalCase;
   }
 
+  String _componentNameFromReferenceUri(Uri referenceUri) {
+    if (referenceUri == null) {
+      return null;
+    }
+    final segments = referenceUri.pathSegments;
+    if (segments[0] == 'components' && segments[1] == 'schemas') {
+      final name = _classNameForComponent(segments[2]);
+      return name;
+    }
+    return null;
+  }
+
   Reference _schemaReference(String key, APISchemaObject schemaObject) {
     _logger.finer('Looking up ${schemaObject.referenceURI}');
     final uri = schemaObject.referenceURI;
-    if (uri != null) {
-      final segments = uri.pathSegments;
-      if (segments[0] == 'components' && segments[1] == 'schemas') {
-        final name = _classNameForComponent(segments[2]);
-        final found = createdSchema.values.firstWhere(
-            (element) => element.symbol == name,
-            orElse: () => null);
-        if (found != null) {
-          _logger.finest('We found it.');
-          return found;
-        }
-      }
+    final componentName =
+        _componentNameFromReferenceUri(uri) ?? _classNameForComponent(key);
+
+    final found = createdSchema.values.firstWhere(
+        (element) => element.symbol == componentName,
+        orElse: () => null);
+    if (found != null) {
+      _logger.finest('We found it.');
+      return found;
     }
+
     final reference = createdSchema.putIfAbsent(schemaObject, () {
       _logger.finer(
           'Creating schema class. for ${schemaObject.referenceURI} / $key');
-      final c = _createSchemaClass(_classNameForComponent(key), schemaObject);
+      final c = _createSchemaClass(componentName, schemaObject);
       lb.body.add(c);
 
       return refer(c.name);
@@ -822,11 +832,29 @@ class OpenApiLibraryGenerator {
   }
 
   Class _createSchemaClass(String className, APISchemaObject obj) {
-    final properties = obj.properties ?? {};
+    var properties = obj.properties ?? {};
+    final override = <String>{};
+    final required = obj.required ?? [];
+    final implements = <Reference>[];
+
+    // check for inheritance
+    if (obj.allOf != null) {
+      for (final baseObj in obj.allOf) {
+        implements.add(_schemaReference('${className}Base', baseObj));
+        properties = {
+          ...baseObj.properties,
+          ...properties,
+        };
+        override.addAll(baseObj.properties.entries.map((e) => e.key));
+        required.addAll(baseObj.required ?? []);
+      }
+    }
+
     final fields = properties.map((key, e) => MapEntry(key, Field((fb) {
           fb
             ..addDartDoc(e.description)
             ..annotations.add(jsonKey([], {'name': literalString(key)}))
+            ..annotations.addAll(override.contains(key) ? [_override] : [])
             ..name = key.camelCase
             ..modifier = FieldModifier.final$
             ..type = _toDartType('$className${key.pascalCase}', e);
@@ -835,7 +863,7 @@ class OpenApiLibraryGenerator {
           }
         })));
     // ignore: avoid_function_literals_in_foreach_calls
-    obj.required?.forEach((element) {
+    required?.forEach((element) {
       if (fields[element] == null) {
         throw StateError('Invalid required "$element" was not '
             'defined as property of $className');
@@ -873,6 +901,7 @@ class OpenApiLibraryGenerator {
         ..annotations.add(jsonSerializable([]))
         ..name = className
         ..implements.add(_openApiContent)
+        ..implements.addAll(implements)
         ..docs.addDartDoc(obj.description)
         ..constructors.add(
           Constructor(
@@ -881,10 +910,10 @@ class OpenApiLibraryGenerator {
                   .addAll(fields.entries.map((f) => Parameter((pb) => pb
 //            ..docs.addAll(f.docs)
                     ..name = f.value.name
-                    ..asRequired(this, obj.required?.contains(f.key) ?? false)
+                    ..asRequired(this, required?.contains(f.key) ?? false)
                     ..named = true
                     ..toThis = true)))
-              ..initializers.addAll(obj.required?.map((e) => refer('assert')(
+              ..initializers.addAll(required?.map((e) => refer('assert')(
                       [refer(fields[e].name).notEqualTo(literalNull)]).code) ??
                   []),
           ),
@@ -917,6 +946,7 @@ class OpenApiLibraryGenerator {
             (mb) => mb
               ..name = 'toJson'
               ..returns = refer('Map<String, dynamic>')
+              ..annotations.addAll(implements.isEmpty ? [] : [_override])
               ..lambda = true
               ..body = toJsonExpression.code,
           ),

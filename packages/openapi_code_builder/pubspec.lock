@@ -225,13 +225,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
-  open_api:
-    dependency: transitive
-    description:
-      name: open_api
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
   open_api_forked:
     dependency: "direct main"
     description:
@@ -245,7 +238,7 @@ packages:
       name: openapi_base
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.2"
+    version: "0.1.4"
   package_config:
     dependency: transitive
     description:
@@ -372,6 +365,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.0+5"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
   watcher:
     dependency: transitive
     description:
