@@ -577,12 +577,6 @@ class OpenApiLibraryGenerator {
                 param.name,
                 encodeParameter(refer(paramName)),
               ).statement);
-              clientCode.add(clientCodeRequest
-                  .property('addQueryParameter')([
-                    literalString(param.name),
-                    encodeParameter(refer(paramName)),
-                  ])
-                  .statement);
             }
             final urlResolverMethod = clientMethod.build().toBuilder()
               ..returns = _openApiClientRequest
