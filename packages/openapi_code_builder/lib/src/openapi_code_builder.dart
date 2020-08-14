@@ -50,6 +50,8 @@ class OpenApiLibraryGenerator {
       'OpenApiResponseBodyJson', 'package:openapi_base/openapi_base.dart');
   final _openApiResponseBodyString = refer(
       'OpenApiResponseBodyString', 'package:openapi_base/openapi_base.dart');
+  final _openApiResponseBodyBinary = refer(
+      'OpenApiResponseBodyBinary', 'package:openapi_base/openapi_base.dart');
   final _openApiEndpoint =
       refer('ApiEndpoint', 'package:openapi_base/openapi_base.dart');
   final _endpointProvider =
@@ -94,6 +96,8 @@ class OpenApiLibraryGenerator {
   final _required = refer('required', 'package:meta/meta.dart');
   final _override = refer('override');
   final _void = refer('void');
+  final _uint8List = refer('Uint8List', 'dart:typed_data');
+  final _typeString = refer('String');
 
   static const mediaTypeJson = OpenApiContentType.json;
 
@@ -244,10 +248,14 @@ class OpenApiLibraryGenerator {
               }
               final content =
                   (response.value.content ?? {})[mediaTypeJson.contentType];
-              OpenApiContentType responseContentType;
+//              OpenApiContentType responseContentType;
+              var responseContentTypeAssignment = literalNull.code;
               Reference bodyType;
               if (content != null) {
-                responseContentType = OpenApiContentType.json;
+                const responseContentType = OpenApiContentType.json;
+                responseContentTypeAssignment = _openApiContentType
+                    .newInstanceNamed('parse',
+                        [literalString(responseContentType.toString())]).code;
                 bodyType = _schemaReference(
                     '${responseClass.name}Body$codeName', content.schema);
                 responseCodeClass.fields.add(Field((fb) => fb
@@ -258,7 +266,7 @@ class OpenApiLibraryGenerator {
                   ..name = 'bodyJson'
                   ..annotations.add(_override)
                   ..type = _referType('Map',
-                      generics: [refer('String'), refer('dynamic')])
+                      generics: [_typeString, refer('dynamic')])
                   ..modifier = FieldModifier.final$));
                 cb.requiredParameters.add(Parameter((pb) => pb
                   ..name = 'body'
@@ -276,8 +284,11 @@ class OpenApiLibraryGenerator {
               } else {
                 if (response.value.content?.length == 1) {
                   final responseContent = response.value.content.entries.first;
-                  responseContentType =
+                  final responseContentType =
                       OpenApiContentType.parse(responseContent.key);
+                  responseContentTypeAssignment = _openApiContentType
+                      .newInstanceNamed('parse',
+                          [literalString(responseContentType.toString())]).code;
                   bodyType = _toDartType('${responseCodeClass}Content',
                       responseContent.value.schema);
                   checkState(
@@ -289,14 +300,35 @@ class OpenApiLibraryGenerator {
                     ..type = bodyType
                     ..annotations.add(_override)
                     ..modifier = FieldModifier.final$));
+                  if (responseContent.key.contains('*')) {
+                    responseContentTypeAssignment = null;
+                    cb.requiredParameters.add(Parameter((pb) => pb
+                      ..type = _openApiContentType
+                      ..name = 'contentType'
+                      ..toThis = true));
+                    clientResponseParseParams.add(
+                        refer('response').property('responseContentType')([]));
+                  }
                   cb.requiredParameters.add(Parameter((pb) => pb
                     ..name = 'body'
                     ..type = bodyType
                     ..toThis = true));
-                  responseCodeClass.implements.add(_openApiResponseBodyString);
-                  clientResponseParseParams.add(refer('response')
-                      .property('responseBodyString')([])
-                      .awaited);
+                  if (_typeString == bodyType) {
+                    responseCodeClass.implements
+                        .add(_openApiResponseBodyString);
+                    clientResponseParseParams.add(refer('response')
+                        .property('responseBodyString')([])
+                        .awaited);
+                  } else if (_uint8List == bodyType) {
+                    responseCodeClass.implements
+                        .add(_openApiResponseBodyBinary);
+                    clientResponseParseParams.add(refer('response')
+                        .property('responseBodyBytes')([])
+                        .awaited);
+                  } else {
+                    throw StateError(
+                        'Unsupported bodyType $bodyType for responses.');
+                  }
                 }
               }
               if (response.key.startsWith('2') ||
@@ -306,15 +338,14 @@ class OpenApiLibraryGenerator {
                 successResponseBodyType = bodyType;
                 successApiResponse = response;
               }
-              responseCodeClass.fields.add(Field((fb) => fb
-                ..name = 'contentType'
-                ..type = _openApiContentType
-                ..annotations.add(_override)
-                ..modifier = FieldModifier.final$
-                ..assignment = responseContentType == null
-                    ? literalNull.code
-                    : _openApiContentType.newInstanceNamed('parse',
-                        [literalString(responseContentType.toString())]).code));
+              responseCodeClass.fields.add(Field(
+                (fb) => fb
+                  ..name = 'contentType'
+                  ..type = _openApiContentType
+                  ..annotations.add(_override)
+                  ..modifier = FieldModifier.final$
+                  ..assignment = responseContentTypeAssignment,
+              ));
             });
 
             responseCodeClass.constructors.add((constructor.toBuilder()
@@ -325,8 +356,8 @@ class OpenApiLibraryGenerator {
             responseCodeClass.methods.add(Method((mb) => mb
               ..name = 'propertiesToString'
               ..annotations.add(_override)
-              ..returns = _referType('Map',
-                  generics: [refer('String'), refer('Object')])
+              ..returns =
+                  _referType('Map', generics: [_typeString, refer('Object')])
               ..lambda = true
               ..body = literalMap(
                 Map.fromEntries(responseCodeClass.fields.build().map(
@@ -725,7 +756,7 @@ class OpenApiLibraryGenerator {
 
     if (contentType.matches(OpenApiContentType.text_plain)) {
       _addRequestBody(
-        refer('String'),
+        _typeString,
         _openApiClientRequestBodyText.newInstance([refer('body')]),
         refer('request').property('readBodyString')([]).awaited,
       );
@@ -889,7 +920,7 @@ class OpenApiLibraryGenerator {
               ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
               ..body = literalConstSet(
                       fields.entries.map((e) => literalString(e.key)).toSet(),
-                      refer('String'))
+                      _typeString)
                   .property('contains')([refer('e').property('key')])
                   .negate()
                   .code).closure
@@ -959,14 +990,14 @@ class OpenApiLibraryGenerator {
 //          ..body = literalMap(
 //            obj.properties
 //                .map((key, value) => MapEntry(key, refer(key))),
-//            refer('String'),
+//            _typeString,
 //            refer('dynamic'),
 //          ).code,
 //      ),
         )
         ..methods.add(Method((mb) => mb
           ..name = 'toString'
-          ..returns = refer('String')
+          ..returns = _typeString
           ..annotations.add(_override)
           ..lambda = true
           ..body = refer('toJson')([]).property('toString')([]).code));
@@ -977,9 +1008,9 @@ class OpenApiLibraryGenerator {
           ..name = '_additionalProperties'
           ..type = _referType(
             'Map',
-            generics: [refer('String'), refer('Object')],
+            generics: [_typeString, refer('Object')],
           )
-          ..assignment = literalMap({}, refer('String'), refer('Object')).code
+          ..assignment = literalMap({}, _typeString, refer('Object')).code
           ..modifier = FieldModifier.final$));
         cb.methods.add(
           Method((mb) => mb
@@ -987,7 +1018,7 @@ class OpenApiLibraryGenerator {
             ..returns = refer('void')
             ..requiredParameters.add(Parameter((pb) => pb
               ..name = 'key'
-              ..type = refer('String')))
+              ..type = _typeString))
             ..requiredParameters.add(Parameter((pb) => pb
               ..name = 'value'
               ..type = refer('Object')))
@@ -1003,7 +1034,7 @@ class OpenApiLibraryGenerator {
             ..returns = refer('Object')
             ..requiredParameters.add(Parameter((pb) => pb
               ..name = 'key'
-              ..type = refer('String')))
+              ..type = _typeString))
             ..lambda = true
             ..body = refer('_additionalProperties').index(refer('key')).code),
         );
@@ -1043,7 +1074,10 @@ class OpenApiLibraryGenerator {
         if (schema.format == 'uuid') {
           return _apiUuid;
         }
-        return refer('String');
+        if (schema.format == 'binary') {
+          return _uint8List;
+        }
+        return _typeString;
       case APIType.number:
         return refer('num');
       case APIType.integer:
@@ -1094,7 +1128,7 @@ class OpenApiLibraryGenerator {
                   ..type = _openApiClientRequest))
                 ..requiredParameters.add(Parameter((pb) => pb
                   ..name = 'value'
-                  ..type = refer('String')))
+                  ..type = _typeString))
                 ..body = _writeToRequest(refer('request'), value.location,
                     value.name, literalList([refer('value')])).code).closure,
             }).code),

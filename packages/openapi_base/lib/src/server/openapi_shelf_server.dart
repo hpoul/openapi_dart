@@ -78,33 +78,32 @@ class OpenApiShelfServer extends OpenApiServerBase {
       // TODO handle security constraints.
       final shelfRequest = ShelfRequest(request, match);
       final response = await config.handler(shelfRequest);
+      Object body;
       if (response is OpenApiResponseBodyJson) {
         assert(response.contentType.isJson);
         final responseJson = response as OpenApiResponseBodyJson;
-        return shelf.Response(
-          response.status,
-          body: responseJson.bodyJson == null
-              ? null
-              : json.encode(responseJson.bodyJson),
-          headers: {
-            HttpHeaders.contentTypeHeader: response.contentType.toString(),
-          },
-        );
+        body = responseJson.bodyJson == null
+            ? null
+            : json.encode(responseJson.bodyJson);
       } else if (response is OpenApiResponseBodyString) {
         assert(response.contentType.isString);
         final responseString = response as OpenApiResponseBodyString;
-//        body = response.body;
-        return shelf.Response(
-          response.status,
-          body: responseString.body,
-          headers: {
-            HttpHeaders.contentTypeHeader: response.contentType.toString(),
-          },
-        );
+        body = responseString.body;
+      } else if (response is OpenApiResponseBodyBinary) {
+        final responseBinary = response as OpenApiResponseBodyBinary;
+        body = responseBinary.body;
       } else {
         return shelf.Response(response.status);
 //        throw StateError('Invalid response $response');
       }
+      return shelf.Response(
+        response.status,
+        body: body,
+        headers: {
+          ...response.headers.map((key, value) => MapEntry(key, value.first)),
+          HttpHeaders.contentTypeHeader: response.contentType.toString(),
+        },
+      );
 
 //      return shelf.Response.ok('Ok found. $response');
     }

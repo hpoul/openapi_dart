@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:meta/meta.dart';
 import 'package:openapi_base/src/openapi_client_base.dart';
 import 'package:openapi_base/src/openapi_content_type.dart';
@@ -27,6 +29,10 @@ abstract class OpenApiResponseBodyJson {
 
 abstract class OpenApiResponseBodyString {
   String get body;
+}
+
+abstract class OpenApiResponseBodyBinary {
+  Uint8List get body;
 }
 
 abstract class OpenApiResponse {

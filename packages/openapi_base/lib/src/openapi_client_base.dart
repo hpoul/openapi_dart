@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
+import 'package:openapi_base/openapi_base.dart';
 import 'package:openapi_base/src/openapi_base.dart';
 import 'package:uri/uri.dart';
 
@@ -165,8 +167,10 @@ class OpenApiClientRequest {
 abstract class OpenApiClientResponse {
   int get status;
 
+  OpenApiContentType responseContentType();
   Future<Map<String, dynamic>> responseBodyJson();
   Future<String> responseBodyString();
+  Future<Uint8List> responseBodyBytes();
 }
 
 /// [OpenApiRequestSender] implementation based on package:http for
@@ -215,9 +219,19 @@ class HttpClientResponse extends OpenApiClientResponse {
   @override
   int get status => response.statusCode;
 
+  OpenApiContentType responseContentType() {
+    final contentTypeString = response.headers['content-type'];
+    return OpenApiContentType.parse(contentTypeString);
+  }
+
   @override
   Future<String> responseBodyString() async {
     return response.body;
+  }
+
+  @override
+  Future<Uint8List> responseBodyBytes() async {
+    throw response.bodyBytes;
   }
 }
 
