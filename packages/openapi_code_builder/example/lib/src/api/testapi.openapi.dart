@@ -3,13 +3,13 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:json_annotation/json_annotation.dart' as _i1;
-import 'package:meta/meta.dart' as _i3;
-import 'package:openapi_base/openapi_base.dart' as _i2;
+import 'package:meta/meta.dart' as _i2;
+import 'package:openapi_base/openapi_base.dart';
 part 'testapi.openapi.g.dart';
 
 @_i1.JsonSerializable()
-class RegisterRequest implements _i2.OpenApiContent {
-  RegisterRequest({@_i3.required this.email}) : assert(email != null);
+class RegisterRequest implements OpenApiContent {
+  RegisterRequest({@_i2.required this.email}) : assert(email != null);
 
   factory RegisterRequest.fromJson(Map<String, dynamic> jsonMap) =>
       _$RegisterRequestFromJson(jsonMap);
@@ -24,7 +24,7 @@ class RegisterRequest implements _i2.OpenApiContent {
 }
 
 @_i1.JsonSerializable()
-class HelloRequest implements _i2.OpenApiContent {
+class HelloRequest implements OpenApiContent {
   HelloRequest({this.salutation});
 
   factory HelloRequest.fromJson(Map<String, dynamic> jsonMap) =>
@@ -40,7 +40,7 @@ class HelloRequest implements _i2.OpenApiContent {
 }
 
 @_i1.JsonSerializable()
-class HelloResponse implements _i2.OpenApiContent {
+class HelloResponse implements OpenApiContent {
   HelloResponse({this.message});
 
   factory HelloResponse.fromJson(Map<String, dynamic> jsonMap) =>
@@ -63,23 +63,22 @@ class _UserRegisterPostResponse200 extends UserRegisterPostResponse {
   final int status;
 
   @override
-  final _i2.OpenApiContentType contentType = null;
+  final OpenApiContentType contentType = null;
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'contentType': contentType};
 }
 
-abstract class UserRegisterPostResponse extends _i2.OpenApiResponse
-    implements _i2.HasSuccessResponse<void> {
+abstract class UserRegisterPostResponse extends OpenApiResponse
+    implements HasSuccessResponse<void> {
   UserRegisterPostResponse();
 
   /// OK
   factory UserRegisterPostResponse.response200() =>
       _UserRegisterPostResponse200.response200();
 
-  void map(
-      {@_i3.required _i2.ResponseMap<_UserRegisterPostResponse200> on200}) {
+  void map({@_i2.required ResponseMap<_UserRegisterPostResponse200> on200}) {
     if (this is _UserRegisterPostResponse200) {
       on200((this as _UserRegisterPostResponse200));
     } else {
@@ -99,7 +98,7 @@ abstract class UserRegisterPostResponse extends _i2.OpenApiResponse
 }
 
 class _HelloNameHtmlGetResponse200 extends HelloNameHtmlGetResponse
-    implements _i2.OpenApiResponseBodyString {
+    implements OpenApiResponseBodyString {
   /// OK
   _HelloNameHtmlGetResponse200.response200(this.body) : status = 200;
 
@@ -110,24 +109,22 @@ class _HelloNameHtmlGetResponse200 extends HelloNameHtmlGetResponse
   final String body;
 
   @override
-  final _i2.OpenApiContentType contentType =
-      _i2.OpenApiContentType.parse('text/html');
+  final OpenApiContentType contentType = OpenApiContentType.parse('text/html');
 
   @override
   Map<String, Object> propertiesToString() =>
       {'status': status, 'body': body, 'contentType': contentType};
 }
 
-abstract class HelloNameHtmlGetResponse extends _i2.OpenApiResponse
-    implements _i2.HasSuccessResponse<String> {
+abstract class HelloNameHtmlGetResponse extends OpenApiResponse
+    implements HasSuccessResponse<String> {
   HelloNameHtmlGetResponse();
 
   /// OK
   factory HelloNameHtmlGetResponse.response200(String body) =>
       _HelloNameHtmlGetResponse200.response200(body);
 
-  void map(
-      {@_i3.required _i2.ResponseMap<_HelloNameHtmlGetResponse200> on200}) {
+  void map({@_i2.required ResponseMap<_HelloNameHtmlGetResponse200> on200}) {
     if (this is _HelloNameHtmlGetResponse200) {
       on200((this as _HelloNameHtmlGetResponse200));
     } else {
@@ -147,7 +144,7 @@ abstract class HelloNameHtmlGetResponse extends _i2.OpenApiResponse
 }
 
 class _HelloNameGetResponse200 extends HelloNameGetResponse
-    implements _i2.OpenApiResponseBodyJson {
+    implements OpenApiResponseBodyJson {
   /// OK
   _HelloNameGetResponse200.response200(this.body)
       : status = 200,
@@ -162,8 +159,8 @@ class _HelloNameGetResponse200 extends HelloNameGetResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i2.OpenApiContentType contentType =
-      _i2.OpenApiContentType.parse('application/json');
+  final OpenApiContentType contentType =
+      OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -174,15 +171,15 @@ class _HelloNameGetResponse200 extends HelloNameGetResponse
       };
 }
 
-abstract class HelloNameGetResponse extends _i2.OpenApiResponse
-    implements _i2.HasSuccessResponse<HelloResponse> {
+abstract class HelloNameGetResponse extends OpenApiResponse
+    implements HasSuccessResponse<HelloResponse> {
   HelloNameGetResponse();
 
   /// OK
   factory HelloNameGetResponse.response200(HelloResponse body) =>
       _HelloNameGetResponse200.response200(body);
 
-  void map({@_i3.required _i2.ResponseMap<_HelloNameGetResponse200> on200}) {
+  void map({@_i2.required ResponseMap<_HelloNameGetResponse200> on200}) {
     if (this is _HelloNameGetResponse200) {
       on200((this as _HelloNameGetResponse200));
     } else {
@@ -202,7 +199,7 @@ abstract class HelloNameGetResponse extends _i2.OpenApiResponse
 }
 
 class _HelloNamePutResponse200 extends HelloNamePutResponse
-    implements _i2.OpenApiResponseBodyJson {
+    implements OpenApiResponseBodyJson {
   /// OK
   _HelloNamePutResponse200.response200(this.body)
       : status = 200,
@@ -217,8 +214,8 @@ class _HelloNamePutResponse200 extends HelloNamePutResponse
   final Map<String, dynamic> bodyJson;
 
   @override
-  final _i2.OpenApiContentType contentType =
-      _i2.OpenApiContentType.parse('application/json');
+  final OpenApiContentType contentType =
+      OpenApiContentType.parse('application/json');
 
   @override
   Map<String, Object> propertiesToString() => {
@@ -229,15 +226,15 @@ class _HelloNamePutResponse200 extends HelloNamePutResponse
       };
 }
 
-abstract class HelloNamePutResponse extends _i2.OpenApiResponse
-    implements _i2.HasSuccessResponse<HelloResponse> {
+abstract class HelloNamePutResponse extends OpenApiResponse
+    implements HasSuccessResponse<HelloResponse> {
   HelloNamePutResponse();
 
   /// OK
   factory HelloNamePutResponse.response200(HelloResponse body) =>
       _HelloNamePutResponse200.response200(body);
 
-  void map({@_i3.required _i2.ResponseMap<_HelloNamePutResponse200> on200}) {
+  void map({@_i2.required ResponseMap<_HelloNamePutResponse200> on200}) {
     if (this is _HelloNamePutResponse200) {
       on200((this as _HelloNamePutResponse200));
     } else {
@@ -256,7 +253,7 @@ abstract class HelloNamePutResponse extends _i2.OpenApiResponse
   }
 }
 
-abstract class TestApi implements _i2.ApiEndpoint {
+abstract class TestApi implements ApiEndpoint {
   /// Create new user
   /// post: /user/register
   Future<UserRegisterPostResponse> userRegisterPost(RegisterRequest body);
@@ -264,21 +261,21 @@ abstract class TestApi implements _i2.ApiEndpoint {
   /// Say Hello World to {name} with a nice html page.
   /// get: /hello/{name}/html
   Future<HelloNameHtmlGetResponse> helloNameHtmlGet(
-      {@_i3.required String name});
+      {@_i2.required String name});
 
   /// Say Hello World to {name}
   /// get: /hello/{name}
   Future<HelloNameGetResponse> helloNameGet(
-      {@_i3.required String name, String salutation});
+      {@_i2.required String name, String salutation});
 
   /// Say Hello World to {name} with some parameters
   /// put: /hello/{name}
   Future<HelloNamePutResponse> helloNamePut(HelloRequest body,
-      {@_i3.required String name});
+      {@_i2.required String name});
 }
 
-abstract class TestApiClient implements _i2.OpenApiClient {
-  factory TestApiClient(Uri baseUri, _i2.OpenApiRequestSender requestSender) =>
+abstract class TestApiClient implements OpenApiClient {
+  factory TestApiClient(Uri baseUri, OpenApiRequestSender requestSender) =>
       _TestApiClientImpl._(baseUri, requestSender);
 
   /// Create new user
@@ -290,31 +287,30 @@ abstract class TestApiClient implements _i2.OpenApiClient {
   /// get: /hello/{name}/html
   ///
   Future<HelloNameHtmlGetResponse> helloNameHtmlGet(
-      {@_i3.required String name});
+      {@_i2.required String name});
 
   /// Say Hello World to {name}
   /// get: /hello/{name}
   ///
   /// * [salutation]: Optional salutation
   Future<HelloNameGetResponse> helloNameGet(
-      {@_i3.required String name, String salutation});
+      {@_i2.required String name, String salutation});
 
   /// Say Hello World to {name} with some parameters
   /// put: /hello/{name}
   ///
   Future<HelloNamePutResponse> helloNamePut(HelloRequest body,
-      {@_i3.required String name});
+      {@_i2.required String name});
 }
 
-class _TestApiClientImpl extends _i2.OpenApiClientBase
-    implements TestApiClient {
+class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
   _TestApiClientImpl._(this.baseUri, this.requestSender);
 
   @override
   final Uri baseUri;
 
   @override
-  final _i2.OpenApiRequestSender requestSender;
+  final OpenApiRequestSender requestSender;
 
   /// Create new user
   /// post: /user/register
@@ -322,11 +318,11 @@ class _TestApiClientImpl extends _i2.OpenApiClientBase
   @override
   Future<UserRegisterPostResponse> userRegisterPost(
       RegisterRequest body) async {
-    final request = _i2.OpenApiClientRequest('post', '/user/register', []);
+    final request = OpenApiClientRequest('post', '/user/register', []);
     request.setHeader('content-type', 'application/json');
-    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
-      '200': (_i2.OpenApiClientResponse response) async =>
+      '200': (OpenApiClientResponse response) async =>
           _UserRegisterPostResponse200.response200()
     });
   }
@@ -336,12 +332,11 @@ class _TestApiClientImpl extends _i2.OpenApiClientBase
   ///
   @override
   Future<HelloNameHtmlGetResponse> helloNameHtmlGet(
-      {@_i3.required String name}) async {
-    final request = _i2.OpenApiClientRequest('get', '/hello/{name}/html', []);
+      {@_i2.required String name}) async {
+    final request = OpenApiClientRequest('get', '/hello/{name}/html', []);
     request.addPathParameter('name', encodeString(name));
-    request.addQueryParameter('name', encodeString(name));
     return await sendRequest(request, {
-      '200': (_i2.OpenApiClientResponse response) async =>
+      '200': (OpenApiClientResponse response) async =>
           _HelloNameHtmlGetResponse200.response200(
               await response.responseBodyString())
     });
@@ -353,14 +348,12 @@ class _TestApiClientImpl extends _i2.OpenApiClientBase
   /// * [salutation]: Optional salutation
   @override
   Future<HelloNameGetResponse> helloNameGet(
-      {@_i3.required String name, String salutation}) async {
-    final request = _i2.OpenApiClientRequest('get', '/hello/{name}', []);
+      {@_i2.required String name, String salutation}) async {
+    final request = OpenApiClientRequest('get', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
-    request.addQueryParameter('name', encodeString(name));
-    request.addQueryParameter('salutation', encodeString(salutation));
     request.addQueryParameter('salutation', encodeString(salutation));
     return await sendRequest(request, {
-      '200': (_i2.OpenApiClientResponse response) async =>
+      '200': (OpenApiClientResponse response) async =>
           _HelloNameGetResponse200.response200(
               HelloResponse.fromJson(await response.responseBodyJson()))
     });
@@ -371,36 +364,34 @@ class _TestApiClientImpl extends _i2.OpenApiClientBase
   ///
   @override
   Future<HelloNamePutResponse> helloNamePut(HelloRequest body,
-      {@_i3.required String name}) async {
-    final request = _i2.OpenApiClientRequest('put', '/hello/{name}', []);
+      {@_i2.required String name}) async {
+    final request = OpenApiClientRequest('put', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
-    request.addQueryParameter('name', encodeString(name));
     request.setHeader('content-type', 'application/json');
-    request.setBody(_i2.OpenApiClientRequestBodyJson(body.toJson()));
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
     return await sendRequest(request, {
-      '200': (_i2.OpenApiClientResponse response) async =>
+      '200': (OpenApiClientResponse response) async =>
           _HelloNamePutResponse200.response200(
               HelloResponse.fromJson(await response.responseBodyJson()))
     });
   }
 }
 
-class TestApiUrlResolve with _i2.OpenApiUrlEncodeMixin {
+class TestApiUrlResolve with OpenApiUrlEncodeMixin {
   /// Create new user
   /// post: /user/register
   ///
-  _i2.OpenApiClientRequest userRegisterPost() {
-    final request = _i2.OpenApiClientRequest('post', '/user/register', []);
+  OpenApiClientRequest userRegisterPost() {
+    final request = OpenApiClientRequest('post', '/user/register', []);
     return request;
   }
 
   /// Say Hello World to {name} with a nice html page.
   /// get: /hello/{name}/html
   ///
-  _i2.OpenApiClientRequest helloNameHtmlGet({@_i3.required String name}) {
-    final request = _i2.OpenApiClientRequest('get', '/hello/{name}/html', []);
+  OpenApiClientRequest helloNameHtmlGet({@_i2.required String name}) {
+    final request = OpenApiClientRequest('get', '/hello/{name}/html', []);
     request.addPathParameter('name', encodeString(name));
-    request.addQueryParameter('name', encodeString(name));
     return request;
   }
 
@@ -408,12 +399,10 @@ class TestApiUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// get: /hello/{name}
   ///
   /// * [salutation]: Optional salutation
-  _i2.OpenApiClientRequest helloNameGet(
-      {@_i3.required String name, String salutation}) {
-    final request = _i2.OpenApiClientRequest('get', '/hello/{name}', []);
+  OpenApiClientRequest helloNameGet(
+      {@_i2.required String name, String salutation}) {
+    final request = OpenApiClientRequest('get', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
-    request.addQueryParameter('name', encodeString(name));
-    request.addQueryParameter('salutation', encodeString(salutation));
     request.addQueryParameter('salutation', encodeString(salutation));
     return request;
   }
@@ -421,28 +410,27 @@ class TestApiUrlResolve with _i2.OpenApiUrlEncodeMixin {
   /// Say Hello World to {name} with some parameters
   /// put: /hello/{name}
   ///
-  _i2.OpenApiClientRequest helloNamePut({@_i3.required String name}) {
-    final request = _i2.OpenApiClientRequest('put', '/hello/{name}', []);
+  OpenApiClientRequest helloNamePut({@_i2.required String name}) {
+    final request = OpenApiClientRequest('put', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
-    request.addQueryParameter('name', encodeString(name));
     return request;
   }
 }
 
-class TestApiRouter extends _i2.OpenApiServerRouterBase {
+class TestApiRouter extends OpenApiServerRouterBase {
   TestApiRouter(this.impl);
 
-  final _i2.ApiEndpointProvider<TestApi> impl;
+  final ApiEndpointProvider<TestApi> impl;
 
   @override
   void configure() {
-    addRoute('/user/register', 'post', (_i2.OpenApiRequest request) async {
+    addRoute('/user/register', 'post', (OpenApiRequest request) async {
       return await impl.invoke(
           request,
           (TestApi impl) async => impl.userRegisterPost(
               RegisterRequest.fromJson(await request.readJsonBody())));
     }, security: []);
-    addRoute('/hello/{name}/html', 'get', (_i2.OpenApiRequest request) async {
+    addRoute('/hello/{name}/html', 'get', (OpenApiRequest request) async {
       return await impl.invoke(
           request,
           (TestApi impl) async => impl.helloNameHtmlGet(
@@ -452,7 +440,7 @@ class TestApiRouter extends _i2.OpenApiServerRouterBase {
                   value: request.pathParameter('name'),
                   decode: (value) => paramToString(value))));
     }, security: []);
-    addRoute('/hello/{name}', 'get', (_i2.OpenApiRequest request) async {
+    addRoute('/hello/{name}', 'get', (OpenApiRequest request) async {
       return await impl.invoke(
           request,
           (TestApi impl) async => impl.helloNameGet(
@@ -467,7 +455,7 @@ class TestApiRouter extends _i2.OpenApiServerRouterBase {
                   value: request.queryParameter('salutation'),
                   decode: (value) => paramToString(value))));
     }, security: []);
-    addRoute('/hello/{name}', 'put', (_i2.OpenApiRequest request) async {
+    addRoute('/hello/{name}', 'put', (OpenApiRequest request) async {
       return await impl.invoke(
           request,
           (TestApi impl) async => impl.helloNamePut(

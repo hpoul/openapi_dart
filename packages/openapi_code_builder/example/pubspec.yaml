@@ -16,8 +16,8 @@ dependencies:
 dev_dependencies:
   openapi_code_builder:
     path: ../
-  json_serializable: ^3.3.0
-  build_runner: ^1.10.0
+  json_serializable: ^3.4.0
+  build_runner: ^1.10.2
   pedantic: ^1.9.0
 
 dependency_overrides:
