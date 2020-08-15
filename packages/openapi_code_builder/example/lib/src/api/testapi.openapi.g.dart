@@ -38,3 +38,17 @@ Map<String, dynamic> _$HelloResponseToJson(HelloResponse instance) =>
     <String, dynamic>{
       'message': instance.message,
     };
+
+UuidExampleMessageIdGetResponseBody200
+    _$UuidExampleMessageIdGetResponseBody200FromJson(
+        Map<String, dynamic> json) {
+  return UuidExampleMessageIdGetResponseBody200(
+    id: const ApiUuidJsonConverter().fromJson(json['id'] as String),
+  );
+}
+
+Map<String, dynamic> _$UuidExampleMessageIdGetResponseBody200ToJson(
+        UuidExampleMessageIdGetResponseBody200 instance) =>
+    <String, dynamic>{
+      'id': const ApiUuidJsonConverter().toJson(instance.id),
+    };

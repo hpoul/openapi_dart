@@ -49,4 +49,11 @@ class TestApiImpl extends TestApi {
 <p>How are you?
     ''');
   }
+
+  @override
+  Future<UuidExampleMessageIdGetResponse> uuidExampleMessageIdGet(
+      {ApiUuid messageId}) async {
+    return UuidExampleMessageIdGetResponse.response200(
+        UuidExampleMessageIdGetResponseBody200(id: messageId));
+  }
 }

@@ -293,8 +293,9 @@ class OpenApiLibraryGenerator {
                       responseContent.value.schema);
                   checkState(
                       responseContent.value.schema.type == APIType.string,
-                      message:
-                          'schema type not supported: ${responseContent.value.schema.type}');
+                      message: 'schema type not supported for content type '
+                          '${responseContent.key}: '
+                          '${responseContent.value.schema.type}');
                   responseCodeClass.fields.add(Field((fb) => fb
                     ..name = 'body'
                     ..type = bodyType
@@ -492,7 +493,15 @@ class OpenApiLibraryGenerator {
                   (APIParameter param, Expression expression) {
                 switch (param.schema.type) {
                   case APIType.string:
-                    return refer('paramToString')([expression]);
+                    final asString = refer('paramToString')([expression]);
+                    if (param.schema.format == 'uuid') {
+                      assert(paramType == _apiUuid);
+                      return _apiUuid.newInstanceNamed('parse', [asString]);
+                    } else if (paramType != _typeString) {
+                      throw StateError(
+                          'Unsupported paramType for string $paramType');
+                    }
+                    return asString;
                   case APIType.number:
                     break;
                   case APIType.integer:
@@ -542,6 +551,15 @@ class OpenApiLibraryGenerator {
               final encodeParameter = (Expression expression) {
                 switch (param.schema.type) {
                   case APIType.string:
+                    if (param.schema.format == 'uuid') {
+                      assert(paramType == _apiUuid);
+                      expression = expression.property('encodeToString')([]);
+                    } else if (paramType != _typeString) {
+                      // TODO not sure if this makes sense, maybe we should just
+                      //      use `toString`?
+                      throw StateError(
+                          'Unsupported paramType for string $paramType');
+                    }
                     return refer('encodeString')([expression]);
                   case APIType.number:
                     break;

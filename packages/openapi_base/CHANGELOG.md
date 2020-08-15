@@ -1,3 +1,11 @@
+## 0.1.5+1
+
+* Fix ApiUuid parsing/encoding in url parameters.
+
+## 0.1.5
+
+* Support for binary responses.
+
 ## 0.1.4
 
 * Add support for `uuid` format.

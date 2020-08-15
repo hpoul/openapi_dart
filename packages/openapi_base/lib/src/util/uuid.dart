@@ -5,6 +5,8 @@ import 'package:uuid/uuid_util.dart';
 class ApiUuid {
   ApiUuid._(this._uuid) : assert(_isUuid(_uuid));
   ApiUuid.secure() : this._(_secureUuidGenerator.v4());
+
+  /// Parse the given uuid. This is the reverse of [encodeToString].
   ApiUuid.parse(String uuid) : this._(uuid);
 
   static final _secureUuidGenerator =
@@ -19,6 +21,11 @@ class ApiUuid {
 
   final String _uuid;
 
+  /// Encodes UUID into a [String]. Opposite of [ApiUuid.parse].
+  String encodeToString() => _uuid;
+
+  /// String representation for debugging.
+  /// Use [encodeToString] to use for transmission.
   @override
   String toString() => _uuid;
 }
@@ -30,5 +37,5 @@ class ApiUuidJsonConverter implements JsonConverter<ApiUuid, String> {
   ApiUuid fromJson(String json) => ApiUuid.parse(json);
 
   @override
-  String toJson(ApiUuid object) => object?.toString();
+  String toJson(ApiUuid object) => object?.encodeToString();
 }

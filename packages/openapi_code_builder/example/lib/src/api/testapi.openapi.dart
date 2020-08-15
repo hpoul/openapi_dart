@@ -253,6 +253,82 @@ abstract class HelloNamePutResponse extends OpenApiResponse
   }
 }
 
+@_i1.JsonSerializable()
+class UuidExampleMessageIdGetResponseBody200 implements OpenApiContent {
+  UuidExampleMessageIdGetResponseBody200({@_i2.required this.id})
+      : assert(id != null);
+
+  factory UuidExampleMessageIdGetResponseBody200.fromJson(
+          Map<String, dynamic> jsonMap) =>
+      _$UuidExampleMessageIdGetResponseBody200FromJson(jsonMap);
+
+  @_i1.JsonKey(name: 'id')
+  @ApiUuidJsonConverter()
+  final ApiUuid id;
+
+  Map<String, dynamic> toJson() =>
+      _$UuidExampleMessageIdGetResponseBody200ToJson(this);
+  @override
+  String toString() => toJson().toString();
+}
+
+class _UuidExampleMessageIdGetResponse200
+    extends UuidExampleMessageIdGetResponse implements OpenApiResponseBodyJson {
+  /// OK
+  _UuidExampleMessageIdGetResponse200.response200(this.body)
+      : status = 200,
+        bodyJson = body.toJson();
+
+  @override
+  final int status;
+
+  final UuidExampleMessageIdGetResponseBody200 body;
+
+  @override
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final OpenApiContentType contentType =
+      OpenApiContentType.parse('application/json');
+
+  @override
+  Map<String, Object> propertiesToString() => {
+        'status': status,
+        'body': body,
+        'bodyJson': bodyJson,
+        'contentType': contentType
+      };
+}
+
+abstract class UuidExampleMessageIdGetResponse extends OpenApiResponse
+    implements HasSuccessResponse<UuidExampleMessageIdGetResponseBody200> {
+  UuidExampleMessageIdGetResponse();
+
+  /// OK
+  factory UuidExampleMessageIdGetResponse.response200(
+          UuidExampleMessageIdGetResponseBody200 body) =>
+      _UuidExampleMessageIdGetResponse200.response200(body);
+
+  void map(
+      {@_i2.required ResponseMap<_UuidExampleMessageIdGetResponse200> on200}) {
+    if (this is _UuidExampleMessageIdGetResponse200) {
+      on200((this as _UuidExampleMessageIdGetResponse200));
+    } else {
+      throw StateError('Invalid instance type $this');
+    }
+  }
+
+  /// status 200:  OK
+  @override
+  UuidExampleMessageIdGetResponseBody200 requireSuccess() {
+    if (this is _UuidExampleMessageIdGetResponse200) {
+      return (this as _UuidExampleMessageIdGetResponse200).body;
+    } else {
+      throw StateError('Expected success response, but got $this');
+    }
+  }
+}
+
 abstract class TestApi implements ApiEndpoint {
   /// Create new user
   /// post: /user/register
@@ -272,6 +348,11 @@ abstract class TestApi implements ApiEndpoint {
   /// put: /hello/{name}
   Future<HelloNamePutResponse> helloNamePut(HelloRequest body,
       {@_i2.required String name});
+
+  /// details of uuid.
+  /// get: /uuidExample/{messageId}
+  Future<UuidExampleMessageIdGetResponse> uuidExampleMessageIdGet(
+      {@_i2.required ApiUuid messageId});
 }
 
 abstract class TestApiClient implements OpenApiClient {
@@ -301,6 +382,12 @@ abstract class TestApiClient implements OpenApiClient {
   ///
   Future<HelloNamePutResponse> helloNamePut(HelloRequest body,
       {@_i2.required String name});
+
+  /// details of uuid.
+  /// get: /uuidExample/{messageId}
+  ///
+  Future<UuidExampleMessageIdGetResponse> uuidExampleMessageIdGet(
+      {@_i2.required ApiUuid messageId});
 }
 
 class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
@@ -375,6 +462,23 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
               HelloResponse.fromJson(await response.responseBodyJson()))
     });
   }
+
+  /// details of uuid.
+  /// get: /uuidExample/{messageId}
+  ///
+  @override
+  Future<UuidExampleMessageIdGetResponse> uuidExampleMessageIdGet(
+      {@_i2.required ApiUuid messageId}) async {
+    final request = OpenApiClientRequest('get', '/uuidExample/{messageId}', []);
+    request.addPathParameter(
+        'messageId', encodeString(messageId.encodeToString()));
+    return await sendRequest(request, {
+      '200': (OpenApiClientResponse response) async =>
+          _UuidExampleMessageIdGetResponse200.response200(
+              UuidExampleMessageIdGetResponseBody200.fromJson(
+                  await response.responseBodyJson()))
+    });
+  }
 }
 
 class TestApiUrlResolve with OpenApiUrlEncodeMixin {
@@ -413,6 +517,17 @@ class TestApiUrlResolve with OpenApiUrlEncodeMixin {
   OpenApiClientRequest helloNamePut({@_i2.required String name}) {
     final request = OpenApiClientRequest('put', '/hello/{name}', []);
     request.addPathParameter('name', encodeString(name));
+    return request;
+  }
+
+  /// details of uuid.
+  /// get: /uuidExample/{messageId}
+  ///
+  OpenApiClientRequest uuidExampleMessageIdGet(
+      {@_i2.required ApiUuid messageId}) {
+    final request = OpenApiClientRequest('get', '/uuidExample/{messageId}', []);
+    request.addPathParameter(
+        'messageId', encodeString(messageId.encodeToString()));
     return request;
   }
 }
@@ -465,6 +580,16 @@ class TestApiRouter extends OpenApiServerRouterBase {
                   name: 'name',
                   value: request.pathParameter('name'),
                   decode: (value) => paramToString(value))));
+    }, security: []);
+    addRoute('/uuidExample/{messageId}', 'get', (OpenApiRequest request) async {
+      return await impl.invoke(
+          request,
+          (TestApi impl) async => impl.uuidExampleMessageIdGet(
+              messageId: param(
+                  isRequired: true,
+                  name: 'messageId',
+                  value: request.pathParameter('messageId'),
+                  decode: (value) => ApiUuid.parse(paramToString(value)))));
     }, security: []);
   }
 }

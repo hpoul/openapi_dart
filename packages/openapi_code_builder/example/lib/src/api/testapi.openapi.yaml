@@ -71,7 +71,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HelloResponse'
-
+  /uuidExample/{messageId}:
+    parameters:
+      - name: messageId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: details of uuid.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                required:
+                  - id
 components:
   schemas:
     RegisterRequest:
