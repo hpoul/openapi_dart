@@ -219,6 +219,7 @@ class HttpClientResponse extends OpenApiClientResponse {
   @override
   int get status => response.statusCode;
 
+  @override
   OpenApiContentType responseContentType() {
     final contentTypeString = response.headers['content-type'];
     return OpenApiContentType.parse(contentTypeString);

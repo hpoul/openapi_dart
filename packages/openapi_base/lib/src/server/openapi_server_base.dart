@@ -1,5 +1,3 @@
-import 'package:openapi_base/src/openapi_base.dart';
-
 abstract class OpenApiServerBase {
   Future<StoppableProcessBase> startServer({
     String address = 'localhost',
