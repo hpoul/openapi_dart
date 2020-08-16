@@ -173,15 +173,40 @@ abstract class OpenApiClientResponse {
   Future<Uint8List> responseBodyBytes();
 }
 
+/// Add a user-agent adder to the given value.
+class UserAgentClient extends BaseClient {
+  UserAgentClient(this.userAgent, this._inner);
+
+  final String userAgent;
+  final Client _inner;
+
+  @override
+  Future<StreamedResponse> send(BaseRequest request) {
+    request.headers['user-agent'] = userAgent;
+    return _inner.send(request);
+  }
+}
+
+/// Allows to customize how a Client is created.
+/// For example acn be used to use [UserAgentClient] to add user agent header.
+typedef ClientCreator = Client Function();
+
 /// [OpenApiRequestSender] implementation based on package:http for
 /// cross platform compatibility.
 class HttpRequestSender extends OpenApiRequestSender {
+  HttpRequestSender({
+    ClientCreator clientCreator,
+  }) : clientCreator = clientCreator ?? defaultClientCreator;
+
+  static var defaultClientCreator = () => Client();
+
   Client _client;
+  ClientCreator clientCreator;
 
   @override
   Future<OpenApiClientResponse> sendRequest(
       Uri baseUri, OpenApiClientRequest request) async {
-    _client ??= Client();
+    _client ??= clientCreator();
 
     final uri = request.resolveUri(baseUri);
     _logger.finest('Expanded Uri for request to $uri '

@@ -1,3 +1,7 @@
+## 0.1.5+2
+
+* Allow customizing of http clients, to override user-agent.
+
 ## 0.1.5+1
 
 * Fix ApiUuid parsing/encoding in url parameters.
