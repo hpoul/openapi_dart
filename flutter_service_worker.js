@@ -6,7 +6,7 @@ const RESOURCES = {
   "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
-"main.dart.js": "750f2c830a7a7a3fe3fcd0dc87362dd6",
+"main.dart.js": "afe5f4339df7e00a6d48200dd5afa863",
 "index.html": "e01195c26fb2de3a977b34a6797afd2e",
 "/": "e01195c26fb2de3a977b34a6797afd2e",
 "manifest.json": "7c26ffd0c8cb6fd798dffd687f442760",
@@ -15,7 +15,7 @@ const RESOURCES = {
 "assets/packages/flutter_markdown/assets/logo.png": "67642a0b80f3d50277c44cde8f450e50",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "115e937bb829a890521f72d2e664b632",
 "assets/AssetManifest.json": "85df429c81683d01f80288870ed219f8",
-"assets/NOTICES": "d1c39cb8889ba8761404f6251f366007",
+"assets/NOTICES": "e53e7d6abd3ca128bcb46f1864f68fc8",
 "assets/assets/petstore.schema.yaml": "18781beaf496742a13d9bfefd7579084"
 };
 
@@ -33,8 +33,8 @@ const CORE = [
 self.addEventListener("install", (event) => {
   return event.waitUntil(
     caches.open(TEMP).then((cache) => {
-      // Provide a 'reload' param to ensure the latest version is downloaded.
-      return cache.addAll(CORE.map((value) => new Request(value, {'cache': 'reload'})));
+      return cache.addAll(
+        CORE.map((value) => new Request(value + '?revision=' + RESOURCES[value], {'cache': 'reload'})));
     })
   );
 });
