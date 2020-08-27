@@ -28,6 +28,12 @@ class ApiUuid {
   /// Use [encodeToString] to use for transmission.
   @override
   String toString() => _uuid;
+
+  @override
+  bool operator ==(Object other) => other is ApiUuid && _uuid == other._uuid;
+
+  @override
+  int get hashCode => _uuid.hashCode;
 }
 
 class ApiUuidJsonConverter implements JsonConverter<ApiUuid, String> {
