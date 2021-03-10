@@ -32,7 +32,7 @@ class StoppableProcess extends StoppableProcessBase {
   final Completer<int> _completer = Completer<int>();
 
   @override
-  Future stop(int exitCode, {String reason}) async {
+  Future stop(int exitCode, {String? reason}) async {
     if (_completer.isCompleted) {
       return;
     }

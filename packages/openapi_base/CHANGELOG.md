@@ -1,3 +1,7 @@
+## 0.2.0
+
+* Null safety migration
+
 ## 0.1.5+3
 
 * ApiUuid: Implement operator== and hashCode().

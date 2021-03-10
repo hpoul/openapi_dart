@@ -6,6 +6,8 @@ import 'package:openapi_base/src/openapi_base.dart';
 import 'package:openapi_base/src/openapi_exception.dart';
 import 'package:openapi_base/src/server/openapi_server_base.dart';
 import 'package:openapi_base/src/server/stoppable_process.dart';
+import 'package:openapi_base/src/util/shelf_cookie/cookie_parser.dart';
+import 'package:openapi_base/src/util/shelf_cookie/shelf_cookie.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
 // import 'package:shelf_cookie/shelf_cookie.dart';
@@ -22,7 +24,7 @@ class OpenApiShelfServer extends OpenApiServerBase {
 
   @protected
   shelf.Handler preparePipeline() => const shelf.Pipeline()
-      // .addMiddleware(cookieParser())
+      .addMiddleware(cookieParser())
       .addMiddleware(shelf.logRequests())
       .addHandler(_handleRequestWithExceptions);
 
@@ -78,7 +80,7 @@ class OpenApiShelfServer extends OpenApiServerBase {
       // TODO handle security constraints.
       final shelfRequest = ShelfRequest(request, match);
       final response = await config.handler(shelfRequest);
-      Object body;
+      Object? body;
       if (response is OpenApiResponseBodyJson) {
         assert(response.contentType.isJson);
         final responseJson = response as OpenApiResponseBodyJson;
@@ -114,14 +116,14 @@ class OpenApiShelfServer extends OpenApiServerBase {
 class ShelfRequest extends OpenApiRequest {
   ShelfRequest(this._request, this._match)
       : _matchParametersDecoded = _match.parameters
-            .map((key, value) => MapEntry(key, Uri.decodeComponent(value)));
+            .map((key, value) => MapEntry(key, Uri.decodeComponent(value!)));
 
   final shelf.Request _request;
   // ignore: unused_field
   final UriMatch _match;
   final Map<String, String> _matchParametersDecoded;
 
-  List<String> _wrapValue(String value) {
+  List<String> _wrapValue(String? value) {
     if (value == null) {
       return [];
     }
@@ -130,9 +132,8 @@ class ShelfRequest extends OpenApiRequest {
 
   @override
   List<String> cookieParameter(String name) {
-    //   final cookies = _request.context['cookies'] as CookieParser;
-    //   return _wrapValue(cookies.get(name)?.value);
-    throw StateError('Todo');
+    final cookies = _request.context['cookies'] as CookieParser;
+    return _wrapValue(cookies.get(name)?.value);
   }
 
   @override
@@ -147,12 +148,13 @@ class ShelfRequest extends OpenApiRequest {
 
   @override
   List<String> queryParameter(String name) {
-    return _request.url.queryParametersAll[name];
+    return _request.url.queryParametersAll[name] ?? [];
   }
 
   @override
   Future<Map<String, dynamic>> readJsonBody() async {
-    return json.decode(await _request.readAsString()) as Map<String, dynamic>;
+    return (json.decode(await _request.readAsString())
+        as Map<String, dynamic>?)!;
   }
 
   @override

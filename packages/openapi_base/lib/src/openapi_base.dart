@@ -102,18 +102,18 @@ abstract class OpenApiServerRouterBase {
     String path,
     String operation,
     RouteHandler handle, {
-    List<SecurityRequirement> security,
+    required List<SecurityRequirement> security,
   }) {
     configs.add(_RouteConfig(path, operationFromString(operation), handle,
         security: security));
   }
 
   @protected
-  T param<T>(
-      {bool isRequired,
-      String name,
-      List<String> value,
-      T Function(List<String> value) decode}) {
+  T? param<T>(
+      {required bool isRequired,
+      required String name,
+      List<String>? value,
+      required T Function(List<String> value) decode}) {
     if (value == null || value.isEmpty) {
       if (isRequired) {
         throw StateError('Parameter "$name" is required.');
@@ -135,7 +135,7 @@ abstract class OpenApiServerRouterBase {
 
   @protected
   bool paramToBool(List<String> value) {
-    final str = paramToString(value)?.toLowerCase();
+    final str = paramToString(value).toLowerCase();
     return str == 'true' || str == '1';
   }
 }
@@ -164,7 +164,8 @@ Operation operationFromString(String operation) =>
     (() => throw StateError('Invalid operation $operation'))();
 
 class _RouteConfig {
-  _RouteConfig(this.path, this.operation, this.handler, {this.security})
+  _RouteConfig(this.path, this.operation, this.handler,
+      {required this.security})
       : uriParser = UriParser(UriTemplate(path));
 
   final String path;
@@ -181,12 +182,12 @@ class _RouteConfig {
 }
 
 class SecurityRequirement {
-  SecurityRequirement({this.schemes});
+  SecurityRequirement({required this.schemes});
   List<SecurityRequirementScheme> schemes;
 }
 
 class SecurityRequirementScheme {
-  SecurityRequirementScheme({this.scheme, this.scopes});
+  SecurityRequirementScheme({required this.scheme, required this.scopes});
   final SecurityScheme scheme;
   final List<String> scopes;
 }
@@ -198,7 +199,7 @@ abstract class SecurityScheme<T extends SecuritySchemeData> {
   void applyToRequest(OpenApiClientRequest request, T data);
 
   /// extract security data from a server side request.
-  T fromRequest(OpenApiRequest request);
+  T? fromRequest(OpenApiRequest request);
 }
 
 abstract class SecuritySchemeData {}
@@ -210,11 +211,11 @@ enum SecuritySchemeHttpScheme {
 class SecuritySchemeHttpData extends SecuritySchemeData {
   SecuritySchemeHttpData({this.bearerToken});
 
-  final String bearerToken;
+  final String? bearerToken;
 }
 
 class SecuritySchemeHttp extends SecurityScheme<SecuritySchemeHttpData> {
-  SecuritySchemeHttp({@required this.scheme}) : assert(scheme != null);
+  SecuritySchemeHttp({required this.scheme});
   final SecuritySchemeHttpScheme scheme;
   static const _headerName = 'Authorization';
   static const _headerPrefix = 'Bearer ';
@@ -229,9 +230,9 @@ class SecuritySchemeHttp extends SecurityScheme<SecuritySchemeHttpData> {
   }
 
   @override
-  SecuritySchemeHttpData fromRequest(OpenApiRequest request) {
+  SecuritySchemeHttpData? fromRequest(OpenApiRequest request) {
     final authHeader = request.headerParameter(_headerName);
-    if (authHeader != null && authHeader.isNotEmpty) {
+    if (authHeader.isNotEmpty) {
       final auth = authHeader.first;
       if (auth.startsWith(_headerPrefix)) {
         final token = auth.substring(_headerPrefix.length);
@@ -243,12 +244,15 @@ class SecuritySchemeHttp extends SecurityScheme<SecuritySchemeHttpData> {
 }
 
 class SecuritySchemeApiKeyData extends SecuritySchemeData {
-  SecuritySchemeApiKeyData({@required this.apiKey});
+  SecuritySchemeApiKeyData({required this.apiKey});
   final String apiKey;
 }
 
 class SecuritySchemeApiKey extends SecurityScheme<SecuritySchemeApiKeyData> {
-  SecuritySchemeApiKey({this.name, this.writeToRequest, this.readFromRequest});
+  SecuritySchemeApiKey(
+      {required this.name,
+      required this.writeToRequest,
+      required this.readFromRequest});
 
   final String name;
   final void Function(OpenApiClientRequest request, String value)
@@ -262,9 +266,9 @@ class SecuritySchemeApiKey extends SecurityScheme<SecuritySchemeApiKeyData> {
   }
 
   @override
-  SecuritySchemeApiKeyData fromRequest(OpenApiRequest request) {
+  SecuritySchemeApiKeyData? fromRequest(OpenApiRequest request) {
     final data = readFromRequest(request);
-    if (data != null && data.isNotEmpty) {
+    if (data.isNotEmpty) {
       return SecuritySchemeApiKeyData(apiKey: data.first);
     }
     return null;

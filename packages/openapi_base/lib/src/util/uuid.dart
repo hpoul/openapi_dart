@@ -43,5 +43,5 @@ class ApiUuidJsonConverter implements JsonConverter<ApiUuid, String> {
   ApiUuid fromJson(String json) => ApiUuid.parse(json);
 
   @override
-  String toJson(ApiUuid object) => object?.encodeToString();
+  String toJson(ApiUuid object) => object.encodeToString();
 }

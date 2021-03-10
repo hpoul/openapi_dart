@@ -25,7 +25,7 @@ abstract class OpenApiRequestSender {
 
 mixin OpenApiUrlEncodeMixin {
   @protected
-  List<String> encodeString(String value) => value == null ? null : [value];
+  List<String> encodeString(String? value) => value == null ? [] : [value];
 
   @protected
   List<String> encodeInt(int value) => encodeObject(value);
@@ -33,8 +33,8 @@ mixin OpenApiUrlEncodeMixin {
   @protected
   List<String> encodeBool(bool value) => encodeObject(value);
 
-  List<String> encodeObject(Object value) =>
-      value == null ? null : [value.toString()];
+  List<String> encodeObject(Object? value) =>
+      value == null ? [] : [value.toString()];
 }
 
 /// Base class for generated client classes for OpenAPI apis.
@@ -83,8 +83,8 @@ abstract class OpenApiClientBase
 
 extension SecuritySchemeClient<T extends SecuritySchemeData>
     on SecurityScheme<T> {
-  T getForClient(OpenApiClient client) {
-    return client._securitySchemeData[this] as T;
+  T? getForClient(OpenApiClient client) {
+    return client._securitySchemeData[this] as T?;
   }
 
   void setForClient(OpenApiClient client, T data) {
@@ -125,7 +125,7 @@ class OpenApiClientRequest {
   final Map<String, List<String>> paramCookie = {};
   final Map<String, List<String>> paramPath = {};
   final Map<String, List<String>> paramQuery = {};
-  OpenApiClientRequestBody body;
+  OpenApiClientRequestBody? body;
 
   void setHeader(String name, String value) => paramHeader[name] = [value];
   void addHeaderParameter(String name, Iterable<String> value) =>
@@ -137,8 +137,8 @@ class OpenApiClientRequest {
   void addQueryParameter(String name, Iterable<String> value) =>
       _addParam(paramQuery, name, value);
 
-  void _addParam(
-      Map<String, List<String>> paramMap, String name, Iterable<String> value) {
+  void _addParam(Map<String, List<String>> paramMap, String name,
+      Iterable<String>? value) {
     // TODO add it, if it already exists?
     if (value == null) {
       return;
@@ -195,12 +195,12 @@ typedef ClientCreator = Client Function();
 /// cross platform compatibility.
 class HttpRequestSender extends OpenApiRequestSender {
   HttpRequestSender({
-    ClientCreator clientCreator,
+    ClientCreator? clientCreator,
   }) : clientCreator = clientCreator ?? defaultClientCreator;
 
   static var defaultClientCreator = () => Client();
 
-  Client _client;
+  Client? _client;
   ClientCreator clientCreator;
 
   @override
@@ -214,20 +214,22 @@ class HttpRequestSender extends OpenApiRequestSender {
 
     final req = Request(request.operation, uri);
     if (request.body != null) {
-      if (request.body.isBytes) {
-        req.bodyBytes = request.body.encodeToBytes();
+      if (request.body!.isBytes) {
+        req.bodyBytes = request.body!.encodeToBytes();
       }
-      req.body = request.body.encodeToString();
+      req.body = request.body!.encodeToString();
     }
     request.paramHeader.forEach((key, value) {
-      req.headers[key] = value?.first;
+      if (value.isNotEmpty) {
+        req.headers[key] = value.first;
+      }
     });
-    final response = await _client.send(req);
+    final response = await _client!.send(req);
     return HttpClientResponse(await Response.fromStream(response));
   }
 
   void dispose() {
-    _client.close();
+    _client!.close();
     _client = null;
   }
 }
@@ -246,7 +248,7 @@ class HttpClientResponse extends OpenApiClientResponse {
 
   @override
   OpenApiContentType responseContentType() {
-    final contentTypeString = response.headers['content-type'];
+    final contentTypeString = response.headers['content-type']!;
     return OpenApiContentType.parse(contentTypeString);
   }
 
