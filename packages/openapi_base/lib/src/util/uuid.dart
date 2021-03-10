@@ -9,7 +9,7 @@ class ApiUuid {
   /// Parse the given uuid. This is the reverse of [encodeToString].
   ApiUuid.parse(String uuid) : this._(uuid);
 
-  static final _secureUuidGenerator =
+  static const _secureUuidGenerator =
       uuid.Uuid(options: <String, dynamic>{'grng': UuidUtil.cryptoRNG});
   static final _validate = RegExp(
       r'^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$',
