@@ -1,3 +1,6 @@
 [submodule "deps/open-api-dart"]
 	path = deps/open-api-dart
 	url = ../open-api-dart.git
+[submodule "deps/dart-codable"]
+	path = deps/dart-codable
+	url = ../dart-codable

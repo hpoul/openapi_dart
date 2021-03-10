@@ -8,7 +8,7 @@ import 'package:openapi_base/src/server/openapi_server_base.dart';
 import 'package:openapi_base/src/server/stoppable_process.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf_cookie/shelf_cookie.dart';
+// import 'package:shelf_cookie/shelf_cookie.dart';
 
 import 'package:logging/logging.dart';
 import 'package:uri/uri.dart';
@@ -22,7 +22,7 @@ class OpenApiShelfServer extends OpenApiServerBase {
 
   @protected
   shelf.Handler preparePipeline() => const shelf.Pipeline()
-      .addMiddleware(cookieParser())
+      // .addMiddleware(cookieParser())
       .addMiddleware(shelf.logRequests())
       .addHandler(_handleRequestWithExceptions);
 
@@ -130,8 +130,9 @@ class ShelfRequest extends OpenApiRequest {
 
   @override
   List<String> cookieParameter(String name) {
-    final cookies = _request.context['cookies'] as CookieParser;
-    return _wrapValue(cookies.get(name)?.value);
+    //   final cookies = _request.context['cookies'] as CookieParser;
+    //   return _wrapValue(cookies.get(name)?.value);
+    throw StateError('Todo');
   }
 
   @override

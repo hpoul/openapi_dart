@@ -19,7 +19,7 @@ dependencies:
 
   # server
   shelf: ">=0.7.7 <1.0.0"
-  shelf_cookie: ">=1.1.1 <2.0.0"
+#  shelf_cookie: ">=1.1.1 <2.0.0"
 
   # for the client:
   http: ">=0.12.1 <1.0.0"
