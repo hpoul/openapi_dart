@@ -200,9 +200,9 @@ packages:
   open_api_forked:
     dependency: "direct main"
     description:
-      name: open_api_forked
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../deps/open-api-dart"
+      relative: true
+    source: path
     version: "3.0.0"
   openapi_base:
     dependency: "direct main"

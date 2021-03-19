@@ -397,7 +397,8 @@ class OpenApiLibraryGenerator {
           responseClass.methods.add(mapMethod.build());
 
           if (successApiResponse != null) {
-            checkNotNull(successResponseCodeType);
+            ArgumentError.checkNotNull(
+                successResponseCodeType, 'successResponseCodeType');
             responseClass.implements.add(_hasSuccessResponse
                 .addGenerics(successResponseBodyType ?? _void));
             responseClass.methods.add(
