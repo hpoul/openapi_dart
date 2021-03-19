@@ -84,9 +84,7 @@ class OpenApiShelfServer extends OpenApiServerBase {
       if (response is OpenApiResponseBodyJson) {
         assert(response.contentType.isJson);
         final responseJson = response as OpenApiResponseBodyJson;
-        body = responseJson.bodyJson == null
-            ? null
-            : json.encode(responseJson.bodyJson);
+        body = json.encode(responseJson.bodyJson);
       } else if (response is OpenApiResponseBodyString) {
         assert(response.contentType.isString);
         final responseString = response as OpenApiResponseBodyString;
