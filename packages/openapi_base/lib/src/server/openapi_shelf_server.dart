@@ -82,12 +82,12 @@ class OpenApiShelfServer extends OpenApiServerBase {
       final response = await config.handler(shelfRequest);
       Object? body;
       if (response is OpenApiResponseBodyJson) {
-        assert(response.contentType.isJson);
         final responseJson = response as OpenApiResponseBodyJson;
+        assert(responseJson.contentType.isJson);
         body = json.encode(responseJson.bodyJson);
       } else if (response is OpenApiResponseBodyString) {
-        assert(response.contentType.isString);
         final responseString = response as OpenApiResponseBodyString;
+        assert(responseString.contentType.isString);
         body = responseString.body;
       } else if (response is OpenApiResponseBodyBinary) {
         final responseBinary = response as OpenApiResponseBodyBinary;

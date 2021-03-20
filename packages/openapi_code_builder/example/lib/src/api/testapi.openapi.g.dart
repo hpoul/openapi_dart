@@ -19,7 +19,7 @@ Map<String, dynamic> _$RegisterRequestToJson(RegisterRequest instance) =>
 
 HelloRequest _$HelloRequestFromJson(Map<String, dynamic> json) {
   return HelloRequest(
-    salutation: json['salutation'] as String,
+    salutation: json['salutation'] as String?,
   );
 }
 
@@ -30,7 +30,7 @@ Map<String, dynamic> _$HelloRequestToJson(HelloRequest instance) =>
 
 HelloResponse _$HelloResponseFromJson(Map<String, dynamic> json) {
   return HelloResponse(
-    message: json['message'] as String,
+    message: json['message'] as String?,
   );
 }
 

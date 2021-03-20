@@ -24,10 +24,12 @@ abstract class OpenApiRequest {
 }
 
 abstract class OpenApiResponseBodyJson {
+  OpenApiContentType get contentType;
   Map<String, dynamic> get bodyJson;
 }
 
 abstract class OpenApiResponseBodyString {
+  OpenApiContentType get contentType;
   String get body;
 }
 
@@ -37,7 +39,7 @@ abstract class OpenApiResponseBodyBinary {
 
 abstract class OpenApiResponse {
   int get status;
-  OpenApiContentType get contentType;
+  OpenApiContentType? get contentType;
 
 //  Map<String, dynamic> bodyJson;
   final Map<String, List<String>> headers = {};
@@ -48,7 +50,7 @@ abstract class OpenApiResponse {
   }
 
   @protected
-  Map<String, Object> propertiesToString() {
+  Map<String, Object?> propertiesToString() {
     return {};
   }
 }
@@ -109,15 +111,22 @@ abstract class OpenApiServerRouterBase {
   }
 
   @protected
-  T? param<T>(
-      {required bool isRequired,
-      required String name,
+  T paramRequired<T>(
+      {required String name,
       List<String>? value,
       required T Function(List<String> value) decode}) {
     if (value == null || value.isEmpty) {
-      if (isRequired) {
-        throw StateError('Parameter "$name" is required.');
-      }
+      throw StateError('Parameter "$name" is required.');
+    }
+    return decode(value);
+  }
+
+  @protected
+  T? paramOpt<T>(
+      {required String name,
+      List<String>? value,
+      required T Function(List<String> value) decode}) {
+    if (value == null || value.isEmpty) {
       return null;
     }
     return decode(value);

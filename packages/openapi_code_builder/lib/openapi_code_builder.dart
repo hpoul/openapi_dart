@@ -6,5 +6,5 @@ export 'package:openapi_code_builder/src/openapi_code_builder.dart'
 
 Builder openapiCodeBuilder(BuilderOptions options) => OpenApiCodeBuilder(
       orderDirectives: true,
-      useNullSafetySyntax: false,
+      useNullSafetySyntax: true,
     );
