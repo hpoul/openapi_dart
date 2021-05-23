@@ -23,13 +23,16 @@ abstract class OpenApiRequest {
   Future<String> readBodyString();
 }
 
-abstract class OpenApiResponseBodyJson {
+abstract class OpenApiResponseWithBody extends OpenApiResponse {
+  @override
   OpenApiContentType get contentType;
+}
+
+abstract class OpenApiResponseBodyJson extends OpenApiResponseWithBody {
   Map<String, dynamic> get bodyJson;
 }
 
-abstract class OpenApiResponseBodyString {
-  OpenApiContentType get contentType;
+abstract class OpenApiResponseBodyString extends OpenApiResponseWithBody {
   String get body;
 }
 

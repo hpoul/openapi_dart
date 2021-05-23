@@ -1,3 +1,7 @@
+## 0.2.0+1
+
+* Fix contentType nullability.
+
 ## 0.2.0
 
 * Null safety migration

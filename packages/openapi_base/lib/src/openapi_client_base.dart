@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart';
+import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:openapi_base/openapi_base.dart';
 import 'package:openapi_base/src/openapi_base.dart';
 import 'package:uri/uri.dart';
-
-import 'package:logging/logging.dart';
 
 final _logger = Logger('openapi_client_base');
 

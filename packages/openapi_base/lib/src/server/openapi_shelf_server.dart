@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+// import 'package:shelf_cookie/shelf_cookie.dart';
+
+import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:openapi_base/src/openapi_base.dart';
 import 'package:openapi_base/src/openapi_exception.dart';
@@ -10,9 +13,6 @@ import 'package:openapi_base/src/util/shelf_cookie/cookie_parser.dart';
 import 'package:openapi_base/src/util/shelf_cookie/shelf_cookie.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as io;
-// import 'package:shelf_cookie/shelf_cookie.dart';
-
-import 'package:logging/logging.dart';
 import 'package:uri/uri.dart';
 
 final _logger = Logger('openapi_shelf_server');
@@ -82,13 +82,11 @@ class OpenApiShelfServer extends OpenApiServerBase {
       final response = await config.handler(shelfRequest);
       Object? body;
       if (response is OpenApiResponseBodyJson) {
-        final responseJson = response as OpenApiResponseBodyJson;
-        assert(responseJson.contentType.isJson);
-        body = json.encode(responseJson.bodyJson);
+        assert(response.contentType.isJson);
+        body = json.encode(response.bodyJson);
       } else if (response is OpenApiResponseBodyString) {
-        final responseString = response as OpenApiResponseBodyString;
-        assert(responseString.contentType.isString);
-        body = responseString.body;
+        assert(response.contentType.isString);
+        body = response.body;
       } else if (response is OpenApiResponseBodyBinary) {
         final responseBinary = response as OpenApiResponseBodyBinary;
         body = responseBinary.body;
