@@ -58,8 +58,8 @@ class _OpenApiGeneratorState extends State<OpenApiGenerator> {
       body: Column(
         children: [
           Markdown(
-            onTapLink: (link) {
-              launch(link);
+            onTapLink: (text, href, title) {
+              launch(href);
             },
             shrinkWrap: true,
             data: '''
