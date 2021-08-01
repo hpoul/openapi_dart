@@ -789,8 +789,7 @@ class OpenApiLibraryGenerator {
           ? refer('request').property('readJsonBody')([]).awaited
           : (contentType.matches(OpenApiContentType.urlencoded)
               ? refer('request').property('readUrlEncodedBodyFlat')([]).awaited
-              : literalConstMap({}, refer('String'), refer('dynamic'))
-                  .expression);
+              : literalConstMap({}, refer('String'), refer('dynamic')));
       _addRequestBody(
           reference,
           _openApiClientRequestBodyJson
@@ -1240,8 +1239,11 @@ class OpenApiCodeBuilderUtils {
 
   static String formatLibrary(Library library,
       {bool orderDirectives = false, bool useNullSafetySyntax}) {
-    final emitter =
-        DartEmitter(CustomAllocator(), orderDirectives, useNullSafetySyntax);
+    final emitter = DartEmitter(
+      allocator: CustomAllocator(),
+      orderDirectives: orderDirectives,
+      useNullSafetySyntax: useNullSafetySyntax,
+    );
     final libraryOutput = DartFormatter().format(
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
         '// ignore_for_file: prefer_initializing_formals\n\n'

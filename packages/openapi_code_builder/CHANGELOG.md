@@ -1,3 +1,7 @@
+## 0.1.4+2
+
+* Upgrade dependencies, fixed warnings.
+
 ## 0.1.4+1
 
 * Add support for `uuid` format.
