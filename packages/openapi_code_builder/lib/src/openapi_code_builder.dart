@@ -70,6 +70,9 @@ class OpenApiLibraryGenerator {
       'OpenApiClientRequestBodyJson', 'package:openapi_base/openapi_base.dart');
   final _openApiClientRequestBodyText = refer(
       'OpenApiClientRequestBodyText', 'package:openapi_base/openapi_base.dart');
+  final _openApiClientRequestBodyBinary = refer(
+      'OpenApiClientRequestBodyBinary',
+      'package:openapi_base/openapi_base.dart');
   final _openApiClientRequest =
       refer('OpenApiClientRequest', 'package:openapi_base/openapi_base.dart');
   final _openApiClientResponse =
@@ -775,11 +778,17 @@ class OpenApiLibraryGenerator {
         ])
         .statement);
 
-    if (contentType.matches(OpenApiContentType.text_plain)) {
+    if (contentType.matches(OpenApiContentType.textPlain)) {
       _addRequestBody(
         _typeString,
         _openApiClientRequestBodyText.newInstance([refer('body')]),
         refer('request').property('readBodyString')([]).awaited,
+      );
+    } else if (contentType.matches(OpenApiContentType.octetStream)) {
+      _addRequestBody(
+        _toDartType(operationName, reqBody.schema),
+        _openApiClientRequestBodyBinary.newInstance([refer('body')]),
+        refer('request').property('readBodyBytes')([]).awaited,
       );
     } else {
       final reference =

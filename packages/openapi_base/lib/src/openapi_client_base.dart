@@ -114,6 +114,21 @@ class OpenApiClientRequestBodyText extends OpenApiClientRequestBody {
   String encodeToString() => body;
 }
 
+class OpenApiClientRequestBodyBinary extends OpenApiClientRequestBody {
+  OpenApiClientRequestBodyBinary(this.body);
+
+  @override
+  bool get isBytes => true;
+
+  final Uint8List body;
+
+  @override
+  List<int> encodeToBytes() => body;
+
+  @override
+  String encodeToString() => throw UnimplementedError();
+}
+
 class OpenApiClientRequest {
   OpenApiClientRequest(this.operation, this.path, this.securityRequirement);
 

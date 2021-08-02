@@ -21,6 +21,7 @@ abstract class OpenApiRequest {
       (await readUrlEncodedBody())
           .map((key, value) => MapEntry(key, value.first));
   Future<String> readBodyString();
+  Future<Uint8List> readBodyBytes();
 }
 
 abstract class OpenApiResponseWithBody extends OpenApiResponse {

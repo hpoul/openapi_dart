@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 // import 'package:shelf_cookie/shelf_cookie.dart';
 
+import 'package:chunked_stream/chunked_stream.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:openapi_base/src/openapi_base.dart';
@@ -162,4 +164,8 @@ class ShelfRequest extends OpenApiRequest {
 
   @override
   Future<String> readBodyString() async => await _request.readAsString();
+
+  @override
+  Future<Uint8List> readBodyBytes() async =>
+      await readByteStream(_request.read());
 }

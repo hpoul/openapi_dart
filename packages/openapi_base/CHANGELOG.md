@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Support for binary request bodys
+
 ## 1.0.0
 
 * Added conflict exception.

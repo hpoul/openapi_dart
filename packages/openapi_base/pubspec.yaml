@@ -1,6 +1,6 @@
 name: openapi_base
 description: Open API base implementation for client/server to be used with openapi_code_builder.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/hpoul/openapi_dart/tree/master/packages/openapi_base
 
 environment:
@@ -17,6 +17,7 @@ dependencies:
 
   uuid: ">=3.0.1 <4.0.0"
   json_annotation: ">=4.0.0 <6.0.0"
+  chunked_stream: ">=1.4.1 <2.0.0"
 
   # server
   shelf: ">=1.0.0 <2.0.0"
@@ -26,4 +27,4 @@ dependencies:
   http: ">=0.13.0 <1.0.0"
 
 dev_dependencies:
-  pedantic: ^1.11.0
+  pedantic: ">=1.11.0 <2.0.0"

@@ -10,7 +10,8 @@ class OpenApiContentType {
 
   static const json = OpenApiContentType._('application/json');
   static const html = OpenApiContentType._('text/html');
-  static const text_plain = OpenApiContentType._('text/plain');
+  static const textPlain = OpenApiContentType._('text/plain');
+  static const octetStream = OpenApiContentType._('application/octet-stream');
   static const urlencoded =
       OpenApiContentType._('application/x-www-form-urlencoded');
 
