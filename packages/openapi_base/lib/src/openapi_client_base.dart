@@ -212,11 +212,12 @@ class HttpRequestSender extends OpenApiRequestSender {
         ' (baseUri: $baseUri)');
 
     final req = Request(request.operation, uri);
-    if (request.body != null) {
-      if (request.body!.isBytes) {
-        req.bodyBytes = request.body!.encodeToBytes();
+    final requestBody = request.body;
+    if (requestBody != null) {
+      if (requestBody.isBytes) {
+        req.bodyBytes = requestBody.encodeToBytes();
       }
-      req.body = request.body!.encodeToString();
+      req.body = requestBody.encodeToString();
     }
     request.paramHeader.forEach((key, value) {
       if (value.isNotEmpty) {
