@@ -14,6 +14,11 @@ right inside your browser](https://hpoul.github.io/openapi_dart/): https://hpoul
 
 ![Flutter Screenshot](_docs/screenshot.png)
 
+# Real world example
+
+See the backend for [AuthPass](https://authpass.app/) which uses auto generated
+openapi basically as http server. [Yaml file available on github](https://github.com/authpass/authpass-cloud/blob/master/packages/authpass_cloud_shared/lib/src/api/authpass_cloud.openapi.yaml).
+
 # Usage
 
 1. Update `pubspec.yaml`:

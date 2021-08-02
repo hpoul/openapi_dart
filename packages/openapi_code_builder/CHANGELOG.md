@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Cleanup post-nnbd: Removed many forced null unwraps.
+
 ## 0.1.4+2
 
 * Upgrade dependencies, fixed warnings.

@@ -77,7 +77,7 @@ packages:
       name: codable_forked
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0+1"
+    version: "1.0.0+2"
   code_builder:
     dependency: "direct main"
     description:
@@ -203,7 +203,7 @@ packages:
       name: open_api_forked
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0+3"
+    version: "3.0.0+4"
   openapi_base:
     dependency: "direct main"
     description:

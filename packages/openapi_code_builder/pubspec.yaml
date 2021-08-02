@@ -1,6 +1,6 @@
 name: openapi_code_builder
 description: Generate Dtos, client and server scaffolds for openapi specs.
-version: 0.1.4+2
+version: 1.0.0
 homepage: https://github.com/hpoul/openapi_dart/tree/master/packages/openapi_code_builder
 
 environment:
