@@ -59,7 +59,7 @@ class _OpenApiGeneratorState extends State<OpenApiGenerator> {
         children: [
           Markdown(
             onTapLink: (text, href, title) {
-              launch(href);
+              launch(href!);
             },
             shrinkWrap: true,
             data: '''
@@ -105,7 +105,8 @@ See [GitHub project for details](https://github.com/hpoul/openapi_dart).
       final api = OpenApiCodeBuilderUtils.loadApiFromYaml(value);
       final generator =
           OpenApiLibraryGenerator(api, 'ExampleApi', 'example.dart');
-      final out = OpenApiCodeBuilderUtils.formatLibrary(generator.generate());
+      final out = OpenApiCodeBuilderUtils.formatLibrary(generator.generate(),
+          useNullSafetySyntax: true);
       _output.text = out;
       _logger.info('Updated output.');
     } catch (e, stackTrace) {
@@ -116,17 +117,17 @@ See [GitHub project for details](https://github.com/hpoul/openapi_dart).
 
 class CodeWidget extends StatefulWidget {
   const CodeWidget({
-    Key key,
-    this.controller,
-    this.onChanged,
+    Key? key,
+    required this.controller,
+    required this.onChanged,
     this.style,
     this.labelText,
   }) : super(key: key);
 
   final TextEditingController controller;
   final void Function(String changed) onChanged;
-  final TextStyle style;
-  final String labelText;
+  final TextStyle? style;
+  final String? labelText;
 
   @override
   _CodeWidgetState createState() => _CodeWidgetState();
@@ -150,7 +151,7 @@ class _CodeWidgetState extends State<CodeWidget> {
               border: OutlineInputBorder(),
             ),
             scrollController: scrollController,
-            enabled: widget.onChanged != null,
+            enabled: true,
             controller: widget.controller,
             maxLines: null,
             onChanged: widget.onChanged,
