@@ -114,7 +114,7 @@ Future<void> main() async {
       requestSender);
   final blubb = await client.helloNameGet(name: 'Blubb');
   blubb.map(
-    on200: (response) => _logger.info('Success! ${response.body.message}'),
+    on200: (response) => _logger.info('Success: ****${response.body.message}'),
   );
   _logger.info('Response: $blubb');
   requestSender.dispose();
