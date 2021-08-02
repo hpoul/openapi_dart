@@ -288,14 +288,14 @@ packages:
       path: "../openapi_base"
       relative: true
     source: path
-    version: "0.2.0+1"
+    version: "1.0.0"
   openapi_code_builder:
     dependency: "direct main"
     description:
       path: "../openapi_code_builder"
       relative: true
     source: path
-    version: "0.1.4+1"
+    version: "1.0.0+1"
   package_config:
     dependency: transitive
     description:
