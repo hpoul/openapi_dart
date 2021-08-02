@@ -21,13 +21,15 @@ dependencies:
   recase: ^4.0.0
   quiver: ^3.0.1
   built_collection: ^5.1.0
-  collection: ^1.15.0-nullsafety.4
+  collection: ^1.15.0
 
 dev_dependencies:
   pedantic: ^1.11.1
 
-dependency_overrides:
+#dependency_overrides:
 #  openapi_base:
 #    path: ../openapi_base
-  open_api_forked:
-    path: ../../deps/open-api-dart
+#  open_api_forked:
+#    path: ../../deps/open-api-dart
+#  codable_forked:
+#    path: ../../deps/dart-codable

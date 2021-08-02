@@ -231,7 +231,7 @@ class OpenApiLibraryGenerator {
             mapCode.add(refer('on$codeName')(
                 [refer('this').asA(refer(responseCodeClass.name!))]).statement);
             mapCode.add(const Code('}'));
-            final clientResponseParseParams = <Expression?>[];
+            final clientResponseParseParams = <Expression>[];
             final constructor = Constructor((cb) {
               cb
                 ..name = 'response$codeName'
@@ -394,8 +394,8 @@ class OpenApiLibraryGenerator {
                 ..name = 'response'
                 ..type = _openApiClientResponse))
               ..body = refer(responseCodeClass.name!)
-                  .newInstanceNamed(constructor.name!,
-                      clientResponseParseParams as Iterable<Expression>)
+                  .newInstanceNamed(
+                      constructor.name!, clientResponseParseParams)
                   .code).closure;
             lb.body.add(responseCodeClass.build());
           }
@@ -473,8 +473,8 @@ class OpenApiLibraryGenerator {
               ..returns =
                   _referType('Future', generics: [refer(responseClass.name!)]);
 
-            final routerParams = <Expression?>[];
-            final routerParamsNamed = <String, Expression?>{};
+            final routerParams = <Expression>[];
+            final routerParamsNamed = <String, Expression>{};
 
             if (apiMethodsWithRequest) {
               mb.requiredParameters.add(Parameter((pb) => pb
@@ -613,7 +613,7 @@ class OpenApiLibraryGenerator {
               clientCode.add(_writeToRequest(
                 clientCodeRequest,
                 paramLocation,
-                paramNameCamelCase,
+                paramName,
                 encodeParameter(refer(paramNameCamelCase)),
               ).statement);
             }
@@ -660,9 +660,7 @@ class OpenApiLibraryGenerator {
                     ..name = 'impl'))
                   ..lambda = true
                   ..body = refer('impl')
-                      .property(operationName)(
-                          routerParams as Iterable<Expression>,
-                          routerParamsNamed as Map<String, Expression>)
+                      .property(operationName)(routerParams, routerParamsNamed)
 //                        .returned
                       .code
                   ..modifier = MethodModifier.async).closure
@@ -1274,8 +1272,7 @@ class OpenApiCodeBuilderUtils {
 
 class OpenApiCodeBuilder extends Builder {
   OpenApiCodeBuilder(
-      {this.orderDirectives = false, required this.useNullSafetySyntax})
-      : assert(useNullSafetySyntax != null);
+      {this.orderDirectives = false, required this.useNullSafetySyntax});
 
   final bool orderDirectives;
   final bool useNullSafetySyntax;
@@ -1373,7 +1370,7 @@ extension on MethodBuilder {
 extension on ParameterBuilder {
   void asRequired(OpenApiLibraryGenerator generator, [bool isRequired = true]) {
     if (generator.useNullSafetySyntax) {
-      this.required = isRequired;
+      required = isRequired;
     } else if (isRequired) {
       annotations.add(generator._required);
     }
