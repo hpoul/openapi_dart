@@ -93,7 +93,7 @@ packages:
     source: hosted
     version: "4.1.0"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       url: "https://pub.dartlang.org"
@@ -207,9 +207,9 @@ packages:
   open_api_forked:
     dependency: "direct main"
     description:
-      name: open_api_forked
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../deps/open-api-dart"
+      relative: true
+    source: path
     version: "3.0.0+4"
   openapi_base:
     dependency: "direct main"

@@ -14,10 +14,14 @@ class CustomAllocator implements Allocator {
   @override
   String allocate(Reference reference) {
     final symbol = reference.symbol;
-    if (reference.url == null || _doNotPrefix.contains(reference.url)) {
+    final url = reference.url;
+    if (symbol == null) {
+      throw ArgumentError.notNull('reference.symbol');
+    }
+    if (url == null || _doNotPrefix.contains(url)) {
       return symbol;
     }
-    return '_i${_imports.putIfAbsent(reference.url, _nextKey)}.$symbol';
+    return '_i${_imports.putIfAbsent(url, _nextKey)}.$symbol';
   }
 
   int _nextKey() => _keys++;

@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Migrate to null safety.
+
 ## 1.0.1
 
 * Support for binary request body.
