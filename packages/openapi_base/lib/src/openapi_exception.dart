@@ -36,3 +36,13 @@ class NotFoundException extends OpenApiResponseException {
   @override
   final String message;
 }
+
+class ConflictException extends OpenApiResponseException {
+  ConflictException(this.message);
+
+  @override
+  int get status => 409;
+
+  @override
+  final String message;
+}

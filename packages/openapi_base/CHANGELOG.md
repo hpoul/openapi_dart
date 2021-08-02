@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Added conflict exception.
+
 ## 0.2.0+2
 
 * Fix contentType nullability.
