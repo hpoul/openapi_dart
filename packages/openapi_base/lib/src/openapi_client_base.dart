@@ -231,8 +231,9 @@ class HttpRequestSender extends OpenApiRequestSender {
     if (requestBody != null) {
       if (requestBody.isBytes) {
         req.bodyBytes = requestBody.encodeToBytes();
+      } else {
+        req.body = requestBody.encodeToString();
       }
-      req.body = requestBody.encodeToString();
     }
     request.paramHeader.forEach((key, value) {
       if (value.isNotEmpty) {
@@ -274,7 +275,7 @@ class HttpClientResponse extends OpenApiClientResponse {
 
   @override
   Future<Uint8List> responseBodyBytes() async {
-    throw response.bodyBytes;
+    return response.bodyBytes;
   }
 }
 
