@@ -1,7 +1,8 @@
-## 1.0.1+3
+## 1.0.1+4
 
 * introduced `OpenApiHttpStatus` constants.
 * Fix sending of binary request data.
+* Fix passing on headers to callers.
 
 ## 1.0.1
 

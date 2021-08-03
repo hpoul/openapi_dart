@@ -39,6 +39,7 @@ mixin OpenApiUrlEncodeMixin {
 /// Base class for generated client classes for OpenAPI apis.
 abstract class OpenApiClient {
   Map<SecurityScheme, SecuritySchemeData> get _securitySchemeData;
+
   void setAuth<U extends SecuritySchemeData, T extends SecurityScheme<U>>(
       T security, U data);
 }
@@ -47,7 +48,9 @@ abstract class OpenApiClientBase
     with OpenApiUrlEncodeMixin
     implements OpenApiClient {
   Uri get baseUri;
+
   OpenApiRequestSender get requestSender;
+
   @override
   final Map<SecurityScheme, SecuritySchemeData> _securitySchemeData = {};
 
@@ -76,7 +79,9 @@ abstract class OpenApiClientBase
     if (parser == null) {
       throw StateError('Unexpected response from server ${response.status}');
     }
-    return await parser(response);
+    final parsedResponse = await parser(response);
+    parsedResponse.headers.addAll(response.headers);
+    return parsedResponse;
   }
 }
 
@@ -93,12 +98,15 @@ extension SecuritySchemeClient<T extends SecuritySchemeData>
 
 abstract class OpenApiClientRequestBody {
   bool get isBytes => false;
+
   String encodeToString();
+
   List<int> encodeToBytes() => throw UnimplementedError();
 }
 
 class OpenApiClientRequestBodyJson extends OpenApiClientRequestBody {
   OpenApiClientRequestBodyJson(this.jsonMap);
+
   final Map<String, dynamic> jsonMap;
 
   @override
@@ -142,12 +150,16 @@ class OpenApiClientRequest {
   OpenApiClientRequestBody? body;
 
   void setHeader(String name, String value) => paramHeader[name] = [value];
+
   void addHeaderParameter(String name, Iterable<String> value) =>
       _addParam(paramHeader, name, value);
+
   void addCookieParameter(String name, Iterable<String> value) =>
       _addParam(paramCookie, name, value);
+
   void addPathParameter(String name, Iterable<String> value) =>
       _addParam(paramPath, name, value);
+
   void addQueryParameter(String name, Iterable<String> value) =>
       _addParam(paramQuery, name, value);
 
@@ -181,9 +193,14 @@ class OpenApiClientRequest {
 abstract class OpenApiClientResponse {
   int get status;
 
+  Map<String, List<String>> get headers;
+
   OpenApiContentType responseContentType();
+
   Future<Map<String, dynamic>> responseBodyJson();
+
   Future<String> responseBodyString();
+
   Future<Uint8List> responseBodyBytes();
 }
 
@@ -252,6 +269,7 @@ class HttpRequestSender extends OpenApiRequestSender {
 
 class HttpClientResponse extends OpenApiClientResponse {
   HttpClientResponse(this.response);
+
   final Response response;
 
   @override
@@ -261,6 +279,10 @@ class HttpClientResponse extends OpenApiClientResponse {
 
   @override
   int get status => response.statusCode;
+
+  @override
+  late final Map<String, List<String>> headers =
+      response.headers.map((key, value) => MapEntry(key, [value]));
 
   @override
   OpenApiContentType responseContentType() {
