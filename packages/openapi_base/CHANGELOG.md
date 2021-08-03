@@ -1,3 +1,7 @@
+## 1.0.1+1
+
+* introduced `OpenApiHttpStatus` constants.
+
 ## 1.0.1
 
 * Support for binary request bodys

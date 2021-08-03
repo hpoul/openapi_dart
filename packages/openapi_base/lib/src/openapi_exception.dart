@@ -1,3 +1,5 @@
+import 'package:openapi_base/src/http_headers.dart';
+
 /// Base class for exceptions which can be thrown by endpoint implementations
 /// with special handling in the server implementations
 /// (e.g. [OpenApiShelfServer]).
@@ -21,7 +23,7 @@ class UnauthorizedException extends OpenApiResponseException
   UnauthorizedException(this.message);
 
   @override
-  int get status => 401;
+  int get status => OpenApiHttpStatus.unauthorized;
 
   @override
   final String message;
@@ -31,7 +33,7 @@ class NotFoundException extends OpenApiResponseException {
   NotFoundException(this.message);
 
   @override
-  int get status => 404;
+  int get status => OpenApiHttpStatus.notFound;
 
   @override
   final String message;
@@ -41,7 +43,7 @@ class ConflictException extends OpenApiResponseException {
   ConflictException(this.message);
 
   @override
-  int get status => 409;
+  int get status => OpenApiHttpStatus.conflict;
 
   @override
   final String message;
