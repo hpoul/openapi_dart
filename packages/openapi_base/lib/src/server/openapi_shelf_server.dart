@@ -11,6 +11,7 @@ import 'package:openapi_base/src/openapi_base.dart';
 import 'package:openapi_base/src/openapi_exception.dart';
 import 'package:openapi_base/src/server/openapi_server_base.dart';
 import 'package:openapi_base/src/server/stoppable_process.dart';
+import 'package:openapi_base/src/util/internal_utils.dart';
 import 'package:openapi_base/src/util/shelf_cookie/cookie_parser.dart';
 import 'package:openapi_base/src/util/shelf_cookie/shelf_cookie.dart';
 import 'package:shelf/shelf.dart' as shelf;
@@ -20,15 +21,19 @@ import 'package:uri/uri.dart';
 final _logger = Logger('openapi_shelf_server');
 
 class OpenApiShelfServer extends OpenApiServerBase {
-  OpenApiShelfServer(this.router);
+  OpenApiShelfServer(this.router, {this.customizePipeline = identity});
 
   final OpenApiServerRouterBase router;
+  final shelf.Pipeline Function(shelf.Pipeline pipeline) customizePipeline;
 
   @protected
-  shelf.Handler preparePipeline() => const shelf.Pipeline()
-      .addMiddleware(cookieParser())
-      .addMiddleware(shelf.logRequests())
-      .addHandler(_handleRequestWithExceptions);
+  shelf.Handler preparePipeline() {
+    final pipeline = const shelf.Pipeline()
+        .addMiddleware(cookieParser())
+        .addMiddleware(shelf.logRequests());
+
+    return customizePipeline(pipeline).addHandler(_handleRequestWithExceptions);
+  }
 
   @override
   Future<StoppableProcess> startServer({

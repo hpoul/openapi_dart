@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Allow customizing of the shelf pipeline with additional middleware.
+
 ## 1.0.1+4
 
 * introduced `OpenApiHttpStatus` constants.
