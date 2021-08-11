@@ -41,7 +41,8 @@ class OpenApiShelfServer extends OpenApiServerBase {
     int port = 8080,
   }) async {
     final server = await io.serve(preparePipeline(), address, port);
-    _logger.info('Serving at http://${server.address.host}:${server.port}');
+    _logger
+        .info('Serving at http${''}://${server.address.host}:${server.port}');
     return StoppableProcess((reason) async {
       _logger.info('Stopping server... ($reason)');
       await server.close();
@@ -57,7 +58,7 @@ class OpenApiShelfServer extends OpenApiServerBase {
       _logger.fine('response exception during request handling', e, stackTrace);
       return shelf.Response(e.status, body: e.message);
     } catch (e, stackTrace) {
-      _logger.warning('Error while handling requet.', e, stackTrace);
+      _logger.warning('Error while handling request.', e, stackTrace);
       rethrow;
     }
   }
