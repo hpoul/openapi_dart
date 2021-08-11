@@ -927,7 +927,8 @@ class OpenApiLibraryGenerator {
             ..annotations.addAll(override.contains(key) ? [_override] : [])
             ..name = key.camelCase
             ..modifier = FieldModifier.final$
-            ..type = fieldType.asNullable(!required.contains(key));
+            ..type = fieldType
+                .asNullable(!required.contains(key) && e.defaultValue == null);
           if (fieldType == _apiUuid) {
             fb.annotations.add(_apiUuidJsonConverter([]));
           }
@@ -988,6 +989,9 @@ class OpenApiLibraryGenerator {
 //            ..docs.addAll(f.docs)
                     ..name = f.value.name
                     ..asRequired(this, required.contains(f.key))
+                    ..defaultTo = (properties[f.key]?.defaultValue as Object?)
+                        ?.let((dynamic it) => literal(it))
+                        .code
                     ..named = true
                     ..toThis = true)))
               ..initializers.addAll(useNullSafetySyntax
@@ -1375,4 +1379,13 @@ extension on ParameterBuilder {
       annotations.add(generator._required);
     }
   }
+}
+
+extension DynamicExt<T> on dynamic {
+  R let<R>(R Function(dynamic that) op) => op(this);
+}
+
+extension ObjectExt<T> on T {
+  T? takeIf(bool Function(T that) predicate) => predicate(this) ? this : null;
+  R let<R>(R Function(T that) op) => op(this);
 }
