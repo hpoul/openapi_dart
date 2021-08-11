@@ -99,15 +99,19 @@ class OpenApiShelfServer extends OpenApiServerBase {
         final responseBinary = response as OpenApiResponseBodyBinary;
         body = responseBinary.body;
       } else {
-        return shelf.Response(response.status);
+        body = null;
+        // return shelf.Response(response.status);
 //        throw StateError('Invalid response $response');
       }
+      final contentType = response.contentType;
       return shelf.Response(
         response.status,
         body: body,
         headers: {
           ...response.headers.map((key, value) => MapEntry(key, value.first)),
-          HttpHeaders.contentTypeHeader: response.contentType.toString(),
+          if (contentType != null) ...{
+            HttpHeaders.contentTypeHeader: contentType.toString(),
+          }
         },
       );
 

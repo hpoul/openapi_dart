@@ -1,3 +1,7 @@
+## 1.0.2+1
+
+* Fix including headers for unknown/error responses.
+
 ## 1.0.2
 
 * Allow customizing of the shelf pipeline with additional middleware.
