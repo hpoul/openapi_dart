@@ -1,3 +1,8 @@
+## 1.0.2+2
+
+* Handle missing parameters as exception (status 400), not an error (status 500).
+* Allow handling of exceptions in middleware.
+
 ## 1.0.2+1
 
 * Fix including headers for unknown/error responses.

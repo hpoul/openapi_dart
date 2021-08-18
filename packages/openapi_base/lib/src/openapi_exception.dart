@@ -48,3 +48,15 @@ class ConflictException extends OpenApiResponseException {
   @override
   final String message;
 }
+
+class MissingParameterException extends OpenApiResponseException {
+  MissingParameterException(this.parameterName);
+
+  @override
+  int get status => OpenApiHttpStatus.badRequest;
+
+  final String parameterName;
+
+  @override
+  String get message => 'Parameter "$parameterName" is required.';
+}

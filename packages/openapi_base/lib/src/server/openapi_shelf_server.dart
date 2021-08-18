@@ -30,9 +30,10 @@ class OpenApiShelfServer extends OpenApiServerBase {
   shelf.Handler preparePipeline() {
     final pipeline = const shelf.Pipeline()
         .addMiddleware(cookieParser())
-        .addMiddleware(shelf.logRequests());
+        .addMiddleware(shelf.logRequests())
+        .addMiddleware(_handleExceptions());
 
-    return customizePipeline(pipeline).addHandler(_handleRequestWithExceptions);
+    return customizePipeline(pipeline).addHandler(_handleRequest);
   }
 
   @override
@@ -50,18 +51,35 @@ class OpenApiShelfServer extends OpenApiServerBase {
     });
   }
 
-  Future<shelf.Response> _handleRequestWithExceptions(
-      shelf.Request request) async {
-    try {
-      return await _handleRequest(request);
-    } on OpenApiResponseException catch (e, stackTrace) {
-      _logger.fine('response exception during request handling', e, stackTrace);
-      return shelf.Response(e.status, body: e.message);
-    } catch (e, stackTrace) {
-      _logger.warning('Error while handling request.', e, stackTrace);
-      rethrow;
-    }
+  static shelf.Middleware _handleExceptions() {
+    return (shelf.Handler innerHandler) {
+      return (shelf.Request request) async {
+        try {
+          return await innerHandler(request);
+        } on OpenApiResponseException catch (e, stackTrace) {
+          _logger.fine(
+              'response exception during request handling', e, stackTrace);
+          return shelf.Response(e.status, body: e.message);
+        } catch (e, stackTrace) {
+          _logger.warning('Error while handling request.', e, stackTrace);
+          rethrow;
+        }
+      };
+    };
   }
+  //
+  // Future<shelf.Response> _handleRequestWithExceptions(
+  //     shelf.Request request) async {
+  //   try {
+  //     return await _handleRequest(request);
+  //   } on OpenApiResponseException catch (e, stackTrace) {
+  //     _logger.fine('response exception during request handling', e, stackTrace);
+  //     return shelf.Response(e.status, body: e.message);
+  //   } catch (e, stackTrace) {
+  //     _logger.warning('Error while handling request.', e, stackTrace);
+  //     rethrow;
+  //   }
+  // }
 
   Future<shelf.Response> _handleRequest(shelf.Request request) async {
     final operation = operationFromString(request.method);
