@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:openapi_base/openapi_base.dart';
 import 'package:openapi_base/src/openapi_client_base.dart';
