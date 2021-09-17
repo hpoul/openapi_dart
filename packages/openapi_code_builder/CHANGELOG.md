@@ -1,3 +1,7 @@
+## 1.1.1
+
+* Improve handling of enum components.
+
 ## 1.1.0
 
 * Migrate to null safety.

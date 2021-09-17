@@ -892,6 +892,10 @@ class OpenApiLibraryGenerator {
     final reference = createdSchema.putIfAbsent(schemaObject, () {
       _logger.finer(
           'Creating schema class. for ${schemaObject.referenceURI} / $key');
+      if (schemaObject.enumerated?.isNotEmpty == true) {
+        final e = _createEnum(componentName, schemaObject.enumerated!);
+        return e;
+      }
       final c = _createSchemaClass(componentName, schemaObject);
       lb.body.add(c);
 
@@ -1117,7 +1121,7 @@ class OpenApiLibraryGenerator {
     switch (schema.type ?? APIType.object) {
       case APIType.string:
         if (schema.enumerated != null && schema.enumerated!.isNotEmpty) {
-          return _createEnum(parent.pascalCase, schema.enumerated);
+          return _schemaReference(parent, schema);
         }
         if (schema.format == 'date-time') {
           return refer('DateTime');
