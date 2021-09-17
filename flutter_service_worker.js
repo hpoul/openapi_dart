@@ -9,12 +9,12 @@ const RESOURCES = {
 "assets/assets/petstore.schema.yaml": "18781beaf496742a13d9bfefd7579084",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "6d342eb68f170c97609e9da345464e5e",
 "assets/fonts/MaterialIcons-Regular.otf": "4e6447691c9509f7acdbf8a931a85ca1",
-"assets/NOTICES": "bd22e4aaeb9b18257c8d2cbced23bffd",
+"assets/NOTICES": "4c4ea0e13e00bec19a487de90a7b1878",
 "assets/AssetManifest.json": "1b67e9231f4d512d50b8e897d50fcb8e",
-"index.html": "0db752207636c55e9f9fae83e42beafa",
-"/": "0db752207636c55e9f9fae83e42beafa",
+"index.html": "5c94dc87e170417f2c58e595bd93c3d7",
+"/": "5c94dc87e170417f2c58e595bd93c3d7",
 "manifest.json": "7c26ffd0c8cb6fd798dffd687f442760",
-"main.dart.js": "5b5716ec41f5c2019f6ced1b2530849a",
+"main.dart.js": "4286927b93947f975346ebd031427410",
 "version.json": "770b5444aeea1514453038815bd29cf8",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796"
 };
