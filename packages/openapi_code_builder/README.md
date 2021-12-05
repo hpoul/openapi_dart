@@ -1,4 +1,4 @@
-# Dart OpenApi Code Genenrator
+# Dart OpenApi Code Generator
 
 `openapi_code_builder` generates server stubs and client libraries for open api schema yaml files.
 
