@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart';
 import 'package:logging_appenders/logging_appenders.dart';
 import 'package:openapi_code_builder/openapi_code_builder.dart';
-import 'package:flutter/services.dart' show rootBundle;
-
-import 'package:logging/logging.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 final _logger = Logger('main');
 
 void main() {
   PrintAppender.setupLogging();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -25,14 +26,16 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: OpenApiGenerator(),
+      home: const OpenApiGenerator(),
     );
   }
 }
 
 class OpenApiGenerator extends StatefulWidget {
+  const OpenApiGenerator({super.key});
+
   @override
-  _OpenApiGeneratorState createState() => _OpenApiGeneratorState();
+  State<OpenApiGenerator> createState() => _OpenApiGeneratorState();
 }
 
 class _OpenApiGeneratorState extends State<OpenApiGenerator> {
@@ -53,13 +56,13 @@ class _OpenApiGeneratorState extends State<OpenApiGenerator> {
     final monoFont = GoogleFonts.ubuntuMono();
     return Scaffold(
       appBar: AppBar(
-        title: Text('OpenAPI Generator'),
+        title: const Text('OpenAPI Generator'),
       ),
       body: Column(
         children: [
           Markdown(
             onTapLink: (text, href, title) {
-              launch(href!);
+              launchUrlString(href!);
             },
             shrinkWrap: true,
             data: '''
@@ -130,7 +133,7 @@ class CodeWidget extends StatefulWidget {
   final String? labelText;
 
   @override
-  _CodeWidgetState createState() => _CodeWidgetState();
+  State<CodeWidget> createState() => _CodeWidgetState();
 }
 
 class _CodeWidgetState extends State<CodeWidget> {
@@ -143,12 +146,12 @@ class _CodeWidgetState extends State<CodeWidget> {
         height: double.infinity,
         padding: const EdgeInsets.all(8.0),
         child: Scrollbar(
-          isAlwaysShown: true,
+          thumbVisibility: true,
           controller: scrollController,
           child: TextField(
             decoration: InputDecoration(
               labelText: widget.labelText,
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             scrollController: scrollController,
             enabled: true,

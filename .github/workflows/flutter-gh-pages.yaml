@@ -21,7 +21,7 @@ jobs:
           flutter config --enable-web
           cd packages/openapi_generator_flutter && flutter pub get
       - name: Build
-        run: cd packages/openapi_generator_flutter && flutter build web
+        run: cd packages/openapi_generator_flutter && flutter build web --base-href /openapi_dart/
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
