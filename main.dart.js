@@ -86659,7 +86659,7 @@ n=A.aPz(o,"ExampleApi","example.dart")
 j=n.a2j()
 h=A.aNO()
 j=A.d(new A.K3(new A.K_(A.q(i,t.S)),!1,!0,!1).a1k(j,null))
-m=h.aqb(A.avy("// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n// ignore_for_file: prefer_initializing_formals\n\n"+j+"\n\nT _throwStateError<T>(String message) => throw StateError(message);\n\n",!0,null,null,null)).b
+m=h.aqb(A.avy("// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n// ignore_for_file: prefer_initializing_formals, no_leading_underscores_for_library_prefixes, library_private_types_in_public_api\n\n"+j+"\n\nT _throwStateError<T>(String message) => throw StateError(message);\n\n",!0,null,null,null)).b
 p.e.scC(0,m)
 $.axN().mT(B.pY,"Updated output.",null,null)}catch(d){l=A.ak(d)
 k=A.b0(d)
