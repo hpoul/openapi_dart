@@ -1269,7 +1269,7 @@ class OpenApiCodeBuilderUtils {
     );
     final libraryOutput = DartFormatter().format(
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
-        '// ignore_for_file: prefer_initializing_formals\n\n'
+        '// ignore_for_file: prefer_initializing_formals, no_leading_underscores_for_library_prefixes, library_private_types_in_public_api\n\n'
         '${library.accept(emitter)}\n\n'
         'T _throwStateError<T>(String message) => throw StateError(message);\n\n');
     return libraryOutput;
