@@ -6,6 +6,8 @@ class CustomAllocator implements Allocator {
   static const _doNotPrefix = [
     'dart:core',
     'package:openapi_base/openapi_base.dart',
+    // https://github.com/google/json_serializable.dart/issues/1115
+    'package:json_annotation/json_annotation.dart',
   ];
 
   final _imports = <String, int>{};
