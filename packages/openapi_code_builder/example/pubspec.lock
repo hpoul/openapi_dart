@@ -140,7 +140,7 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.15.0"
+    version: "1.16.0"
   convert:
     dependency: transitive
     description:
@@ -308,14 +308,14 @@ packages:
       path: "../../openapi_base"
       relative: true
     source: path
-    version: "1.0.2+2"
+    version: "1.0.2+3"
   openapi_code_builder:
     dependency: "direct dev"
     description:
       path: ".."
       relative: true
     source: path
-    version: "1.1.1"
+    version: "1.1.1+1"
   package_config:
     dependency: transitive
     description:

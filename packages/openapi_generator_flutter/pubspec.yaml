@@ -1,5 +1,5 @@
 name: openapi_generator_flutter
-description: A new Flutter project.
+description: An easy web UI to try out openapi_code_builder.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -18,22 +18,18 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   openapi_code_builder:
     path: ../openapi_code_builder
-  flutter_markdown: ^0.6.4
-  url_launcher: ^6.0.9
-  google_fonts: ^2.1.0
-  logging: ^1.0.1
+  flutter_markdown: ^0.6.10+2
+  url_launcher: ^6.1.4
+  google_fonts: ^3.0.1
+  logging: ^1.0.2
   logging_appenders: ^1.0.0
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -42,7 +38,6 @@ dev_dependencies:
 dependency_overrides:
   openapi_base:
     path: ../openapi_base
-  meta: ^1.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
