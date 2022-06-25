@@ -15,8 +15,8 @@ class ApiUuid {
       r'^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$',
       caseSensitive: false);
 
-  static bool _isUuid(String _uuid) {
-    return _validate.hasMatch(_uuid);
+  static bool _isUuid(String uuid) {
+    return _validate.hasMatch(uuid);
   }
 
   final String _uuid;

@@ -178,7 +178,7 @@ class OpenApiClientRequest {
 
   Uri resolveUri(Uri baseUri) {
     if (!baseUri.path.endsWith('/') && baseUri.pathSegments.isNotEmpty) {
-      baseUri = baseUri.resolve(baseUri.pathSegments.last + '/');
+      baseUri = baseUri.resolve('${baseUri.pathSegments.last}/');
     }
 
     final uriTemplate = UriTemplate(path);

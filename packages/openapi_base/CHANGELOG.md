@@ -1,3 +1,7 @@
+## 1.0.2+3
+
+* Upgrade dependencies, fix analysis warnings.
+
 ## 1.0.2+2
 
 * Handle missing parameters as exception (status 400), not an error (status 500).

@@ -1,3 +1,7 @@
+## 1.1.1+1
+
+* Upgrade dependencies, fix analysis warnings.
+
 ## 1.1.1
 
 * Improve handling of enum components.

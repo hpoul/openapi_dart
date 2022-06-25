@@ -99,7 +99,7 @@ abstract class OpenApiServerRouterBase {
     configure();
   }
 
-  final List<_RouteConfig> configs = [];
+  final List<RouteConfig> configs = [];
 
   @protected
   void configure();
@@ -111,7 +111,7 @@ abstract class OpenApiServerRouterBase {
     RouteHandler handle, {
     required List<SecurityRequirement> security,
   }) {
-    configs.add(_RouteConfig(path, operationFromString(operation), handle,
+    configs.add(RouteConfig(path, operationFromString(operation), handle,
         security: security));
   }
 
@@ -177,8 +177,8 @@ Operation operationFromString(String operation) =>
     _operations[operation.toLowerCase()] ??
     (() => throw StateError('Invalid operation $operation'))();
 
-class _RouteConfig {
-  _RouteConfig(this.path, this.operation, this.handler,
+class RouteConfig {
+  RouteConfig(this.path, this.operation, this.handler,
       {required this.security})
       : uriParser = UriParser(UriTemplate(path));
 

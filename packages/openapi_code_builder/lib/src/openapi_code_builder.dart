@@ -502,24 +502,23 @@ class OpenApiLibraryGenerator {
                 ..named = true);
               mb.optionalParameters.add(p);
               clientMethod.optionalParameters.add(p);
-              final decodeParameterFrom =
-                  (APIParameter param, Expression expression) {
+              Expression decodeParameterFrom(APIParameter param, Expression expression) {
                 final schemaType = ArgumentError.checkNotNull(
                     param.schema?.type, 'param.schema.type');
                 switch (schemaType) {
                   case APIType.string:
-                    final Expression? asString =
+                    final Expression asString =
                         refer('paramToString')([expression]);
                     if (param.schema!.format == 'uuid') {
                       assert(paramType == _apiUuid);
-                      return _apiUuid.newInstanceNamed('parse', [asString!]);
+                      return _apiUuid.newInstanceNamed('parse', [asString]);
                     } else if (paramType != _typeString) {
                       throw StateError(
                           'Unsupported paramType for string $paramType');
                     }
                     return asString;
                   case APIType.number:
-                    break;
+                    throw StateError('Invalid schema type $schemaType');
                   case APIType.integer:
                     return refer('paramToInt')([expression]);
                   case APIType.boolean:
@@ -537,7 +536,7 @@ class OpenApiLibraryGenerator {
                                 ..lambda = true
                                 ..requiredParameters
                                     .add(Parameter((pb) => pb..name = 'e'))
-                                ..body = refer(paramEnumType.symbol! + 'Ext')
+                                ..body = refer('${paramEnumType.symbol!}Ext')
                                     .property('fromName')([refer('e')])
                                     .code,
                             ).closure
@@ -550,8 +549,8 @@ class OpenApiLibraryGenerator {
                   default:
                     throw StateError('Invalid schema type $schemaType');
                 }
-              };
-              final decodeParameter = (Expression? expression) {
+              }
+              Expression decodeParameter(Expression? expression) {
                 return refer(
                     param.isRequired ? 'paramRequired' : 'paramOpt')([], {
                   'name': literalString(param.name!),
@@ -561,11 +560,11 @@ class OpenApiLibraryGenerator {
                         ..requiredParameters
                             .add(Parameter((pb) => pb..name = 'value'))
                         ..body =
-                            decodeParameterFrom(param, refer('value'))!.code)
+                            decodeParameterFrom(param, refer('value')).code)
                       .closure,
                 });
-              };
-              final encodeParameter = (Expression expression) {
+              }
+              Expression encodeParameter(Expression expression) {
                 final schemaType = ArgumentError.checkNotNull(
                     param.schema?.type, 'param.schema.type');
                 switch (schemaType) {
@@ -581,7 +580,7 @@ class OpenApiLibraryGenerator {
                     }
                     return refer('encodeString')([expression]);
                   case APIType.number:
-                    break;
+                    throw StateError('Invalid schema type ${param.schema!.type}}');
                   case APIType.integer:
                     return refer('encodeInt')([expression]);
                   case APIType.boolean:
@@ -604,8 +603,7 @@ class OpenApiLibraryGenerator {
                   case APIType.object:
                     return expression;
                 }
-                throw StateError('Invalid schema type ${param.schema!.type}}');
-              };
+              }
               final paramLocation = ArgumentError.checkNotNull(param.location);
               final paramName = ArgumentError.checkNotNull(param.name);
               routerParamsNamed[paramNameCamelCase] =
