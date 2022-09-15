@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
 import 'package:openapi_code_builder/openapi_code_builder.dart';
+import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 
 Future<void> main(List<String> args) async {

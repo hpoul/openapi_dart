@@ -1,3 +1,8 @@
+## 1.1.2
+
+* Support for enums outside of arrays
+* Support for number type.
+
 ## 1.1.1+1
 
 * Upgrade dependencies, fix analysis warnings.
