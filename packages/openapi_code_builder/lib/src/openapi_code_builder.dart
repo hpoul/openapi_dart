@@ -502,23 +502,27 @@ class OpenApiLibraryGenerator {
                 ..named = true);
               mb.optionalParameters.add(p);
               clientMethod.optionalParameters.add(p);
-              Expression decodeParameterFrom(APIParameter param, Expression expression) {
+              Expression decodeParameterFrom(
+                  APIParameter param, Expression expression) {
                 final schemaType = ArgumentError.checkNotNull(
                     param.schema?.type, 'param.schema.type');
                 switch (schemaType) {
                   case APIType.string:
-                    final Expression asString =
-                        refer('paramToString')([expression]);
+                    final asString = refer('paramToString')([expression]);
                     if (param.schema!.format == 'uuid') {
                       assert(paramType == _apiUuid);
                       return _apiUuid.newInstanceNamed('parse', [asString]);
+                    } else if (param.schema?.enumerated?.isNotEmpty == true) {
+                      final paramEnumType = paramType;
+                      return refer(paramEnumType.symbol! + 'Ext')
+                          .property('fromName')([asString]);
                     } else if (paramType != _typeString) {
                       throw StateError(
                           'Unsupported paramType for string $paramType');
                     }
                     return asString;
                   case APIType.number:
-                    throw StateError('Invalid schema type $schemaType');
+                    return refer('paramToNum')([expression]);
                   case APIType.integer:
                     return refer('paramToInt')([expression]);
                   case APIType.boolean:
@@ -572,6 +576,8 @@ class OpenApiLibraryGenerator {
                     if (param.schema!.format == 'uuid') {
                       assert(paramType == _apiUuid);
                       expression = expression.property('encodeToString')([]);
+                    } else if (param.schema?.enumerated?.isNotEmpty == true) {
+                      expression = expression.property('name');
                     } else if (paramType != _typeString) {
                       // TODO not sure if this makes sense, maybe we should just
                       //      use `toString`?
@@ -580,7 +586,7 @@ class OpenApiLibraryGenerator {
                     }
                     return refer('encodeString')([expression]);
                   case APIType.number:
-                    throw StateError('Invalid schema type ${param.schema!.type}}');
+                    return refer('encodeNum')([expression]);
                   case APIType.integer:
                     return refer('encodeInt')([expression]);
                   case APIType.boolean:
