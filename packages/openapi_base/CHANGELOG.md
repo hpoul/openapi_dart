@@ -1,6 +1,11 @@
+## 1.0.3
+
+* Support for `number` type.
+
 ## 1.0.2+3
 
 * Upgrade dependencies, fix analysis warnings.
+=======
 
 ## 1.0.2+2
 

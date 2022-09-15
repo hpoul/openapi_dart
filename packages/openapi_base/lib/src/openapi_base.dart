@@ -138,6 +138,11 @@ abstract class OpenApiServerRouterBase {
   }
 
   @protected
+  num paramToNum(List<String> value) {
+    return double.parse(value.first);
+  }
+
+  @protected
   int paramToInt(List<String> value) {
     return int.parse(value.first);
   }

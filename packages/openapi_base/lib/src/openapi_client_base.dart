@@ -27,6 +27,9 @@ mixin OpenApiUrlEncodeMixin {
   List<String> encodeString(String? value) => value == null ? [] : [value];
 
   @protected
+  List<String> encodeNum(num value) => encodeObject(value);
+
+  @protected
   List<String> encodeInt(int value) => encodeObject(value);
 
   @protected
