@@ -118,7 +118,7 @@ See [GitHub project for details](https://github.com/hpoul/openapi_dart).
   }
 }
 
-class CodeWidget extends StatefulWidget {
+class CodeWidget extends StatelessWidget {
   const CodeWidget({
     Key? key,
     required this.controller,
@@ -133,33 +133,21 @@ class CodeWidget extends StatefulWidget {
   final String? labelText;
 
   @override
-  State<CodeWidget> createState() => _CodeWidgetState();
-}
-
-class _CodeWidgetState extends State<CodeWidget> {
-  final scrollController = ScrollController();
-
-  @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
         height: double.infinity,
         padding: const EdgeInsets.all(8.0),
-        child: Scrollbar(
-          thumbVisibility: true,
-          controller: scrollController,
-          child: TextField(
-            decoration: InputDecoration(
-              labelText: widget.labelText,
-              border: const OutlineInputBorder(),
-            ),
-            scrollController: scrollController,
-            enabled: true,
-            controller: widget.controller,
-            maxLines: null,
-            onChanged: widget.onChanged,
-            style: widget.style,
+        child: TextField(
+          decoration: InputDecoration(
+            labelText: labelText,
+            border: const OutlineInputBorder(),
           ),
+          enabled: true,
+          controller: controller,
+          maxLines: null,
+          onChanged: onChanged,
+          style: style,
         ),
       ),
     );
