@@ -1,3 +1,7 @@
+## 1.1.2+1
+
+* Fix optional enum conversion.
+
 ## 1.1.2
 
 * Support for enums outside of arrays

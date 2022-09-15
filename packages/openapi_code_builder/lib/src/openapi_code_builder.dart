@@ -554,20 +554,23 @@ class OpenApiLibraryGenerator {
                     throw StateError('Invalid schema type $schemaType');
                 }
               }
+
               Expression decodeParameter(Expression? expression) {
-                return refer(
-                    param.isRequired ? 'paramRequired' : 'paramOpt')([], {
-                  'name': literalString(param.name!),
-                  'value': expression!,
-                  'decode': Method((mb) => mb
-                        ..lambda = true
-                        ..requiredParameters
-                            .add(Parameter((pb) => pb..name = 'value'))
-                        ..body =
-                            decodeParameterFrom(param, refer('value')).code)
-                      .closure,
-                });
+                return refer(param.isRequired ? 'paramRequired' : 'paramOpt')(
+                    [],
+                    {
+                      'name': literalString(param.name!),
+                      'value': expression!,
+                      'decode': Method((mb) => mb
+                            ..lambda = true
+                            ..requiredParameters
+                                .add(Parameter((pb) => pb..name = 'value'))
+                            ..body =
+                                decodeParameterFrom(param, refer('value')).code)
+                          .closure,
+                    });
               }
+
               Expression encodeParameter(Expression expression) {
                 final schemaType = ArgumentError.checkNotNull(
                     param.schema?.type, 'param.schema.type');
@@ -577,7 +580,11 @@ class OpenApiLibraryGenerator {
                       assert(paramType == _apiUuid);
                       expression = expression.property('encodeToString')([]);
                     } else if (param.schema?.enumerated?.isNotEmpty == true) {
-                      expression = expression.property('name');
+                      if (param.isRequired) {
+                        expression = expression.property('name');
+                      } else {
+                        expression = expression.nullSafeProperty('name');
+                      }
                     } else if (paramType != _typeString) {
                       // TODO not sure if this makes sense, maybe we should just
                       //      use `toString`?
@@ -610,6 +617,7 @@ class OpenApiLibraryGenerator {
                     return expression;
                 }
               }
+
               final paramLocation = ArgumentError.checkNotNull(param.location);
               final paramName = ArgumentError.checkNotNull(param.name);
               routerParamsNamed[paramNameCamelCase] =
