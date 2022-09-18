@@ -1,4 +1,4 @@
-## 1.1.3
+## 1.1.3+1
 
 * support encoding of optional uuid parameters.
 * Added option to generate `StreamProvider` for integration with riverpod. (TODO: add documentation)

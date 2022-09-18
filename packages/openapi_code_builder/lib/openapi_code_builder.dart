@@ -9,5 +9,6 @@ Builder openapiCodeBuilder(BuilderOptions options) {
     orderDirectives: true,
     useNullSafetySyntax: true,
     generateProvider: options.config['generateProvider'] as bool? ?? false,
+    providerNamePrefix: options.config['providerNamePrefix'] as String? ?? '',
   );
 }
