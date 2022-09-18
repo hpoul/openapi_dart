@@ -22,6 +22,13 @@ abstract class OpenApiRequestSender {
       Uri baseUri, OpenApiClientRequest request);
 }
 
+/// Api sender implementing the actual HTTP protocol.
+/// See [HttpRequestSender].
+abstract class OpenApiGetRequestSender extends OpenApiRequestSender {
+  Stream<OpenApiClientResponse> sendGet(
+      Uri baseUri, OpenApiClientRequest request);
+}
+
 mixin OpenApiUrlEncodeMixin {
   @protected
   List<String> encodeString(String? value) => value == null ? [] : [value];
@@ -85,6 +92,36 @@ abstract class OpenApiClientBase
     final parsedResponse = await parser(response);
     parsedResponse.headers.addAll(response.headers);
     return parsedResponse;
+  }
+
+  Stream<T> sendGetRequest<T extends OpenApiResponse>(
+      OpenApiClientRequest request,
+      Map<String, ResponseParser<T>> parserMap) async* {
+    final sender = requestSender;
+    if (sender is! OpenApiGetRequestSender) {
+      throw StateError('Require a OpenApiGetRequestSender');
+    }
+    for (final security in request.securityRequirement) {
+      for (final scheme in security.schemes) {
+        final data = _securitySchemeData[scheme.scheme];
+        if (data == null) {
+          _logger.warning('Missing security scheme data for request.'
+              ' $scheme to ${request.path}');
+          continue;
+        }
+        scheme.scheme.applyToRequest(request, data);
+      }
+    }
+    await for (final response in sender.sendGet(baseUri, request)) {
+      final parser =
+          parserMap[response.status.toString()] ?? parserMap['default'];
+      if (parser == null) {
+        throw StateError('Unexpected response from server ${response.status}');
+      }
+      final parsedResponse = await parser(response);
+      parsedResponse.headers.addAll(response.headers);
+      yield parsedResponse;
+    }
   }
 }
 

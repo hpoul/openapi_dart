@@ -19,20 +19,26 @@ final _logger = Logger('openapi_code_builder');
 
 class OpenApiLibraryGenerator {
   OpenApiLibraryGenerator(
-    this.api,
-    this.baseName,
-    this.partFileName, {
+    this.api, {
+    required this.baseName,
+    required this.partFileName,
+    this.freezedPartFileName = '',
     this.useNullSafetySyntax = false,
     this.apiMethodsWithRequest = false,
+    this.generateProvider = false,
+    this.providerNamePrefix = '',
   });
 
   final APIDocument api;
 
   /// base name for this API. Should be in `PascalCase`
   final String baseName;
+  final String freezedPartFileName;
   final String partFileName;
   final bool useNullSafetySyntax;
   final bool apiMethodsWithRequest;
+  final bool generateProvider;
+  final String providerNamePrefix;
 
   final jsonSerializable =
       refer('JsonSerializable', 'package:json_annotation/json_annotation.dart');
@@ -100,6 +106,12 @@ class OpenApiLibraryGenerator {
   final _apiUuid = refer('ApiUuid', 'package:openapi_base/openapi_base.dart');
   final _apiUuidJsonConverter =
       refer('ApiUuidJsonConverter', 'package:openapi_base/openapi_base.dart');
+  final _freezed =
+      refer('freezed', 'package:freezed_annotation/freezed_annotation.dart');
+  final _provider =
+      refer('Provider', 'package:hooks_riverpod/hooks_riverpod.dart');
+  final _streamProvider =
+      refer('StreamProvider', 'package:hooks_riverpod/hooks_riverpod.dart');
   final _required = refer('required', 'package:meta/meta.dart');
   final _override = refer('override');
   final _void = refer('void');
@@ -119,6 +131,9 @@ class OpenApiLibraryGenerator {
 
   Library generate() {
     lb.body.add(Directive.part(partFileName));
+    if (freezedPartFileName.isNotEmpty) {
+      lb.body.add(Directive.part(freezedPartFileName));
+    }
 
     // create class for each schema..
     for (final schemaEntry in api.components!.schemas!.entries) {
@@ -139,6 +154,21 @@ class OpenApiLibraryGenerator {
       MapEntry('baseUri', refer('Uri')),
       MapEntry('requestSender', _openApiRequestSender),
     ];
+    final providerClosure = Method((mb) => mb
+      ..lambda = true
+      ..requiredParameters.add(Parameter((pb) => pb..name = 'ref'))
+      ..body = refer('StateError')([literalString('must be overwritten')])
+          .thrown
+          .code).closure;
+    final clientProviderName = '${baseName}ClientProvider'.camelCase;
+    if (generateProvider) {
+      lb.body.add(_provider
+          .addGenerics(refer(clientInterface.name!.pascalCase))
+          ([providerClosure])
+          .assignFinal(clientProviderName)
+          .statement);
+    }
+
     final urlResolveClass = ClassBuilder()
       ..name = '${baseName}UrlResolve'
       ..mixins.add(_openApiUrlEncodeMixin);
@@ -442,6 +472,14 @@ class OpenApiLibraryGenerator {
 
           lb.body.add(responseClass.build());
 
+          final clientDataClass = ClassBuilder()
+            ..name = operationName.pascalCase
+            ..mixins.add(refer('_\$${operationName.pascalCase}'))
+            ..annotations.add(_freezed);
+          final clientDataConstructor = ConstructorBuilder()
+            ..factory = true
+            ..redirect = refer('_${operationName.pascalCase}');
+
           final clientMethod = MethodBuilder()
             ..name = operationName
             ..addDartDoc(operation.value!.summary)
@@ -502,6 +540,13 @@ class OpenApiLibraryGenerator {
                 ..named = true);
               mb.optionalParameters.add(p);
               clientMethod.optionalParameters.add(p);
+              clientDataConstructor.optionalParameters.add(p.rebuild((pb) => pb
+                  // ..toThis = true
+                  ));
+              // clientDataClass.fields.add(Field((fb) => fb
+              //   ..name = paramNameCamelCase
+              //   ..modifier = FieldModifier.final$
+              //   ..type = paramType.asNullable(!param.isRequired)));
               Expression decodeParameterFrom(
                   APIParameter param, Expression expression) {
                 final schemaType = ArgumentError.checkNotNull(
@@ -578,7 +623,12 @@ class OpenApiLibraryGenerator {
                   case APIType.string:
                     if (param.schema!.format == 'uuid') {
                       assert(paramType == _apiUuid);
-                      expression = expression.property('encodeToString')([]);
+                      if (param.isRequired) {
+                        expression = expression.property('encodeToString')([]);
+                      } else {
+                        expression =
+                            expression.nullSafeProperty('encodeToString')([]);
+                      }
                     } else if (param.schema?.enumerated?.isNotEmpty == true) {
                       if (param.isRequired) {
                         expression = expression.property('name');
@@ -694,6 +744,66 @@ class OpenApiLibraryGenerator {
                 ..annotations.clear()
                 ..body = null)
               .build());
+          if (generateProvider && operation.key.toLowerCase() == 'get') {
+            final params = clientDataConstructor.build().optionalParameters;
+            clientDataClass.constructors.add(clientDataConstructor.build());
+            // clientDataClass.build().fields.
+            if (params.length > 1) {
+              lb.body.add(clientDataClass.build());
+            }
+
+// final baseBaseIdGet = _i1.StreamProvider.family<BaseBaseIdGetResponse, BaseBaseIdGet>((ref, arg) {
+//   final client = ref.watch(mywarmApiClientProvider);
+//   return Stream.fromFuture(client.baseBaseIdGet(baseId: arg.baseId));
+// });
+            final m = Method((mb) {
+              mb.requiredParameters.add(Parameter((pb) => pb..name = 'ref'));
+              if (params.isNotEmpty) {
+                mb.requiredParameters.add(Parameter((pb) => pb..name = 'arg'));
+              }
+              mb.body = Block.of([
+                refer('ref')
+                    .property('watch')([refer(clientProviderName)])
+                    .assignFinal('client')
+                    .statement,
+                refer('Stream')
+                    .property('fromFuture')(
+                      [
+                        refer('client').property(operationName)(
+                            [],
+                            params.isEmpty
+                                ? {}
+                                : params.length == 1
+                                    ? {
+                                        params.first.name: refer('arg'),
+                                      }
+                                    : Map.fromEntries(params.map((f) =>
+                                        MapEntry(f.name,
+                                            refer('arg').property(f.name))))),
+                      ],
+                    )
+                    .returned
+                    .statement,
+              ]);
+            });
+            final providerName =
+                '${providerNamePrefix.isEmpty ? operationName.camelCase : '$providerNamePrefix${operationName.pascalCase}'}Provider';
+            final Expression createProvider;
+            if (params.isEmpty) {
+              createProvider = _streamProvider(
+                  [m.closure], {}, [refer(responseClass.name!)]);
+            } else {
+              createProvider = _streamProvider.property('family').call([
+                m.closure
+              ], {}, [
+                refer(responseClass.name!),
+                params.length > 1
+                    ? refer(clientDataClass.name!)
+                    : params.first.type!
+              ]);
+            }
+            lb.body.add(createProvider.assignFinal(providerName).statement);
+          }
         }
       }
     });
@@ -1291,11 +1401,17 @@ class OpenApiCodeBuilderUtils {
 }
 
 class OpenApiCodeBuilder extends Builder {
-  OpenApiCodeBuilder(
-      {this.orderDirectives = false, required this.useNullSafetySyntax});
+  OpenApiCodeBuilder({
+    this.orderDirectives = false,
+    required this.useNullSafetySyntax,
+    this.generateProvider = false,
+    this.providerNamePrefix = '',
+  });
 
+  final bool generateProvider;
   final bool orderDirectives;
   final bool useNullSafetySyntax;
+  final String providerNamePrefix;
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
@@ -1316,9 +1432,13 @@ class OpenApiCodeBuilder extends Builder {
 
     final l = OpenApiLibraryGenerator(
       api,
-      baseName,
-      outputId.changeExtension('.g.dart').pathSegments.last,
+      baseName: baseName,
+      partFileName: outputId.changeExtension('.g.dart').pathSegments.last,
+      freezedPartFileName:
+          outputId.changeExtension('.freezed.dart').pathSegments.last,
       useNullSafetySyntax: useNullSafetySyntax,
+      generateProvider: generateProvider,
+      providerNamePrefix: providerNamePrefix,
     ).generate();
 
     final libraryOutput = OpenApiCodeBuilderUtils.formatLibrary(

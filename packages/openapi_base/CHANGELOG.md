@@ -1,3 +1,7 @@
+## 1.0.3+1
+
+* Support Stream clients.
+
 ## 1.0.3
 
 * Support for `number` type.

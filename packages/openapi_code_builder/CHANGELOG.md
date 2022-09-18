@@ -1,3 +1,8 @@
+## 1.1.3
+
+* support encoding of optional uuid parameters.
+* Added option to generate `StreamProvider` for integration with riverpod. (TODO: add documentation)
+
 ## 1.1.2+1
 
 * Fix optional enum conversion.

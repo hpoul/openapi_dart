@@ -17,8 +17,8 @@ Future<void> main(List<String> args) async {
 
   final library = OpenApiLibraryGenerator(
     api,
-    baseName,
-    '${path.basenameWithoutExtension(fileName)}.g.dart',
+    baseName: baseName,
+    partFileName: '${path.basenameWithoutExtension(fileName)}.g.dart',
     useNullSafetySyntax: true,
   ).generate();
   final libraryOutput = OpenApiCodeBuilderUtils.formatLibrary(
