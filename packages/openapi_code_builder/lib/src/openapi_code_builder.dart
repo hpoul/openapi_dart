@@ -1049,7 +1049,12 @@ class OpenApiLibraryGenerator {
           final fieldType = _toDartType('$className${key.pascalCase}', e!);
           fb
             ..addDartDoc(e.description)
-            ..annotations.add(jsonKey([], {'name': literalString(key)}))
+            ..annotations.add(jsonKey([], {
+              'name': literalString(key),
+              if (!(e.isNullable ?? false)) ...{
+                'includeIfNull': literalFalse,
+              }
+            }))
             ..annotations.addAll(override.contains(key) ? [_override] : [])
             ..name = key.camelCase
             ..modifier = FieldModifier.final$

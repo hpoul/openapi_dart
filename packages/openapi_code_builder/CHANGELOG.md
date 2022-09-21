@@ -1,3 +1,7 @@
+## 1.1.3+2
+
+* Don't include optional non-nullable json properties when null.
+
 ## 1.1.3+1
 
 * support encoding of optional uuid parameters.
