@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:openapi_base/src/openapi_base.dart';
 import 'package:openapi_base/src/openapi_content_type.dart';
+import 'package:openapi_base/src/openapi_exception.dart';
 import 'package:uri/uri.dart';
 
 final _logger = Logger('openapi_client_base');
@@ -87,7 +88,11 @@ abstract class OpenApiClientBase
     final parser =
         parserMap[response.status.toString()] ?? parserMap['default'];
     if (parser == null) {
-      throw StateError('Unexpected response from server ${response.status}');
+      throw UnexpectedResponseException(
+        response: response,
+        request: request,
+        status: response.status,
+      );
     }
     final parsedResponse = await parser(response);
     parsedResponse.headers.addAll(response.headers);
@@ -116,7 +121,11 @@ abstract class OpenApiClientBase
       final parser =
           parserMap[response.status.toString()] ?? parserMap['default'];
       if (parser == null) {
-        throw StateError('Unexpected response from server ${response.status}');
+        throw UnexpectedResponseException(
+          response: response,
+          request: request,
+          status: response.status,
+        );
       }
       final parsedResponse = await parser(response);
       parsedResponse.headers.addAll(response.headers);

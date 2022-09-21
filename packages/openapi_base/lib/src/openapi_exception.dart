@@ -1,3 +1,4 @@
+import 'package:openapi_base/openapi_base.dart';
 import 'package:openapi_base/src/http_headers.dart';
 
 /// Base class for exceptions which can be thrown by endpoint implementations
@@ -14,6 +15,23 @@ abstract class OpenApiResponseException implements Exception {
   String toString() {
     return '$runtimeType{status=$status,message=$message}';
   }
+}
+
+class UnexpectedResponseException extends OpenApiResponseException {
+  UnexpectedResponseException({
+    required this.status,
+    String? message,
+    required this.request,
+    required this.response,
+  }) : message = message ??
+            'Unexpected response from server for ${request.operation} ${request.path} (${response.status})';
+
+  @override
+  final int status;
+  @override
+  final String message;
+  final OpenApiClientResponse response;
+  final OpenApiClientRequest request;
 }
 
 /// Server exception which can be thrown by implementations of

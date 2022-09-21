@@ -1,3 +1,7 @@
+## 1.0.3+2
+
+* Improve "unexpected response" client exception.
+
 ## 1.0.3+1
 
 * Support Stream clients.
