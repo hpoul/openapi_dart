@@ -834,10 +834,13 @@ class OpenApiLibraryGenerator {
                 '${providerNamePrefix.isEmpty ? operationName.camelCase : '$providerNamePrefix${operationName.pascalCase}'}Provider';
             final Expression createProvider;
             if (params.isEmpty) {
-              createProvider = _streamProvider(
+              createProvider = _streamProvider.property('autoDispose')(
                   [m.closure], {}, [refer(responseClass.name!)]);
             } else {
-              createProvider = _streamProvider.property('family').call([
+              createProvider = _streamProvider
+                  .property('autoDispose')
+                  .property('family')
+                  .call([
                 m.closure
               ], {}, [
                 refer(responseClass.name!),

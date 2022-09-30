@@ -1,3 +1,7 @@
+## 1.1.4+1
+
+* Client: generate riverpod `.autoDispose` providers.
+
 ## 1.1.4
 
 * Client Only: Add support for array response types.
