@@ -1,3 +1,7 @@
+## 1.1.4
+
+* Client Only: Add support for array response types.
+
 ## 1.1.3+2
 
 * Don't include optional non-nullable json properties when null.

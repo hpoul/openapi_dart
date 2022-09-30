@@ -131,8 +131,17 @@ class OpenApiLibraryGenerator {
 
   Library generate() {
     lb.body.add(Directive.part(partFileName));
-    if (freezedPartFileName.isNotEmpty) {
-      lb.body.add(Directive.part(freezedPartFileName));
+    var myRequireFreezed = false;
+    void requireFreezed() {
+      if (myRequireFreezed) {
+        return;
+      }
+      if (freezedPartFileName.isEmpty) {
+        throw StateError(
+            'freeze is required, but no freezedPartFileName was given.');
+      }
+      lb.body.insert(1, Directive.part(freezedPartFileName));
+      myRequireFreezed = true;
     }
 
     // create class for each schema..
@@ -294,8 +303,54 @@ class OpenApiLibraryGenerator {
                 responseContentTypeAssignment = _openApiContentType
                     .newInstanceNamed('parse',
                         [literalString(responseContentType.toString())]).code;
-                bodyType = _schemaReference(
-                    '${responseClass.name}Body$codeName', content.schema!);
+                final responseSchema = content.schema!;
+                if (responseSchema.type == APIType.array) {
+                  final bodyItemType = _schemaReference(
+                      '${responseClass.name}Body$codeName',
+                      responseSchema.items!);
+                  bodyType = _referType('List', generics: [bodyItemType]);
+                  cb.requiredParameters.add(Parameter((pb) => pb
+                    ..name = 'body'
+                    ..type = bodyType
+                    ..toThis = true));
+                  // TODO add server side support for arrays.
+                  // cb.initializers.add(refer('bodyJson')
+                  //     .assign(refer('body').property('toJson')([]))
+                  //     .code);
+                  cb.initializers
+                      .add(refer('bodyJson').assign(literalMap({})).code);
+                  clientResponseParseParams.add(refer('response')
+                      .property('responseBodyJsonDynamic')([])
+                      .awaited
+                      .asA(_referType('List', generics: [refer('dynamic')]))
+                      .property('map')([
+                        Method((mb) {
+                          mb.requiredParameters
+                              .add(Parameter((pb) => pb..name = 'item'));
+                          mb.lambda = true;
+                          mb.body = bodyItemType.newInstanceNamed('fromJson', [
+                            refer('item').asA(_referType('Map',
+                                generics: [refer('String'), refer('dynamic')]))
+                          ]).code;
+                        }).closure
+                      ])
+                      .property('toList')([]));
+                } else {
+                  bodyType = _schemaReference(
+                      '${responseClass.name}Body$codeName', content.schema!);
+                  cb.requiredParameters.add(Parameter((pb) => pb
+                    ..name = 'body'
+                    ..type = bodyType
+                    ..toThis = true));
+                  cb.initializers.add(refer('bodyJson')
+                      .assign(refer('body').property('toJson')([]))
+                      .code);
+
+                  clientResponseParseParams.add(bodyType.newInstanceNamed(
+                      'fromJson', [
+                    refer('response').property('responseBodyJson')([]).awaited
+                  ]));
+                }
                 responseCodeClass.fields.add(Field((fb) => fb
                   ..name = 'body'
                   ..type = bodyType
@@ -306,19 +361,7 @@ class OpenApiLibraryGenerator {
                   ..type = _referType('Map',
                       generics: [_typeString, refer('dynamic')])
                   ..modifier = FieldModifier.final$));
-                cb.requiredParameters.add(Parameter((pb) => pb
-                  ..name = 'body'
-                  ..type = bodyType
-                  ..toThis = true));
-                cb.initializers.add(refer('bodyJson')
-                    .assign(refer('body').property('toJson')([]))
-                    .code);
                 responseCodeClass.implements.add(_openApiResponseBodyJson);
-
-                clientResponseParseParams.add(bodyType.newInstanceNamed(
-                    'fromJson', [
-                  refer('response').property('responseBodyJson')([]).awaited
-                ]));
               } else {
                 if (response.value!.content?.length == 1) {
                   final responseContent =
@@ -750,6 +793,7 @@ class OpenApiLibraryGenerator {
             // clientDataClass.build().fields.
             if (params.length > 1) {
               lb.body.add(clientDataClass.build());
+              requireFreezed();
             }
 
 // final baseBaseIdGet = _i1.StreamProvider.family<BaseBaseIdGetResponse, BaseBaseIdGet>((ref, arg) {

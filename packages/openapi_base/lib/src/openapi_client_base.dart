@@ -248,6 +248,8 @@ abstract class OpenApiClientResponse {
 
   Future<Map<String, dynamic>> responseBodyJson();
 
+  Future<dynamic> responseBodyJsonDynamic();
+
   Future<String> responseBodyString();
 
   Future<Uint8List> responseBodyBytes();
@@ -324,6 +326,11 @@ class HttpClientResponse extends OpenApiClientResponse {
   @override
   Future<Map<String, dynamic>> responseBodyJson() async {
     return json.decode(response.body) as Map<String, dynamic>;
+  }
+
+  @override
+  Future<dynamic> responseBodyJsonDynamic() async {
+    return json.decode(response.body);
   }
 
   @override
