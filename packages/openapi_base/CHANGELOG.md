@@ -1,3 +1,7 @@
+## 1.1.0+1
+
+* Fix json conversion.
+
 ## 1.1.0
 
 * Require json responses to return dynamic, to support array response objects.

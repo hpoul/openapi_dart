@@ -1160,6 +1160,7 @@ class OpenApiLibraryGenerator {
       }
       cb
         ..annotations.add(jsonSerializable([]))
+        ..annotations.add(_apiUuidJsonConverter([]))
         ..name = className
         ..implements.add(_openApiContent)
         ..implements.addAll(implements)

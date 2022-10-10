@@ -1,4 +1,4 @@
-## 1.1.4+3
+## 1.1.4+4
 
 * Add option to ignore security schemes.
 

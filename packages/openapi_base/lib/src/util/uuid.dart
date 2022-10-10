@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart' as uuid;
 import 'package:uuid/uuid_util.dart';
 
+@ApiUuidJsonConverter()
 class ApiUuid {
   ApiUuid._(this._uuid) : assert(_isUuid(_uuid));
   ApiUuid.secure() : this._(_secureUuidGenerator.v4());
