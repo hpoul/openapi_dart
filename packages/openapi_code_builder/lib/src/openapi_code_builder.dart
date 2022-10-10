@@ -1367,7 +1367,9 @@ class OpenApiLibraryGenerator {
         return refer(securitySchemesClass.name!).property(name.camelCase);
       case APISecuritySchemeType.oauth2:
       case APISecuritySchemeType.openID:
+      case APISecuritySchemeType.openIdConnect:
         throw StateError('Unsupported security scheme ${value.type}');
+        break;
     }
     // throw StateError(
     //     'Should not happen - unsupported security scheme ${value.type}');
