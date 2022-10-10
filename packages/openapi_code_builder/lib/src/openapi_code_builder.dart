@@ -1500,6 +1500,7 @@ class OpenApiCodeBuilder extends Builder {
       useNullSafetySyntax: useNullSafetySyntax,
       generateProvider: generateProvider,
       providerNamePrefix: providerNamePrefix,
+      ignoreSecuritySchemes: ignoreSecuritySchemes,
     ).generate();
 
     final libraryOutput = OpenApiCodeBuilderUtils.formatLibrary(
