@@ -20,6 +20,7 @@ Future<void> main(List<String> args) async {
     baseName: baseName,
     partFileName: '${path.basenameWithoutExtension(fileName)}.g.dart',
     useNullSafetySyntax: true,
+    ignoreSecuritySchemes: true,
   ).generate();
   final libraryOutput = OpenApiCodeBuilderUtils.formatLibrary(
     library,

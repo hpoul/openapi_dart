@@ -1,3 +1,7 @@
+## 1.1.4+2
+
+* Add option to ignore security schemes.
+
 ## 1.1.4+1
 
 * Client: generate riverpod `.autoDispose` providers.

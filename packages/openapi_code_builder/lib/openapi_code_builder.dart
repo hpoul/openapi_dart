@@ -10,5 +10,7 @@ Builder openapiCodeBuilder(BuilderOptions options) {
     useNullSafetySyntax: true,
     generateProvider: options.config['generateProvider'] as bool? ?? false,
     providerNamePrefix: options.config['providerNamePrefix'] as String? ?? '',
+    ignoreSecuritySchemes:
+        options.config['ignoreSecuritySchemes'] as bool? ?? false,
   );
 }

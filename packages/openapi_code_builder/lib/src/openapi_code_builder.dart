@@ -27,6 +27,7 @@ class OpenApiLibraryGenerator {
     this.apiMethodsWithRequest = false,
     this.generateProvider = false,
     this.providerNamePrefix = '',
+    this.ignoreSecuritySchemes = false,
   });
 
   final APIDocument api;
@@ -39,6 +40,7 @@ class OpenApiLibraryGenerator {
   final bool apiMethodsWithRequest;
   final bool generateProvider;
   final String providerNamePrefix;
+  final bool ignoreSecuritySchemes;
 
   final jsonSerializable =
       refer('JsonSerializable', 'package:json_annotation/json_annotation.dart');
@@ -148,7 +150,7 @@ class OpenApiLibraryGenerator {
     for (final schemaEntry in api.components!.schemas!.entries) {
       _schemaReference(schemaEntry.key, schemaEntry.value!);
     }
-    if (api.components!.securitySchemes != null) {
+    if (api.components!.securitySchemes != null && !ignoreSecuritySchemes) {
       for (final securityScheme in api.components!.securitySchemes!.entries) {
         _securitySchemeReference(securityScheme.key, securityScheme.value!);
       }
@@ -1011,6 +1013,9 @@ class OpenApiLibraryGenerator {
 
   LiteralListExpression _operationSecurityRequirements(
       List<APISecurityRequirement?>? security) {
+    if (ignoreSecuritySchemes) {
+      return literalList([]);
+    }
     return literalList(
       security?.map(
             (security) => _securityRequirement(
@@ -1460,12 +1465,14 @@ class OpenApiCodeBuilder extends Builder {
     required this.useNullSafetySyntax,
     this.generateProvider = false,
     this.providerNamePrefix = '',
+    this.ignoreSecuritySchemes = false,
   });
 
   final bool generateProvider;
   final bool orderDirectives;
   final bool useNullSafetySyntax;
   final String providerNamePrefix;
+  final bool ignoreSecuritySchemes;
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
