@@ -40,8 +40,16 @@ class OpenApiShelfServer extends OpenApiServerBase {
   Future<StoppableProcess> startServer({
     String address = 'localhost',
     int port = 8080,
+    SecurityContext? securityContext,
+    int? backlog,
+    bool shared = false,
+    String? poweredByHeader = 'Dart with package:shelf',
   }) async {
-    final server = await io.serve(preparePipeline(), address, port);
+    final server = await io.serve(preparePipeline(), address, port,
+        securityContext: securityContext,
+        backlog: backlog,
+        shared: shared,
+        poweredByHeader: poweredByHeader);
     _logger
         .info('Serving at http${''}://${server.address.host}:${server.port}');
     return StoppableProcess((reason) async {
