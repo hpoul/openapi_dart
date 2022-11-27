@@ -183,8 +183,7 @@ Operation operationFromString(String operation) =>
     (() => throw StateError('Invalid operation $operation'))();
 
 class RouteConfig {
-  RouteConfig(this.path, this.operation, this.handler,
-      {required this.security})
+  RouteConfig(this.path, this.operation, this.handler, {required this.security})
       : uriParser = UriParser(UriTemplate(path));
 
   final String path;

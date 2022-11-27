@@ -1,3 +1,8 @@
+## 1.1.0+2
+
+* Fix optional query parameter #5
+* Extend startServer method to accept all io.serve parameter #6 (thanks @Bonnyfication)
+
 ## 1.1.0+1
 
 * Fix json conversion.

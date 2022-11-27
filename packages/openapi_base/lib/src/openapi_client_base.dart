@@ -200,16 +200,16 @@ class OpenApiClientRequest {
 
   void setHeader(String name, String value) => paramHeader[name] = [value];
 
-  void addHeaderParameter(String name, Iterable<String> value) =>
+  void addHeaderParameter(String name, Iterable<String>? value) =>
       _addParam(paramHeader, name, value);
 
-  void addCookieParameter(String name, Iterable<String> value) =>
+  void addCookieParameter(String name, Iterable<String>? value) =>
       _addParam(paramCookie, name, value);
 
   void addPathParameter(String name, Iterable<String> value) =>
       _addParam(paramPath, name, value);
 
-  void addQueryParameter(String name, Iterable<String> value) =>
+  void addQueryParameter(String name, Iterable<String>? value) =>
       _addParam(paramQuery, name, value);
 
   void _addParam(Map<String, List<String>> paramMap, String name,
