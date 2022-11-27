@@ -3,25 +3,25 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "main.dart.js": "b6ac6ac518c16f334813972a5e967077",
-"flutter.js": "f85e6fb278b0fd20c349186fb46ae36d",
-"assets/fonts/MaterialIcons-Regular.otf": "95db9098c58fd6db106f1116bae85a0b",
-"assets/assets/petstore.schema.yaml": "18781beaf496742a13d9bfefd7579084",
-"assets/FontManifest.json": "7b2a36307916a9721811788013e65289",
-"assets/NOTICES": "a07c995659c7d98ca147062f8bbc36e2",
-"assets/shaders/ink_sparkle.frag": "83c076d55fdbf5e6f73f29c79926992c",
-"assets/AssetManifest.json": "80b3330d70c4151b78f0be981422f4f6",
-"manifest.json": "7c26ffd0c8cb6fd798dffd687f442760",
-"canvaskit/canvaskit.js": "2bc454a691c631b07a9307ac4ca47797",
-"canvaskit/canvaskit.wasm": "bf50631470eb967688cca13ee181af62",
-"canvaskit/profiling/canvaskit.js": "38164e5a72bdad0faa4ce740c9b8e564",
-"canvaskit/profiling/canvaskit.wasm": "95a45378b69e77af5ed2bc72b2209b94",
-"favicon.png": "5dcef449791fa27946b3d35ad8803796",
+  "manifest.json": "7c26ffd0c8cb6fd798dffd687f442760",
+"version.json": "48073d49ffd885086638bb816cb1678c",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
-"version.json": "48073d49ffd885086638bb816cb1678c",
-"index.html": "689e2bef0bfbc9a4e8a9e92cf5c481d6",
-"/": "689e2bef0bfbc9a4e8a9e92cf5c481d6"
+"canvaskit/profiling/canvaskit.js": "38164e5a72bdad0faa4ce740c9b8e564",
+"canvaskit/profiling/canvaskit.wasm": "95a45378b69e77af5ed2bc72b2209b94",
+"canvaskit/canvaskit.js": "2bc454a691c631b07a9307ac4ca47797",
+"canvaskit/canvaskit.wasm": "bf50631470eb967688cca13ee181af62",
+"favicon.png": "5dcef449791fa27946b3d35ad8803796",
+"flutter.js": "f85e6fb278b0fd20c349186fb46ae36d",
+"index.html": "49b080c584685d2d2c7b0133e3f62376",
+"/": "49b080c584685d2d2c7b0133e3f62376",
+"main.dart.js": "b6ac6ac518c16f334813972a5e967077",
+"assets/NOTICES": "a07c995659c7d98ca147062f8bbc36e2",
+"assets/shaders/ink_sparkle.frag": "83c076d55fdbf5e6f73f29c79926992c",
+"assets/FontManifest.json": "7b2a36307916a9721811788013e65289",
+"assets/AssetManifest.json": "80b3330d70c4151b78f0be981422f4f6",
+"assets/fonts/MaterialIcons-Regular.otf": "95db9098c58fd6db106f1116bae85a0b",
+"assets/assets/petstore.schema.yaml": "18781beaf496742a13d9bfefd7579084"
 };
 
 // The application shell files that are downloaded before a service worker can
