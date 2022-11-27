@@ -106,8 +106,11 @@ See [GitHub project for details](https://github.com/hpoul/openapi_dart).
   Future<void> _updateInput(String value) async {
     try {
       final api = OpenApiCodeBuilderUtils.loadApiFromYaml(value);
-      final generator =
-          OpenApiLibraryGenerator(api, 'ExampleApi', 'example.dart');
+      final generator = OpenApiLibraryGenerator(
+        api,
+        baseName: 'ExampleApi',
+        partFileName: 'example.dart',
+      );
       final out = OpenApiCodeBuilderUtils.formatLibrary(generator.generate(),
           useNullSafetySyntax: true);
       _output.text = out;
