@@ -1,3 +1,7 @@
+## 1.1.0+3
+
+* string binary support
+
 ## 1.1.0+2
 
 * Fix optional query parameter #5

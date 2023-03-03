@@ -1,3 +1,8 @@
+## 1.1.4+5
+
+* string binary support
+* code_builder analyzer fix
+
 ## 1.1.4+4
 
 * Add option to ignore security schemes.
