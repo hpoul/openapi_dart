@@ -1,5 +1,4 @@
 import 'package:openapi_base/openapi_base.dart';
-import 'package:openapi_base/src/http_headers.dart';
 
 /// Base class for exceptions which can be thrown by endpoint implementations
 /// with special handling in the server implementations
@@ -36,8 +35,7 @@ class UnexpectedResponseException extends OpenApiResponseException {
 
 /// Server exception which can be thrown by implementations of
 /// the server endpoint to indicate a 401 response status.
-class UnauthorizedException extends OpenApiResponseException
-    implements Exception {
+class UnauthorizedException extends OpenApiResponseException implements Exception {
   UnauthorizedException(this.message);
 
   @override
