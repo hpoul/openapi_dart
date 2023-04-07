@@ -26,11 +26,12 @@ packages:
     source: hosted
     version: "1.1.1"
   codable_forked:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../../deps/dart-codable"
-      relative: true
-    source: path
+      name: codable_forked
+      sha256: "902e6f90fa4d97be2d02931d0a6e555e83252fd2f8b632e26a6385c50964e473"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.0+3"
   collection:
     dependency: "direct main"
@@ -131,9 +132,10 @@ packages:
   open_api_forked:
     dependency: "direct main"
     description:
-      path: "../../deps/open-api-dart"
-      relative: true
-    source: path
+      name: open_api_forked
+      sha256: e815a0adbb290b6b460c48808de2b393f95522b1016cdb5d54cc8098cc8d5d2f
+      url: "https://pub.dev"
+    source: hosted
     version: "3.0.0+6"
   path:
     dependency: transitive
