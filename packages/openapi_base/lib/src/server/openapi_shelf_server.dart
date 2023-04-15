@@ -87,7 +87,7 @@ class OpenApiShelfServer extends OpenApiServerBase {
 
   Future<shelf.Response> _handleRequest(shelf.Request request) async {
     final operation = operationFromString(request.method);
-    _logger.fine('handling request. ${request.method} ${request.url}');
+    _logger.finest('handling request. ${request.method} ${request.url}');
     final url = request.url.replace(path: '/${request.url.path}');
     for (final config in router.configs) {
       if (config.operation != operation) {
