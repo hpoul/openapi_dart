@@ -20,13 +20,15 @@ Future<void> main() async {
 
 class TestApiImpl extends TestApi {
   @override
-  Future<HelloNamePutResponse> helloNamePut(HelloRequest body, {required String name}) async {
+  Future<HelloNamePutResponse> helloNamePut(HelloRequest body,
+      {required String name}) async {
     return HelloNamePutResponse.response200(
         HelloResponse(message: 'Hello ${body.salutation} $name'));
   }
 
   @override
-  Future<HelloNameGetResponse> helloNameGet({required String name, String? salutation}) async {
+  Future<HelloNameGetResponse> helloNameGet(
+      {required String name, String? salutation}) async {
     _logger.info('Saying hi to $name (salutation: $salutation)');
     return HelloNameGetResponse.response200(
         HelloResponse(message: 'Hello ${salutation ?? 'Dear'} $name'));
@@ -39,7 +41,8 @@ class TestApiImpl extends TestApi {
   }
 
   @override
-  Future<HelloNameHtmlGetResponse> helloNameHtmlGet({required String name}) async {
+  Future<HelloNameHtmlGetResponse> helloNameHtmlGet(
+      {required String name}) async {
     // language=html
     return HelloNameHtmlGetResponse.response200('''<!DOCTYPE html>
 <title>Hello World</title>

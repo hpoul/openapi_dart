@@ -28,8 +28,9 @@ class OpenApiShelfServer extends OpenApiServerBase {
 
   @protected
   shelf.Handler preparePipeline() {
-    final pipeline =
-        const shelf.Pipeline().addMiddleware(cookieParser()).addMiddleware(_handleExceptions());
+    final pipeline = const shelf.Pipeline()
+        .addMiddleware(cookieParser())
+        .addMiddleware(_handleExceptions());
 
     return customizePipeline(pipeline).addHandler(_handleRequest);
   }
@@ -48,7 +49,8 @@ class OpenApiShelfServer extends OpenApiServerBase {
         backlog: backlog,
         shared: shared,
         poweredByHeader: poweredByHeader);
-    _logger.info('Serving at http${''}://${server.address.host}:${server.port}');
+    _logger
+        .info('Serving at http${''}://${server.address.host}:${server.port}');
     return StoppableProcess((reason) async {
       _logger.info('Stopping server... ($reason)');
       await server.close();
@@ -62,7 +64,8 @@ class OpenApiShelfServer extends OpenApiServerBase {
         try {
           return await innerHandler(request);
         } on OpenApiResponseException catch (e, stackTrace) {
-          _logger.fine('response exception during request handling', e, stackTrace);
+          _logger.fine(
+              'response exception during request handling', e, stackTrace);
           return shelf.Response(e.status, body: e.message);
         } catch (e, stackTrace) {
           _logger.warning('Error while handling request.', e, stackTrace);
@@ -138,8 +141,8 @@ class OpenApiShelfServer extends OpenApiServerBase {
 
 class ShelfRequest extends OpenApiRequest {
   ShelfRequest(this._request, this._match)
-      : _matchParametersDecoded =
-            _match.parameters.map((key, value) => MapEntry(key, Uri.decodeComponent(value!)));
+      : _matchParametersDecoded = _match.parameters
+            .map((key, value) => MapEntry(key, Uri.decodeComponent(value!)));
 
   final shelf.Request _request;
   // ignore: unused_field
@@ -178,7 +181,8 @@ class ShelfRequest extends OpenApiRequest {
 
   @override
   Future<Map<String, dynamic>> readJsonBody() async {
-    return (json.decode(await _request.readAsString()) as Map<String, dynamic>?)!;
+    return (json.decode(await _request.readAsString())
+        as Map<String, dynamic>?)!;
   }
 
   @override
@@ -192,5 +196,6 @@ class ShelfRequest extends OpenApiRequest {
   Future<String> readBodyString() async => await _request.readAsString();
 
   @override
-  Future<Uint8List> readBodyBytes() async => await readByteStream(_request.read());
+  Future<Uint8List> readBodyBytes() async =>
+      await readByteStream(_request.read());
 }

@@ -20,7 +20,8 @@ abstract class OpenApiRequest {
   Future<Map<String, List<String>>> readUrlEncodedBody();
 
   Future<Map<String, String>> readUrlEncodedBodyFlat() async =>
-      (await readUrlEncodedBody()).map((key, value) => MapEntry(key, value.first));
+      (await readUrlEncodedBody())
+          .map((key, value) => MapEntry(key, value.first));
 
   Future<String> readBodyString();
 
@@ -63,12 +64,13 @@ abstract class ApiEndpoint {}
 typedef RouteHandler = Future<OpenApiResponse> Function(OpenApiRequest request);
 
 //typedef ServiceProvider<T extends Service> = FutureOr<U> Function<U>(Future<U> callback(T));
-typedef ApiEndpointCallback<ENDPOINT extends ApiEndpoint, RET> = Future<RET> Function(
-    ENDPOINT impl);
+typedef ApiEndpointCallback<ENDPOINT extends ApiEndpoint, RET> = Future<RET>
+    Function(ENDPOINT impl);
 
 abstract class ApiEndpointProvider<ENDPOINT extends ApiEndpoint> {
   ApiEndpointProvider();
-  factory ApiEndpointProvider.static(ENDPOINT endpoint) => StaticEndpointProvider(endpoint);
+  factory ApiEndpointProvider.static(ENDPOINT endpoint) =>
+      StaticEndpointProvider(endpoint);
 
   Future<RET> invoke<RET>(
     OpenApiRequest request,
@@ -76,14 +78,15 @@ abstract class ApiEndpointProvider<ENDPOINT extends ApiEndpoint> {
   );
 }
 
-class StaticEndpointProvider<ENDPOINT extends ApiEndpoint> extends ApiEndpointProvider<ENDPOINT> {
+class StaticEndpointProvider<ENDPOINT extends ApiEndpoint>
+    extends ApiEndpointProvider<ENDPOINT> {
   StaticEndpointProvider(this.endpoint);
 
   final ENDPOINT endpoint;
 
   @override
-  Future<RET> invoke<RET>(
-          OpenApiRequest request, ApiEndpointCallback<ENDPOINT, RET> callback) async =>
+  Future<RET> invoke<RET>(OpenApiRequest request,
+          ApiEndpointCallback<ENDPOINT, RET> callback) async =>
       callback(endpoint);
 }
 
@@ -287,11 +290,13 @@ class SecuritySchemeApiKey extends SecurityScheme<SecuritySchemeApiKeyData> {
   });
 
   final String name;
-  final void Function(OpenApiClientRequest request, String value) writeToRequest;
+  final void Function(OpenApiClientRequest request, String value)
+      writeToRequest;
   final List<String> Function(OpenApiRequest request) readFromRequest;
 
   @override
-  void applyToRequest(OpenApiClientRequest request, SecuritySchemeApiKeyData data) =>
+  void applyToRequest(
+          OpenApiClientRequest request, SecuritySchemeApiKeyData data) =>
       writeToRequest(request, data.apiKey);
 
   @override

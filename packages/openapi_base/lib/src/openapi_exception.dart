@@ -35,7 +35,8 @@ class UnexpectedResponseException extends OpenApiResponseException {
 
 /// Server exception which can be thrown by implementations of
 /// the server endpoint to indicate a 401 response status.
-class UnauthorizedException extends OpenApiResponseException implements Exception {
+class UnauthorizedException extends OpenApiResponseException
+    implements Exception {
   UnauthorizedException(this.message);
 
   @override
