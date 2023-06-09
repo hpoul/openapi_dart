@@ -10,3 +10,4 @@ export 'src/server/openapi_shelf_noop_server.dart'
     if (dart.library.io) 'src/server/openapi_shelf_server.dart';
 export 'src/util/uint8list.dart';
 export 'src/util/uuid.dart';
+export 'src/server/openapi_shelf_server.dart' show ShelfRequest;
