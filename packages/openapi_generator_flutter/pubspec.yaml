@@ -27,7 +27,7 @@ dependencies:
     path: ../openapi_code_builder
   flutter_markdown: ^0.6.13
   url_launcher: ^6.1.7
-  google_fonts: ^3.0.1
+  google_fonts: ^5.1.0
   logging: ^1.1.0
   logging_appenders: ^1.0.0
 
