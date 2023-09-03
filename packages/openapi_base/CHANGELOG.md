@@ -1,3 +1,8 @@
+## 1.1.0+3
+
+* Update http version constraints.
+* Fix dart analysis warnings.
+
 ## 1.1.0+2
 
 * Fix optional query parameter #5

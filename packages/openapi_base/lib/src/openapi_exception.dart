@@ -1,5 +1,4 @@
 import 'package:openapi_base/openapi_base.dart';
-import 'package:openapi_base/src/http_headers.dart';
 
 /// Base class for exceptions which can be thrown by endpoint implementations
 /// with special handling in the server implementations
