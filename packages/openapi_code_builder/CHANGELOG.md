@@ -1,3 +1,7 @@
+## ?
+
+* Update SDK Constraint to `>= 3.2.0 <4.0.0`
+
 ## 1.2.0
 
 * Support `DateTime` format for parameters.
