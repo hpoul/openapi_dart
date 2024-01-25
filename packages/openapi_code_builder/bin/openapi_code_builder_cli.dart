@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:logging_appenders/logging_appenders.dart';
 import 'package:openapi_code_builder/openapi_code_builder.dart';
 import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
@@ -9,6 +10,7 @@ Future<void> main(List<String> args) async {
     print('Usage: ${Platform.executable} <file>');
     exit(1);
   }
+  PrintAppender.setupLogging();
   final fileName = args[0];
   final file = File(fileName);
   final source = await file.readAsString();

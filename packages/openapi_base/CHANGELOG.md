@@ -1,6 +1,11 @@
-## 1.1.0+3
+## 1.1.1
 
 * string binary support
+
+## 1.1.0+3
+
+* Update http version constraints.
+* Fix dart analysis warnings.
 
 ## 1.1.0+2
 

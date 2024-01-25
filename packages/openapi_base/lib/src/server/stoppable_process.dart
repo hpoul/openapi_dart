@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:openapi_base/src/server/openapi_server_base.dart';
 
-typedef _StopProcess = Future Function(String reason);
+typedef _StopProcess = Future<void> Function(String reason);
 
 class StoppableProcess extends StoppableProcessBase {
   StoppableProcess(Future<dynamic> Function(String reason) onStop)
@@ -26,18 +26,20 @@ class StoppableProcess extends StoppableProcessBase {
   @override
   Future<int> get exitCode => _completer.future;
 
-  final List<StreamSubscription> _listeners = [];
+  final List<StreamSubscription<Object>> _listeners = [];
 
   final _StopProcess _stop;
   final Completer<int> _completer = Completer<int>();
 
   @override
-  Future stop(int exitCode, {String? reason}) async {
+  Future<void> stop(int exitCode, {String? reason}) async {
     if (_completer.isCompleted) {
       return;
     }
 
-    await Future.forEach(_listeners, (StreamSubscription sub) => sub.cancel());
+    for (final sub in _listeners) {
+      sub.cancel();
+    }
     await _stop(reason ?? 'Terminated normally.');
     _completer.complete(exitCode);
   }

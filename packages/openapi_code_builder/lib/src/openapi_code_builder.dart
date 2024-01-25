@@ -1442,7 +1442,38 @@ class EnumValueSpec extends Spec {
 class OpenApiCodeBuilderUtils {
   static Map<String, dynamic>? _loadYaml(String source) {
     final dynamic tmp = loadYaml(source) as dynamic;
-    return json.decode(json.encode(tmp)) as Map<String, dynamic>?;
+    // return json.decode(json.encode(tmp)) as Map<String, dynamic>?;
+    try {
+      final encoded = json.encode(tmp, toEncodable: (dynamic obj) {
+        if (obj is YamlMap) {
+          return obj.value.map<String, dynamic>((dynamic key, dynamic value) {
+            final String k;
+            if (key is String) {
+              k = key;
+            } else if (key is num) {
+              k = key.toString();
+            } else {
+              throw JsonUnsupportedObjectError(
+                  'Key for map must be String (or number). Got: $key (${key.runtimeType})');
+            }
+            return MapEntry<String, dynamic>(k, value);
+          });
+          // for (final key in obj.value.keys) {
+          //   if (key is! String) {
+          //     _logger.severe(
+          //         'YamlMap contains key which is not a string?! $key (${key.runtimeType})');
+          //   }
+          // }
+          // return obj.value;
+        }
+        return obj.toJson();
+      });
+      return json.decode(encoded) as Map<String, dynamic>?;
+    } on JsonUnsupportedObjectError catch (e, stackTrace) {
+      _logger.severe('Error converting yaml tree to map objects.', e.cause ?? e,
+          stackTrace);
+      rethrow;
+    }
   }
 
   static APIDocument loadApiFromYaml(String yamlSource) {
