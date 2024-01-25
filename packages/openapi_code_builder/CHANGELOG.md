@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Support `DateTime` format for parameters.
+
 ## 1.1.4+4
 
 * Add option to ignore security schemes.

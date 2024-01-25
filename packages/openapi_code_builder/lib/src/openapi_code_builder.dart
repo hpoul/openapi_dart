@@ -119,6 +119,7 @@ class OpenApiLibraryGenerator {
   final _void = refer('void');
   final _uint8List = refer('Uint8List', 'dart:typed_data');
   final _typeString = refer('String');
+  final _typeDateTime = refer('DateTime');
   final _literalNullCode = literalNull.code;
 
   static const mediaTypeJson = OpenApiContentType.json;
@@ -606,6 +607,8 @@ class OpenApiLibraryGenerator {
                       final paramEnumType = paramType;
                       return refer(paramEnumType.symbol! + 'Ext')
                           .property('fromName')([asString]);
+                    } else if (paramType == _typeDateTime) {
+                      return _typeDateTime.property('parse')([asString]);
                     } else if (paramType != _typeString) {
                       throw StateError(
                           'Unsupported paramType for string $paramType');
@@ -680,11 +683,18 @@ class OpenApiLibraryGenerator {
                       } else {
                         expression = expression.nullSafeProperty('name');
                       }
+                    } else if (paramType == _typeDateTime) {
+                      if (param.isRequired) {
+                        expression = expression.property('toIso8601String')([]);
+                      } else {
+                        expression =
+                            expression.nullSafeProperty('toIso8601String')([]);
+                      }
                     } else if (paramType != _typeString) {
                       // TODO not sure if this makes sense, maybe we should just
                       //      use `toString`?
                       throw StateError(
-                          'Unsupported paramType for string $paramType');
+                          'encodeParameter: Unsupported paramType for string $paramType');
                     }
                     return refer('encodeString')([expression]);
                   case APIType.number:
@@ -1304,7 +1314,7 @@ class OpenApiLibraryGenerator {
           return _schemaReference(parent, schema);
         }
         if (schema.format == 'date-time') {
-          return refer('DateTime');
+          return _typeDateTime;
         }
         if (schema.format == 'uuid') {
           return _apiUuid;
