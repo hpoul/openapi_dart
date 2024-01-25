@@ -1,0 +1,26 @@
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: Example Api
+  x-dart-name: TestApi
+
+paths:
+  /hello:
+    get:
+      summary: Say Hello World
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HelloResponse'
+components:
+  schemas:
+    HelloResponse:
+      properties:
+        message:
+          type: string
+          description: 'The Hello World greeting ;-)'
