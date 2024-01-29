@@ -1,3 +1,7 @@
+## 1.3.1
+
+* bump UUID version constraint to support `4.x`
+
 ## 1.3.0
 
 * `ResponseMap` now has a return type.
