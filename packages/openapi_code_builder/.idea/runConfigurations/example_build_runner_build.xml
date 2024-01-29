@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="example build_runner build" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+    <option name="VMOptions" value="run build_runner build --delete-conflicting-outputs --" />
+    <option name="checkedMode" value="false" />
+    <option name="filePath" value="." />
+    <option name="workingDirectory" value="$PROJECT_DIR$/example" />
+    <method v="2" />
+  </configuration>
+</component>

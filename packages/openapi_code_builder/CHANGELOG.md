@@ -1,6 +1,8 @@
-## ?
+## 1.3.0
 
 * Update SDK Constraint to `>= 3.2.0 <4.0.0`
+* add `onElse` to `map` functions and allow a return value.
+* Make base Response classes `sealed`.
 
 ## 1.2.0
 

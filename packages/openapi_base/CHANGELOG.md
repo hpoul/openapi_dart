@@ -1,3 +1,7 @@
+## 1.3.0
+
+* `ResponseMap` now has a return type.
+
 ## 1.1.0+3
 
 * Update http version constraints.
