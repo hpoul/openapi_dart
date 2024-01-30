@@ -784,5 +784,3 @@ class TestApiRouter extends OpenApiServerRouterBase {
 }
 
 class SecuritySchemes {}
-
-T _throwStateError<T>(String message) => throw StateError(message);
