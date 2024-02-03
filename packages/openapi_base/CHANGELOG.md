@@ -1,3 +1,7 @@
+## 1.3.1+1
+
+* Updated package deps
+
 ## 1.3.1
 
 * bump UUID version constraint to support `4.x`

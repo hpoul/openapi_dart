@@ -1,3 +1,7 @@
+## 1.3.0+1
+
+* Updated package deps
+
 ## 1.3.0
 
 * Update SDK Constraint to `>= 3.2.0 <4.0.0`

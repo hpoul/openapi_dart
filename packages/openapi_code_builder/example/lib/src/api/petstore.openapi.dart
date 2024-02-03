@@ -33,6 +33,7 @@ extension OrderStatusExt on OrderStatus {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class Order implements OpenApiContent {
   Order({
     this.id,
@@ -91,6 +92,7 @@ class Order implements OpenApiContent {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class Category implements OpenApiContent {
   Category({
     this.id,
@@ -120,6 +122,7 @@ class Category implements OpenApiContent {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class User implements OpenApiContent {
   User({
     this.id,
@@ -192,6 +195,7 @@ class User implements OpenApiContent {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class Tag implements OpenApiContent {
   Tag({
     this.id,
@@ -241,6 +245,7 @@ extension PetStatusExt on PetStatus {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class Pet implements OpenApiContent {
   Pet({
     this.id,
@@ -298,6 +303,7 @@ class Pet implements OpenApiContent {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class ApiResponse implements OpenApiContent {
   ApiResponse({
     this.code,
@@ -789,6 +795,7 @@ sealed class UpdatePetWithFormResponse extends OpenApiResponse {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class UpdatePetWithFormSchema implements OpenApiContent {
   UpdatePetWithFormSchema({
     this.name,
@@ -940,6 +947,7 @@ sealed class UploadFileResponse extends OpenApiResponse
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class GetInventoryResponseBody200 implements OpenApiContent {
   GetInventoryResponseBody200();
 
@@ -1368,6 +1376,7 @@ sealed class CreateUsersWithArrayInputResponse extends OpenApiResponse
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class CreateUsersWithArrayInputSchema implements OpenApiContent {
   CreateUsersWithArrayInputSchema();
 
@@ -1435,6 +1444,7 @@ sealed class CreateUsersWithListInputResponse extends OpenApiResponse
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class LoginUserResponseBody200 implements OpenApiContent {
   LoginUserResponseBody200();
 

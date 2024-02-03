@@ -9,6 +9,7 @@ part 'testapi.openapi.g.dart';
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class RegisterRequest implements OpenApiContent {
   RegisterRequest({required this.email});
 
@@ -30,6 +31,7 @@ class RegisterRequest implements OpenApiContent {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class HelloRequest implements OpenApiContent {
   HelloRequest({this.salutation});
 
@@ -51,6 +53,7 @@ class HelloRequest implements OpenApiContent {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class HelloResponse implements OpenApiContent {
   HelloResponse({this.message});
 
@@ -295,6 +298,7 @@ sealed class HelloNamePutResponse extends OpenApiResponse
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
+@Uint8ListConverter()
 class UuidExampleMessageIdGetResponseBody200 implements OpenApiContent {
   UuidExampleMessageIdGetResponseBody200({required this.id});
 
@@ -784,3 +788,5 @@ class TestApiRouter extends OpenApiServerRouterBase {
 }
 
 class SecuritySchemes {}
+
+T _throwStateError<T>(String message) => throw StateError(message);

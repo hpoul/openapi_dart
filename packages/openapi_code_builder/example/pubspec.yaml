@@ -4,13 +4,13 @@ description: Example use of openapi code builder.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=3.2.6 <4.0.0'
 
 dependencies:
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
-  logging: ^1.0.0
-  logging_appenders: ^1.0.0
+  logging: ^1.2.0
+  logging_appenders: ^1.2.0+1
   openapi_base:
     path: ../../openapi_base
 
@@ -20,10 +20,10 @@ dev_dependencies:
   json_serializable: ^6.7.1
   freezed: ^2.4.6
   build_runner: ^2.4.8
+  build_verify: ^3.1.0
   lints: ^3.0.0
 
 dependency_overrides:
+  analyzer: ^6.4.1
   openapi_base:
     path: ../../openapi_base
-  open_api_forked:
-    path: ../../../deps/open-api-dart
