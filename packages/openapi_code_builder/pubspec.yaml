@@ -27,6 +27,4 @@ dependencies:
 
 dev_dependencies:
   lints: ^3.0.0
-
-dependency_overrides:
-  analyzer: ^6.4.1
+  analyzer: ^6.0.0

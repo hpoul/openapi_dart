@@ -20,20 +20,14 @@ dependencies:
   logging_appenders: ^1.2.0+1
 
 dev_dependencies:
-  analyzer: ^6.4.1
+  analyzer: ^6.0.0
   flutter_lints: ^3.0.1
   flutter_test:
     sdk: flutter
 
 dependency_overrides:
-  ffi: ^2.1.1
-  matcher: ^0.12.16+1
-  material_color_utilities: ^0.8.0
-  meta: ^1.11.0
   openapi_base:
     path: ../openapi_base
-  path: ^1.9.0
-  test_api: ^0.7.0
 
 flutter:
   uses-material-design: true
