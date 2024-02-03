@@ -30,7 +30,6 @@ class OpenApiShelfServer extends OpenApiServerBase {
   shelf.Handler preparePipeline() {
     final pipeline = const shelf.Pipeline()
         .addMiddleware(cookieParser())
-        .addMiddleware(shelf.logRequests())
         .addMiddleware(_handleExceptions());
 
     return customizePipeline(pipeline).addHandler(_handleRequest);
@@ -91,17 +90,13 @@ class OpenApiShelfServer extends OpenApiServerBase {
 
   Future<shelf.Response> _handleRequest(shelf.Request request) async {
     final operation = operationFromString(request.method);
-    _logger.fine('handling request. ${request.method} ${request.url}');
+    _logger.finest('handling request. ${request.method} ${request.url}');
     final url = request.url.replace(path: '/${request.url.path}');
     for (final config in router.configs) {
-//      _logger.finest(
-//          'Matching $operation to $config (${config.operation} vs. $operation)');
       if (config.operation != operation) {
         continue;
       }
       final match = config.uriParser.match(url);
-//      _logger.finest('Matching $url against ${config.uriParser}: '
-//          '$match');
       if (match == null) {
         continue;
       }
@@ -126,8 +121,6 @@ class OpenApiShelfServer extends OpenApiServerBase {
         body = responseBinary.body;
       } else {
         body = null;
-        // return shelf.Response(response.status);
-//        throw StateError('Invalid response $response');
       }
       final contentType = response.contentType;
       return shelf.Response(
@@ -140,9 +133,8 @@ class OpenApiShelfServer extends OpenApiServerBase {
           }
         },
       );
-
-//      return shelf.Response.ok('Ok found. $response');
     }
+
     return shelf.Response.notFound('Not Found.');
   }
 }
@@ -156,6 +148,8 @@ class ShelfRequest extends OpenApiRequest {
   // ignore: unused_field
   final UriMatch _match;
   final Map<String, String> _matchParametersDecoded;
+
+  shelf.Request get request => _request;
 
   List<String> _wrapValue(String? value) {
     if (value == null) {

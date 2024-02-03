@@ -12,6 +12,7 @@
 !.idea/codeStyles
 !.idea/codeStyles/*
 *.iml
+pubspec.lock
 
 # Java/Kotlin/Android
 

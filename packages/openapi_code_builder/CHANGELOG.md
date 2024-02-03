@@ -1,3 +1,7 @@
+## 1.3.0+1
+
+* Updated package deps
+
 ## 1.3.0
 
 * Update SDK Constraint to `>= 3.2.0 <4.0.0`
@@ -7,6 +11,11 @@
 ## 1.2.0
 
 * Support `DateTime` format for parameters.
+ 
+## 1.1.4+5
+
+* string binary support
+* code_builder analyzer fix
 
 ## 1.1.4+4
 

@@ -108,6 +108,9 @@ class OpenApiLibraryGenerator {
   final _apiUuid = refer('ApiUuid', 'package:openapi_base/openapi_base.dart');
   final _apiUuidJsonConverter =
       refer('ApiUuidJsonConverter', 'package:openapi_base/openapi_base.dart');
+  final _uint8List = refer('Uint8List', 'dart:typed_data');
+  final _uint8ListJsonConverter =
+      refer('Uint8ListConverter', 'package:openapi_base/openapi_base.dart');
   final _freezed =
       refer('freezed', 'package:freezed_annotation/freezed_annotation.dart');
   final _provider =
@@ -117,7 +120,6 @@ class OpenApiLibraryGenerator {
   final _required = refer('required', 'package:meta/meta.dart');
   final _override = refer('override');
   final _void = refer('void');
-  final _uint8List = refer('Uint8List', 'dart:typed_data');
   final _typeString = refer('String');
   final _typeDateTime = refer('DateTime');
   final _literalNullCode = literalNull.code;
@@ -626,6 +628,10 @@ class OpenApiLibraryGenerator {
                     if (param.schema!.format == 'uuid') {
                       assert(paramType == _apiUuid);
                       return _apiUuid.newInstanceNamed('parse', [asString]);
+                    }
+                    if (param.schema!.format == 'binary') {
+                      assert(paramType == _uint8List);
+                      return refer('paramToUint8List')([expression]);
                     } else if (param.schema?.enumerated?.isNotEmpty == true) {
                       final paramEnumType = paramType;
                       return refer('${paramEnumType.symbol!}Ext')
@@ -1149,6 +1155,9 @@ class OpenApiLibraryGenerator {
           if (fieldType == _apiUuid) {
             fb.annotations.add(_apiUuidJsonConverter([]));
           }
+          if (fieldType == _uint8List) {
+            fb.annotations.add(_uint8ListJsonConverter([]));
+          }
         })));
     // ignore: avoid_function_literals_in_foreach_calls
     required.forEach((element) {
@@ -1195,6 +1204,7 @@ class OpenApiLibraryGenerator {
       cb
         ..annotations.add(jsonSerializable([]))
         ..annotations.add(_apiUuidJsonConverter([]))
+        ..annotations.add(_uint8ListJsonConverter([]))
         ..name = className
         ..implements.add(_openApiContent)
         ..implements.addAll(implements)
@@ -1277,9 +1287,9 @@ class OpenApiLibraryGenerator {
           ..name = '_additionalProperties'
           ..type = _referType(
             'Map',
-            generics: [_typeString, refer('Object')],
+            generics: [_typeString, refer('dynamic')],
           )
-          ..assignment = literalMap({}, _typeString, refer('Object')).code
+          ..assignment = literalMap({}, _typeString, refer('dynamic')).code
           ..modifier = FieldModifier.final$));
         cb.methods.add(
           Method((mb) => mb
