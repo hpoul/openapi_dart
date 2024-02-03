@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'OpenApi Flutter Server Generator',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -42,6 +42,12 @@ class _OpenApiGeneratorState extends State<OpenApiGenerator> {
   final _input = TextEditingController();
   final _output = TextEditingController();
 
+  final monoFont = GoogleFonts.ubuntuMono();
+  static const projectUrl = String.fromEnvironment('PROJECT_URL',
+      defaultValue: 'https://github.com/hpoul/openapi_dart');
+
+  String? _error;
+
   @override
   void initState() {
     super.initState();
@@ -52,56 +58,62 @@ class _OpenApiGeneratorState extends State<OpenApiGenerator> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final monoFont = GoogleFonts.ubuntuMono();
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('OpenAPI Generator'),
-      ),
-      body: Column(
-        children: [
-          Markdown(
-            onTapLink: (text, href, title) {
-              launchUrlString(href!);
-            },
-            shrinkWrap: true,
-            data: '''
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('OpenAPI Generator'),
+        ),
+        body: Column(
+          children: [
+            Markdown(
+              onTapLink: (text, href, title) {
+                launchUrlString(href!);
+              },
+              shrinkWrap: true,
+              data: '''
 # OpenAPI Generator
 
 Generates dart code for client AND server applications from OpenAPI 3.0 
 yaml schema file. Typically this is used in a project using
 build_runner. This is just a quick example what kind of code is generated :-)
 
-See [GitHub project for details](https://github.com/hpoul/openapi_dart).
+See [GitHub project for details]($projectUrl).
           ''',
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                CodeWidget(
-                  labelText: 'OpenApi 3.0 yaml',
-                  controller: _input,
-                  onChanged: _updateInput,
-                  style: monoFont,
-                ),
-                Container(
-                  width: 4,
-                  height: double.infinity,
-                  color: Theme.of(context).primaryColor,
-                ),
-                CodeWidget(
-                  labelText: 'Generated Dart Client/Server stubs',
-                  controller: _output,
-                  onChanged: _updateInput,
-                  style: monoFont,
-                ),
-              ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(_error ?? 'Status: OK',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: _error == null ? Colors.green : Colors.red)),
+              ),
+            ),
+            Expanded(
+              child: Row(
+                children: [
+                  CodeWidget(
+                    labelText: 'OpenApi 3.0 yaml',
+                    controller: _input,
+                    onChanged: _updateInput,
+                    style: monoFont,
+                  ),
+                  Container(
+                    width: 4,
+                    height: double.infinity,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  CodeWidget(
+                    labelText: 'Generated Dart Client/Server stubs',
+                    controller: _output,
+                    onChanged: _updateInput,
+                    style: monoFont,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
 
   Future<void> _updateInput(String value) async {
     try {
@@ -115,7 +127,10 @@ See [GitHub project for details](https://github.com/hpoul/openapi_dart).
           useNullSafetySyntax: true);
       _output.text = out;
       _logger.info('Updated output.');
+      setState(() => _error = null);
     } catch (e, stackTrace) {
+      setState(() => _error = 'Error while generating library.\n$e');
+
       _logger.warning('Error while generating library.', e, stackTrace);
     }
   }
