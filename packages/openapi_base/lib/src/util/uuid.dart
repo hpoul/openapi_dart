@@ -6,15 +6,13 @@ import 'package:uuid/uuid.dart' as uuid;
 @ApiUuidJsonConverter()
 class ApiUuid {
   ApiUuid._(this._uuid) : assert(_isUuid(_uuid));
-
   ApiUuid.secure() : this._(_secureUuidGenerator.v4());
 
   /// Parse the given uuid. This is the reverse of [encodeToString].
   ApiUuid.parse(String uuid) : this._(uuid);
 
-  static final _cryptoRng = CryptoRNG();
   static final _secureUuidGenerator =
-      uuid.Uuid(goptions: GlobalOptions(_cryptoRng));
+      uuid.Uuid(goptions: GlobalOptions(CryptoRNG()));
   static final _validate = RegExp(
       r'^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$',
       caseSensitive: false);

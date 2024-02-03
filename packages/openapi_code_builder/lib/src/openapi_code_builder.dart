@@ -121,6 +121,7 @@ class OpenApiLibraryGenerator {
   final _override = refer('override');
   final _void = refer('void');
   final _typeString = refer('String');
+  final _typeDateTime = refer('DateTime');
   final _literalNullCode = literalNull.code;
 
   static const mediaTypeJson = OpenApiContentType.json;
@@ -231,7 +232,7 @@ class OpenApiLibraryGenerator {
           final responseClass = ClassBuilder();
           responseClass
             ..name = '${operationName.pascalCase}Response'
-            ..abstract = true
+            ..sealed = true
             ..extend = _openApiResponse
             ..constructors.add(Constructor());
 //            ..constructors.add(Constructor((cb) => cb
@@ -241,7 +242,8 @@ class OpenApiLibraryGenerator {
 //                ..toThis = true))))
           final mapMethod = MethodBuilder()
             ..name = 'map'
-            ..returns = refer('void');
+            ..types.add(const Reference('R'))
+            ..returns = const Reference('R');
           final mapCode = <Code>[];
           Reference? successResponseBodyType;
           Reference? successResponseCodeType;
@@ -252,7 +254,7 @@ class OpenApiLibraryGenerator {
             final codeName = response.key.pascalCase;
             final responseCodeClass = ClassBuilder()
               ..extend = refer(responseClass.name!)
-              ..name = '_${responseClass.name}$codeName'
+              ..name = '${responseClass.name}$codeName'
               ..fields.add(Field((fb) => fb
                 ..name = 'status'
                 ..annotations.add(_override)
@@ -263,7 +265,8 @@ class OpenApiLibraryGenerator {
               ..asRequired(this, true)
               ..named = true
               ..type = _responseMapType
-                  .addGenerics(refer(responseCodeClass.name!))));
+                  .addGenerics(refer(responseCodeClass.name!))
+                  .addGenerics(const Reference('R'))));
             if (mapCode.isNotEmpty) {
               mapCode.add(const Code(' else '));
             }
@@ -271,7 +274,9 @@ class OpenApiLibraryGenerator {
             mapCode.add(refer(responseCodeClass.name!).code);
             mapCode.add(const Code(') {'));
             mapCode.add(refer('on$codeName')(
-                [refer('this').asA(refer(responseCodeClass.name!))]).statement);
+                    [refer('this').asA(refer(responseCodeClass.name!))])
+                .returned
+                .statement);
             mapCode.add(const Code('}'));
             final clientResponseParseParams = <Expression>[];
             final constructor = Constructor((cb) {
@@ -476,10 +481,31 @@ class OpenApiLibraryGenerator {
             lb.body.add(responseCodeClass.build());
           }
           if (mapCode.isNotEmpty) {
-            mapCode.add(const Code('else {'));
-            mapCode.add(const Code(
-                r'''  throw StateError('Invalid instance type $this');'''));
-            mapCode.add(const Code('}'));
+            mapMethod.optionalParameters.add(Parameter((pb) => pb
+              ..name = 'onElse'
+              // ..asRequired(this, true)
+              ..named = true
+              ..type = _responseMapType
+                  .addGenerics(refer(responseClass.name!))
+                  .addGenerics(const Reference('R'))
+                  .asNullable(true)));
+            mapCode.add(const Code('else '));
+            mapCode.add(ifStatement(
+              refer('onElse').notEqualTo(literalNull),
+              refer('onElse')([refer('this')]).returned.statement,
+              elseCode: refer('StateError')
+                  .newInstance(
+                      [literalString(r'Invalid instance of type $this')])
+                  .thrown
+                  .statement,
+            ));
+            // mapCode.add(const Code(r'''
+            //     if (onElse != null) {
+            //       return onElse();
+            //     } else {
+            //       throw StateError('Invalid instance type $this');
+            //     }'''));
+            // mapCode.add(const Code('}'));
           }
           mapMethod.body = Block.of(mapCode);
           responseClass.methods.add(mapMethod.build());
@@ -610,6 +636,8 @@ class OpenApiLibraryGenerator {
                       final paramEnumType = paramType;
                       return refer('${paramEnumType.symbol!}Ext')
                           .property('fromName')([asString]);
+                    } else if (paramType == _typeDateTime) {
+                      return _typeDateTime.property('parse')([asString]);
                     } else if (paramType != _typeString) {
                       throw StateError(
                           'Unsupported paramType for string $paramType');
@@ -684,11 +712,18 @@ class OpenApiLibraryGenerator {
                       } else {
                         expression = expression.nullSafeProperty('name');
                       }
+                    } else if (paramType == _typeDateTime) {
+                      if (param.isRequired) {
+                        expression = expression.property('toIso8601String')([]);
+                      } else {
+                        expression =
+                            expression.nullSafeProperty('toIso8601String')([]);
+                      }
                     } else if (paramType != _typeString) {
                       // TODO not sure if this makes sense, maybe we should just
                       //      use `toString`?
                       throw StateError(
-                          'Unsupported paramType for string $paramType');
+                          'encodeParameter: Unsupported paramType for string $paramType');
                     }
                     return refer('encodeString')([expression]);
                   case APIType.number:
@@ -1313,7 +1348,7 @@ class OpenApiLibraryGenerator {
           return _schemaReference(parent, schema);
         }
         if (schema.format == 'date-time') {
-          return refer('DateTime');
+          return _typeDateTime;
         }
         if (schema.format == 'uuid') {
           return _apiUuid;
@@ -1492,7 +1527,7 @@ class OpenApiCodeBuilderUtils {
     );
     final libraryOutput = DartFormatter().format(
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
-        '// ignore_for_file: prefer_initializing_formals, no_leading_underscores_for_library_prefixes, library_private_types_in_public_api\n\n'
+        '// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api\n\n'
         '${library.accept(emitter)}\n\n'
         'T _throwStateError<T>(String message) => throw StateError(message);\n\n');
     return libraryOutput;
@@ -1627,3 +1662,20 @@ extension ObjectExt<T> on T {
   T? takeIf(bool Function(T that) predicate) => predicate(this) ? this : null;
   R let<R>(R Function(T that) op) => op(this);
 }
+
+Block ifStatement(
+  Expression conditional,
+  Code body, {
+  Code? elseCode,
+}) =>
+    Block.of([
+      const Code('if ('),
+      conditional.code,
+      const Code(') {'),
+      body,
+      if (elseCode != null) ...[
+        const Code('} else {'),
+        elseCode,
+      ],
+      const Code('}'),
+    ]);

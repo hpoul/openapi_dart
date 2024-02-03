@@ -11,7 +11,7 @@ import 'package:uri/uri.dart';
 
 final _logger = Logger('openapi_client_base');
 
-typedef ResponseMap<T> = void Function(T response);
+typedef ResponseMap<T, R> = R Function(T response);
 
 typedef ResponseParser<T extends OpenApiResponse> = Future<T> Function(
     OpenApiClientResponse response);
