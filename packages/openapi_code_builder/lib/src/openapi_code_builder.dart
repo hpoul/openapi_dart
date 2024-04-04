@@ -1277,9 +1277,9 @@ class OpenApiLibraryGenerator {
           ..name = '_additionalProperties'
           ..type = _referType(
             'Map',
-            generics: [_typeString, refer('Object')],
+            generics: [_typeString, refer('dynamic')],
           )
-          ..assignment = literalMap({}, _typeString, refer('Object')).code
+          ..assignment = literalMap({}, _typeString, refer('dynamic')).code
           ..modifier = FieldModifier.final$));
         cb.methods.add(
           Method((mb) => mb
