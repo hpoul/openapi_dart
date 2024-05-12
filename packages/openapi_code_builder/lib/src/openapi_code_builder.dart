@@ -72,6 +72,7 @@ class OpenApiLibraryGenerator {
       refer('OpenApiClientBase', 'package:openapi_base/openapi_base.dart');
   final _hasSuccessResponse =
       refer('HasSuccessResponse', 'package:openapi_base/openapi_base.dart');
+
 //  final _openApiHttpHeaders =
 //      refer('OpenApiHttpHeaders', 'package:openapi_base/openapi_base.dart');
   final _openApiClientRequestBodyJson = refer(
@@ -1277,9 +1278,11 @@ class OpenApiLibraryGenerator {
           ..name = '_additionalProperties'
           ..type = _referType(
             'Map',
-            generics: [_typeString, refer('Object')],
+            generics: [_typeString, _referType('Object', isNullable: true)],
           )
-          ..assignment = literalMap({}, _typeString, refer('Object')).code
+          ..assignment = literalMap(
+                  {}, _typeString, _referType('Object', isNullable: true))
+              .code
           ..modifier = FieldModifier.final$));
         cb.methods.add(
           Method((mb) => mb
@@ -1300,7 +1303,7 @@ class OpenApiLibraryGenerator {
         cb.methods.add(
           Method((mb) => mb
             ..name = 'operator[]'
-            ..returns = refer('Object')
+            ..returns = _referType('Object', isNullable: true)
             ..requiredParameters.add(Parameter((pb) => pb
               ..name = 'key'
               ..type = _typeString))
@@ -1584,11 +1587,16 @@ class OpenApiCodeBuilder extends Builder {
       };
 }
 
-TypeReference _referType(String name,
-        {String? url, List<Reference>? generics}) =>
+TypeReference _referType(
+  String name, {
+  String? url,
+  List<Reference>? generics,
+  bool? isNullable,
+}) =>
     TypeReference((trb) => trb
       ..symbol = name
       ..url = url
+      ..isNullable = isNullable
       ..types.addAll(generics!));
 
 extension on Reference {
@@ -1650,6 +1658,7 @@ extension DynamicExt<T> on dynamic {
 
 extension ObjectExt<T> on T {
   T? takeIf(bool Function(T that) predicate) => predicate(this) ? this : null;
+
   R let<R>(R Function(T that) op) => op(this);
 }
 
