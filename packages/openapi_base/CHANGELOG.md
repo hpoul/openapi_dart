@@ -1,3 +1,7 @@
+## 1.3.2-rc.1
+
+* Allow encoding optional parameters.
+
 ## 1.3.1
 
 * bump UUID version constraint to support `4.x`
