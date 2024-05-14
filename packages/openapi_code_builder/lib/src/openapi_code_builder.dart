@@ -1597,7 +1597,7 @@ TypeReference _referType(
       ..symbol = name
       ..url = url
       ..isNullable = isNullable
-      ..types.addAll(generics!));
+      ..types.addAll(generics ?? []));
 
 extension on Reference {
   Reference addGenerics(Reference type) {

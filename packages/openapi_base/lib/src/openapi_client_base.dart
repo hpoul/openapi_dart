@@ -35,13 +35,13 @@ mixin OpenApiUrlEncodeMixin {
   List<String> encodeString(String? value) => value == null ? [] : [value];
 
   @protected
-  List<String> encodeNum(num value) => encodeObject(value);
+  List<String> encodeNum(num? value) => encodeObject(value);
 
   @protected
-  List<String> encodeInt(int value) => encodeObject(value);
+  List<String> encodeInt(int? value) => encodeObject(value);
 
   @protected
-  List<String> encodeBool(bool value) => encodeObject(value);
+  List<String> encodeBool(bool? value) => encodeObject(value);
 
   List<String> encodeObject(Object? value) =>
       value == null ? [] : [value.toString()];
