@@ -21,7 +21,8 @@ class CookieParser {
   /// Factory constructor to create a new instance from request [headers].
   factory CookieParser.fromHeader(Map<String, dynamic> headers) {
     return CookieParser.fromCookieValue(
-        headers[HttpHeaders.cookieHeader] as String?);
+      headers[HttpHeaders.cookieHeader] as String?,
+    );
   }
 
   /// A list of parsed cookies.

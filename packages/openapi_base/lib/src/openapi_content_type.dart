@@ -18,6 +18,7 @@ class OpenApiContentType {
   final String contentType;
 
   bool get isString => contentType.startsWith('text/');
+
   bool get isJson => contentType.startsWith(json.contentType);
 
   static const allKnown = [json, html, urlencoded];

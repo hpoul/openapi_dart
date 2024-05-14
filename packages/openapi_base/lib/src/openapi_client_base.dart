@@ -14,20 +14,25 @@ final _logger = Logger('openapi_client_base');
 typedef ResponseMap<T, R> = R Function(T response);
 
 typedef ResponseParser<T extends OpenApiResponse> = Future<T> Function(
-    OpenApiClientResponse response);
+  OpenApiClientResponse response,
+);
 
 /// Api sender implementing the actual HTTP protocol.
 /// See [HttpRequestSender].
 abstract class OpenApiRequestSender {
   Future<OpenApiClientResponse> sendRequest(
-      Uri baseUri, OpenApiClientRequest request);
+    Uri baseUri,
+    OpenApiClientRequest request,
+  );
 }
 
 /// Api sender implementing the actual HTTP protocol.
 /// See [HttpRequestSender].
 abstract class OpenApiGetRequestSender extends OpenApiRequestSender {
   Stream<OpenApiClientResponse> sendGet(
-      Uri baseUri, OpenApiClientRequest request);
+    Uri baseUri,
+    OpenApiClientRequest request,
+  );
 }
 
 mixin OpenApiUrlEncodeMixin {
@@ -52,7 +57,9 @@ abstract class OpenApiClient {
   Map<SecurityScheme, SecuritySchemeData> get _securitySchemeData;
 
   void setAuth<U extends SecuritySchemeData, T extends SecurityScheme<U>>(
-      T security, U data);
+    T security,
+    U data,
+  );
 }
 
 abstract class OpenApiClientBase
@@ -67,12 +74,16 @@ abstract class OpenApiClientBase
 
   @override
   void setAuth<U extends SecuritySchemeData, T extends SecurityScheme<U>>(
-      T security, U data) {
+    T security,
+    U data,
+  ) {
     _securitySchemeData[security] = data;
   }
 
-  Future<T> sendRequest<T extends OpenApiResponse>(OpenApiClientRequest request,
-      Map<String, ResponseParser<T>> parserMap) async {
+  Future<T> sendRequest<T extends OpenApiResponse>(
+    OpenApiClientRequest request,
+    Map<String, ResponseParser<T>> parserMap,
+  ) async {
     for (final security in request.securityRequirement) {
       for (final scheme in security.schemes) {
         final data = _securitySchemeData[scheme.scheme];
@@ -100,8 +111,9 @@ abstract class OpenApiClientBase
   }
 
   Stream<T> sendGetRequest<T extends OpenApiResponse>(
-      OpenApiClientRequest request,
-      Map<String, ResponseParser<T>> parserMap) async* {
+    OpenApiClientRequest request,
+    Map<String, ResponseParser<T>> parserMap,
+  ) async* {
     final sender = requestSender;
     if (sender is! OpenApiGetRequestSender) {
       throw StateError('Require a OpenApiGetRequestSender');
@@ -212,8 +224,11 @@ class OpenApiClientRequest {
   void addQueryParameter(String name, Iterable<String>? value) =>
       _addParam(paramQuery, name, value);
 
-  void _addParam(Map<String, List<String>> paramMap, String name,
-      Iterable<String>? value) {
+  void _addParam(
+    Map<String, List<String>> paramMap,
+    String name,
+    Iterable<String>? value,
+  ) {
     // TODO add it, if it already exists?
     if (value == null) {
       return;
@@ -287,7 +302,9 @@ class HttpRequestSender extends OpenApiRequestSender {
 
   @override
   Future<OpenApiClientResponse> sendRequest(
-      Uri baseUri, OpenApiClientRequest request) async {
+    Uri baseUri,
+    OpenApiClientRequest request,
+  ) async {
     _client ??= clientCreator();
 
     final uri = request.resolveUri(baseUri);

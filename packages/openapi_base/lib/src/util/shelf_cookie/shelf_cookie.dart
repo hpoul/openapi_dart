@@ -19,16 +19,19 @@ shelf.Middleware cookieParser() {
         return innerHandler(
           request.change(context: {'cookies': cookies}),
         );
-      }).then((shelf.Response response) {
-        if (cookies.isEmpty) {
-          return response;
-        }
-        return response.change(
-          headers: {HttpHeaders.setCookieHeader: cookies.toString()},
-        );
-      }, onError: (Object error, StackTrace stackTrace) {
-        throw error;
-      });
+      }).then(
+        (shelf.Response response) {
+          if (cookies.isEmpty) {
+            return response;
+          }
+          return response.change(
+            headers: {HttpHeaders.setCookieHeader: cookies.toString()},
+          );
+        },
+        onError: (Object error, StackTrace stackTrace) {
+          throw error;
+        },
+      );
     };
   };
 }

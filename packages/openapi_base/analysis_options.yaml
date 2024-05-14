@@ -17,3 +17,5 @@ analyzer:
 
 linter:
   rules:
+    unawaited_futures: true
+    require_trailing_commas: true

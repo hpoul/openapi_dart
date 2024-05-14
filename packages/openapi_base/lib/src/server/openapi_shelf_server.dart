@@ -45,11 +45,15 @@ class OpenApiShelfServer extends OpenApiServerBase {
     bool shared = false,
     String? poweredByHeader = 'Dart with package:shelf',
   }) async {
-    final server = await io.serve(preparePipeline(), address, port,
-        securityContext: securityContext,
-        backlog: backlog,
-        shared: shared,
-        poweredByHeader: poweredByHeader);
+    final server = await io.serve(
+      preparePipeline(),
+      address,
+      port,
+      securityContext: securityContext,
+      backlog: backlog,
+      shared: shared,
+      poweredByHeader: poweredByHeader,
+    );
     _logger
         .info('Serving at http${''}://${server.address.host}:${server.port}');
     return StoppableProcess((reason) async {
@@ -66,7 +70,10 @@ class OpenApiShelfServer extends OpenApiServerBase {
           return await innerHandler(request);
         } on OpenApiResponseException catch (e, stackTrace) {
           _logger.fine(
-              'response exception during request handling', e, stackTrace);
+            'response exception during request handling',
+            e,
+            stackTrace,
+          );
           return shelf.Response(e.status, body: e.message);
         } catch (e, stackTrace) {
           _logger.warning('Error while handling request.', e, stackTrace);
@@ -75,6 +82,7 @@ class OpenApiShelfServer extends OpenApiServerBase {
       };
     };
   }
+
   //
   // Future<shelf.Response> _handleRequestWithExceptions(
   //     shelf.Request request) async {
@@ -137,7 +145,7 @@ class OpenApiShelfServer extends OpenApiServerBase {
           ...response.headers.map((key, value) => MapEntry(key, value.first)),
           if (contentType != null) ...{
             HttpHeaders.contentTypeHeader: contentType.toString(),
-          }
+          },
         },
       );
 
@@ -153,6 +161,7 @@ class ShelfRequest extends OpenApiRequest {
             .map((key, value) => MapEntry(key, Uri.decodeComponent(value!)));
 
   final shelf.Request _request;
+
   // ignore: unused_field
   final UriMatch _match;
   final Map<String, String> _matchParametersDecoded;

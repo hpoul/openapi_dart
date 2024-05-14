@@ -18,10 +18,13 @@ abstract class OpenApiRequest {
   Future<Map<String, dynamic>> readJsonBody();
 
   Future<Map<String, List<String>>> readUrlEncodedBody();
+
   Future<Map<String, String>> readUrlEncodedBodyFlat() async =>
       (await readUrlEncodedBody())
           .map((key, value) => MapEntry(key, value.first));
+
   Future<String> readBodyString();
+
   Future<Uint8List> readBodyBytes();
 }
 
@@ -44,6 +47,7 @@ abstract class OpenApiResponseBodyBinary {
 
 abstract class OpenApiResponse {
   int get status;
+
   OpenApiContentType? get contentType;
 
 //  Map<String, dynamic> bodyJson;
@@ -70,12 +74,15 @@ typedef ApiEndpointCallback<ENDPOINT extends ApiEndpoint, RET> = Future<RET>
 
 abstract class ApiEndpointProvider<ENDPOINT extends ApiEndpoint> {
   ApiEndpointProvider();
+
   factory ApiEndpointProvider.static(ENDPOINT endpoint) {
     return StaticEndpointProvider(endpoint);
   }
 
   Future<RET> invoke<RET>(
-      OpenApiRequest request, ApiEndpointCallback<ENDPOINT, RET> callback);
+    OpenApiRequest request,
+    ApiEndpointCallback<ENDPOINT, RET> callback,
+  );
 }
 
 class StaticEndpointProvider<ENDPOINT extends ApiEndpoint>
@@ -85,8 +92,10 @@ class StaticEndpointProvider<ENDPOINT extends ApiEndpoint>
   final ENDPOINT endpoint;
 
   @override
-  Future<RET> invoke<RET>(OpenApiRequest request,
-      ApiEndpointCallback<ENDPOINT, RET> callback) async {
+  Future<RET> invoke<RET>(
+    OpenApiRequest request,
+    ApiEndpointCallback<ENDPOINT, RET> callback,
+  ) async {
     return await callback(endpoint);
   }
 }
@@ -111,15 +120,22 @@ abstract class OpenApiServerRouterBase {
     RouteHandler handle, {
     required List<SecurityRequirement> security,
   }) {
-    configs.add(RouteConfig(path, operationFromString(operation), handle,
-        security: security));
+    configs.add(
+      RouteConfig(
+        path,
+        operationFromString(operation),
+        handle,
+        security: security,
+      ),
+    );
   }
 
   @protected
-  T paramRequired<T>(
-      {required String name,
-      List<String>? value,
-      required T Function(List<String> value) decode}) {
+  T paramRequired<T>({
+    required String name,
+    List<String>? value,
+    required T Function(List<String> value) decode,
+  }) {
     if (value == null || value.isEmpty) {
       throw MissingParameterException(name);
     }
@@ -127,10 +143,11 @@ abstract class OpenApiServerRouterBase {
   }
 
   @protected
-  T? paramOpt<T>(
-      {required String name,
-      List<String>? value,
-      required T Function(List<String> value) decode}) {
+  T? paramOpt<T>({
+    required String name,
+    List<String>? value,
+    required T Function(List<String> value) decode,
+  }) {
     if (value == null || value.isEmpty) {
       return null;
     }
@@ -173,7 +190,8 @@ enum Operation {
 Map<String, Operation> _operationsMap() {
   final index = Operation.get.toString().indexOf('.') + 1;
   return Map.fromEntries(
-      Operation.values.map((e) => MapEntry(e.toString().substring(index), e)));
+    Operation.values.map((e) => MapEntry(e.toString().substring(index), e)),
+  );
 }
 
 final Map<String, Operation> _operations = _operationsMap();
@@ -201,11 +219,13 @@ class RouteConfig {
 
 class SecurityRequirement {
   SecurityRequirement({required this.schemes});
+
   List<SecurityRequirementScheme> schemes;
 }
 
 class SecurityRequirementScheme {
   SecurityRequirementScheme({required this.scheme, required this.scopes});
+
   final SecurityScheme scheme;
   final List<String> scopes;
 }
@@ -234,13 +254,16 @@ class SecuritySchemeHttpData extends SecuritySchemeData {
 
 class SecuritySchemeHttp extends SecurityScheme<SecuritySchemeHttpData> {
   SecuritySchemeHttp({required this.scheme});
+
   final SecuritySchemeHttpScheme scheme;
   static const _headerName = 'Authorization';
   static const _headerPrefix = 'Bearer ';
 
   @override
   void applyToRequest(
-      OpenApiClientRequest request, SecuritySchemeHttpData data) {
+    OpenApiClientRequest request,
+    SecuritySchemeHttpData data,
+  ) {
     request.addHeaderParameter(
       _headerName,
       ['$_headerPrefix${data.bearerToken}'],
@@ -263,14 +286,16 @@ class SecuritySchemeHttp extends SecurityScheme<SecuritySchemeHttpData> {
 
 class SecuritySchemeApiKeyData extends SecuritySchemeData {
   SecuritySchemeApiKeyData({required this.apiKey});
+
   final String apiKey;
 }
 
 class SecuritySchemeApiKey extends SecurityScheme<SecuritySchemeApiKeyData> {
-  SecuritySchemeApiKey(
-      {required this.name,
-      required this.writeToRequest,
-      required this.readFromRequest});
+  SecuritySchemeApiKey({
+    required this.name,
+    required this.writeToRequest,
+    required this.readFromRequest,
+  });
 
   final String name;
   final void Function(OpenApiClientRequest request, String value)
@@ -279,7 +304,9 @@ class SecuritySchemeApiKey extends SecurityScheme<SecuritySchemeApiKeyData> {
 
   @override
   void applyToRequest(
-      OpenApiClientRequest request, SecuritySchemeApiKeyData data) {
+    OpenApiClientRequest request,
+    SecuritySchemeApiKeyData data,
+  ) {
     writeToRequest(request, data.apiKey);
   }
 

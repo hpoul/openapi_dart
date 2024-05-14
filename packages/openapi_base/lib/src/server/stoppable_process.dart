@@ -38,7 +38,7 @@ class StoppableProcess extends StoppableProcessBase {
     }
 
     for (final sub in _listeners) {
-      sub.cancel();
+      await sub.cancel();
     }
     await _stop(reason ?? 'Terminated normally.');
     _completer.complete(exitCode);

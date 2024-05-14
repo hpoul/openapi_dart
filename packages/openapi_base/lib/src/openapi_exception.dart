@@ -8,6 +8,7 @@ import 'package:openapi_base/openapi_base.dart';
 /// in the OpenApi yaml file.
 abstract class OpenApiResponseException implements Exception {
   int get status;
+
   String get message;
 
   @override
