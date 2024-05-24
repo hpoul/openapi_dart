@@ -25,3 +25,5 @@
 
 #### project specific ignores below
 
+/pubspec_overrides.yaml
+
