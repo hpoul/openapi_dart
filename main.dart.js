@@ -29495,7 +29495,7 @@ this.b=1},
 aaQ:function aaQ(a){this.a=a},
 aaR:function aaR(){},
 aaS:function aaS(){},
-aZm(a,b,c){var s,r,q,p,o,n,m,l=null,k=u.aP,j="package:openapi_base/openapi_base.dart",i="OpenApiContentType",h="package:hooks_riverpod/hooks_riverpod.dart",g=new A.L(j,i).gar(0),f=t.GJ,e=new A.yS(A.bp(B.j,f))
+aZm(a,b,c){var s,r,q,p,o,n,m,l=null,k=u.aP,j="package:openapi_base/openapi_base.dart",i="OpenApiContentType",h="package:riverpod/riverpod.dart",g=new A.L(j,i).gar(0),f=t.GJ,e=new A.yS(A.bp(B.j,f))
 A.dP(g,"other")
 e.f=g
 new A.akO().$1(e)
@@ -31337,7 +31337,7 @@ A.aBy.prototype={
 $1(a){var s=A.ej().b
 if(s==null)s=null
 else{s=s.canvasKitBaseUrl
-if(s==null)s=null}return(s==null?"https://www.gstatic.com/flutter-canvaskit/f6344b75dcf861d8bf1f1322780b8811f982e31a/":s)+a},
+if(s==null)s=null}return(s==null?"https://www.gstatic.com/flutter-canvaskit/55eae6864b296dd9f43b2cc7577ec256e5c32a8d/":s)+a},
 $S:39}
 A.aBN.prototype={
 $1(a){this.a.remove()
