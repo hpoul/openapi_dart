@@ -111,10 +111,9 @@ class OpenApiLibraryGenerator {
       refer('ApiUuidJsonConverter', 'package:openapi_base/openapi_base.dart');
   final _freezed =
       refer('freezed', 'package:freezed_annotation/freezed_annotation.dart');
-  final _provider =
-      refer('Provider', 'package:hooks_riverpod/hooks_riverpod.dart');
+  final _provider = refer('Provider', 'package:riverpod/riverpod.dart');
   final _streamProvider =
-      refer('StreamProvider', 'package:hooks_riverpod/hooks_riverpod.dart');
+      refer('StreamProvider', 'package:riverpod/riverpod.dart');
   final _required = refer('required', 'package:meta/meta.dart');
   final _override = refer('override');
   final _void = refer('void');
