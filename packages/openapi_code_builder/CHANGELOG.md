@@ -1,3 +1,7 @@
+## 1.3.2
+
+* Support `additionalProperties` for inherited models/schemas.
+
 ## 1.3.1
 
 * use import `riverpod/riverpod.dart` instead of `hooks_riverpod`

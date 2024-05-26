@@ -1,4 +1,4 @@
-## 1.3.2-rc.1
+## 1.3.2
 
 * Allow encoding optional parameters.
 

@@ -70,6 +70,108 @@ class HelloResponse implements OpenApiContent {
   String toString() => toJson().toString();
 }
 
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class InheritanceBase implements OpenApiContent {
+  InheritanceBase({this.test1});
+
+  factory InheritanceBase.fromJson(Map<String, dynamic> jsonMap) =>
+      _$InheritanceBaseFromJson(jsonMap)
+        .._additionalProperties.addEntries(jsonMap.entries
+            .where((e) => !const <String>{'test1'}.contains(e.key)));
+
+  @JsonKey(
+    name: 'test1',
+    includeIfNull: false,
+  )
+  final String? test1;
+
+  final Map<String, Object?> _additionalProperties = <String, Object?>{};
+
+  Map<String, dynamic> toJson() =>
+      Map.from(_additionalProperties)..addAll(_$InheritanceBaseToJson(this));
+
+  @override
+  String toString() => toJson().toString();
+
+  void operator []=(
+    String key,
+    Object value,
+  ) =>
+      _additionalProperties[key] = value;
+
+  Object? operator [](String key) => _additionalProperties[key];
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class InheritanceChildBase implements OpenApiContent {
+  InheritanceChildBase({this.test2});
+
+  factory InheritanceChildBase.fromJson(Map<String, dynamic> jsonMap) =>
+      _$InheritanceChildBaseFromJson(jsonMap);
+
+  @JsonKey(
+    name: 'test2',
+    includeIfNull: false,
+  )
+  final String? test2;
+
+  Map<String, dynamic> toJson() => _$InheritanceChildBaseToJson(this);
+
+  @override
+  String toString() => toJson().toString();
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class InheritanceChild
+    implements OpenApiContent, InheritanceBase, InheritanceChildBase {
+  InheritanceChild({
+    this.test2,
+    this.test1,
+  });
+
+  factory InheritanceChild.fromJson(Map<String, dynamic> jsonMap) =>
+      _$InheritanceChildFromJson(jsonMap)
+        .._additionalProperties
+            .addEntries(jsonMap.entries.where((e) => !const <String>{
+                  'test2',
+                  'test1',
+                }.contains(e.key)));
+
+  @JsonKey(
+    name: 'test2',
+    includeIfNull: false,
+  )
+  @override
+  final String? test2;
+
+  @JsonKey(
+    name: 'test1',
+    includeIfNull: false,
+  )
+  @override
+  final String? test1;
+
+  final Map<String, Object?> _additionalProperties = <String, Object?>{};
+
+  @override
+  Map<String, dynamic> toJson() =>
+      Map.from(_additionalProperties)..addAll(_$InheritanceChildToJson(this));
+
+  @override
+  String toString() => toJson().toString();
+
+  void operator []=(
+    String key,
+    Object value,
+  ) =>
+      _additionalProperties[key] = value;
+
+  Object? operator [](String key) => _additionalProperties[key];
+}
+
 class UserRegisterPostResponse200 extends UserRegisterPostResponse {
   /// OK
   UserRegisterPostResponse200.response200() : status = 200;
@@ -784,3 +886,5 @@ class TestApiRouter extends OpenApiServerRouterBase {
 }
 
 class SecuritySchemes {}
+
+T _throwStateError<T>(String message) => throw StateError(message);

@@ -1119,6 +1119,7 @@ class OpenApiLibraryGenerator {
     final implements = <Reference>[];
 
     // check for inheritance
+    var additionalPropertyPolicy = obj.additionalPropertyPolicy;
     if (obj.allOf != null) {
       for (final baseObj in obj.allOf!) {
         implements.add(_schemaReference('${className}Base', baseObj!));
@@ -1128,7 +1129,17 @@ class OpenApiLibraryGenerator {
         };
         override.addAll(baseObj.properties!.entries.map((e) => e.key));
         required.addAll(baseObj.required ?? []);
+        // if the base object as "freeForm" property policy we need to expand it.
+        if (baseObj.additionalPropertyPolicy ==
+            APISchemaAdditionalPropertyPolicy.freeForm) {
+          additionalPropertyPolicy = baseObj.additionalPropertyPolicy;
+        }
       }
+    }
+    if (obj.additionalPropertyPolicy ==
+        APISchemaAdditionalPropertyPolicy.restricted) {
+      _logger.warning(
+          'additionalProperties with restrictions are currently not supported. ${obj.referenceURI}');
     }
 
     final fields = properties.map((key, e) => MapEntry(key, Field((fb) {
@@ -1164,7 +1175,7 @@ class OpenApiLibraryGenerator {
       Expression? fromJsonExpression =
           refer('_\$${className}FromJson').call([refer('jsonMap')]);
 
-      if (obj.additionalPropertyPolicy ==
+      if (additionalPropertyPolicy ==
           APISchemaAdditionalPropertyPolicy.freeForm) {
         toJsonExpression = refer('Map')
             .property('from')([refer('_additionalProperties')])
@@ -1271,7 +1282,7 @@ class OpenApiLibraryGenerator {
           ..lambda = true
           ..body = refer('toJson')([]).property('toString')([]).code));
 
-      if (obj.additionalPropertyPolicy ==
+      if (additionalPropertyPolicy ==
           APISchemaAdditionalPropertyPolicy.freeForm) {
         cb.fields.add(Field((fb) => fb
           ..name = '_additionalProperties'

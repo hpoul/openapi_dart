@@ -112,3 +112,12 @@ components:
         message:
           type: string
           description: 'The Hello World greeting ;-)'
+    InheritanceBase:
+      properties:
+        test1: { type: string }
+      additionalProperties: true
+    InheritanceChild:
+      allOf:
+        - $ref: "#/components/schemas/InheritanceBase"
+        - properties:
+            test2: { type: string }
