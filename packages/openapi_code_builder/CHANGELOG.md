@@ -1,3 +1,7 @@
+## 1.3.2+1
+
+* Upgrade `openapi_base` dependency.
+
 ## 1.3.2
 
 * Support `additionalProperties` for inherited models/schemas.
