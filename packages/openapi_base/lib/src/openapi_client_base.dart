@@ -259,7 +259,7 @@ abstract class OpenApiClientResponse {
 
   Map<String, List<String>> get headers;
 
-  OpenApiContentType responseContentType();
+  OpenApiContentType? responseContentType();
 
   Future<Map<String, dynamic>> responseBodyJson();
 
@@ -342,12 +342,12 @@ class HttpClientResponse extends OpenApiClientResponse {
 
   @override
   Future<Map<String, dynamic>> responseBodyJson() async {
-    return json.decode(response.body) as Map<String, dynamic>;
+    return json.decode(await responseBodyString()) as Map<String, dynamic>;
   }
 
   @override
   Future<dynamic> responseBodyJsonDynamic() async {
-    return json.decode(response.body);
+    return json.decode(await responseBodyString());
   }
 
   @override
@@ -357,14 +357,26 @@ class HttpClientResponse extends OpenApiClientResponse {
   late final Map<String, List<String>> headers =
       response.headers.map((key, value) => MapEntry(key, [value]));
 
+  String? _responseContentTypeString() => response.headers['content-type'];
+
   @override
-  OpenApiContentType responseContentType() {
-    final contentTypeString = response.headers['content-type']!;
-    return OpenApiContentType.parse(contentTypeString);
+  OpenApiContentType? responseContentType() {
+    if (_responseContentTypeString() case final contentTypeString?) {
+      return OpenApiContentType.parse(contentTypeString);
+    }
+    return null;
   }
 
   @override
   Future<String> responseBodyString() async {
+    if (responseContentType() case final contentType?) {
+      final encoding = switch (contentType.charset) {
+            final charset? => Encoding.getByName(charset),
+            null => null,
+          } ??
+          (contentType.isJson ? utf8 : latin1);
+      return encoding.decode(response.bodyBytes);
+    }
     return response.body;
   }
 

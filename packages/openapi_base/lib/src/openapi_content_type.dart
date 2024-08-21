@@ -1,12 +1,17 @@
+import 'package:http_parser/http_parser.dart';
+
 /// Represents the content type header describing content encoding for
 /// request and responses.
 class OpenApiContentType {
-  const OpenApiContentType._(this.contentType);
+  const OpenApiContentType._(this.contentType, [this.mediaType]);
 
   /// Parses the value as returned by [toString]
   factory OpenApiContentType.parse(String value) {
-    return OpenApiContentType._(value);
+    final mediaType = MediaType.parse(value);
+    return OpenApiContentType._(value, mediaType);
   }
+
+  final MediaType? mediaType;
 
   static const json = OpenApiContentType._('application/json');
   static const html = OpenApiContentType._('text/html');
@@ -22,6 +27,8 @@ class OpenApiContentType {
   bool get isJson => contentType.startsWith(json.contentType);
 
   static const allKnown = [json, html, urlencoded];
+
+  String? get charset => mediaType?.parameters['charset'];
 
   /// Reverse of [parse]
   @override

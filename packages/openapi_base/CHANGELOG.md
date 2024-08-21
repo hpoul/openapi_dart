@@ -1,3 +1,7 @@
+## 2.0.0-rc.1
+
+* Use UTF-8 encoding by default for json responses.
+
 ## 1.3.2
 
 * Allow encoding optional parameters.
