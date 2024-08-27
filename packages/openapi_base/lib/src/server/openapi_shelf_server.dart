@@ -201,6 +201,11 @@ class ShelfRequest extends OpenApiRequest {
   }
 
   @override
+  Future<dynamic> readJsonBodyDynamic() async {
+    return json.decode(await _request.readAsString());
+  }
+
+  @override
   Future<Map<String, List<String>>> readUrlEncodedBody() async {
     final query = await _request.readAsString();
     final map = Uri.splitQueryString(query);

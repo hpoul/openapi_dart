@@ -1,3 +1,7 @@
+## 1.3.3
+
+* Support for `application/json` requests with primitive body types.
+
 ## 1.3.2+1
 
 * Upgrade `openapi_base` dependency.

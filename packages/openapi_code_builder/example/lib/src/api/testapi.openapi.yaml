@@ -93,6 +93,17 @@ paths:
                     format: uuid
                 required:
                   - id
+  /hello/integer:
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int32
+      responses:
+        '200':
+          description: OK
 components:
   schemas:
     RegisterRequest:

@@ -1,6 +1,7 @@
-## 2.0.0-rc.1
+## 2.0.0
 
 * Use UTF-8 encoding by default for json responses.
+* Support for dynamic request bodys (instead of just `Map<String, dynamic>`).
 
 ## 1.3.2
 

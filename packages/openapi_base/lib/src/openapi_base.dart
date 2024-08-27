@@ -17,6 +17,8 @@ abstract class OpenApiRequest {
 
   Future<Map<String, dynamic>> readJsonBody();
 
+  Future<dynamic> readJsonBodyDynamic();
+
   Future<Map<String, List<String>>> readUrlEncodedBody();
 
   Future<Map<String, String>> readUrlEncodedBodyFlat() async =>

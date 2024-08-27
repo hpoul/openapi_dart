@@ -1366,22 +1366,6 @@ sealed class CreateUsersWithArrayInputResponse extends OpenApiResponse
   }
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class CreateUsersWithArrayInputSchema implements OpenApiContent {
-  CreateUsersWithArrayInputSchema();
-
-  factory CreateUsersWithArrayInputSchema.fromJson(
-          Map<String, dynamic> jsonMap) =>
-      _$CreateUsersWithArrayInputSchemaFromJson(jsonMap);
-
-  Map<String, dynamic> toJson() =>
-      _$CreateUsersWithArrayInputSchemaToJson(this);
-
-  @override
-  String toString() => toJson().toString();
-}
-
 class CreateUsersWithListInputResponseDefault
     extends CreateUsersWithListInputResponse {
   /// successful operation
@@ -1884,12 +1868,12 @@ abstract class Petstore implements ApiEndpoint {
   /// Creates list of users with given input array
   /// post: /user/createWithArray
   Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
-      CreateUsersWithArrayInputSchema body);
+      List<User> body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
   Future<CreateUsersWithListInputResponse> createUsersWithListInput(
-      CreateUsersWithArrayInputSchema body);
+      List<User> body);
 
   /// Logs user into the system
   /// get: /user/login
@@ -2024,13 +2008,13 @@ abstract class PetstoreClient implements OpenApiClient {
   /// post: /user/createWithArray
   ///
   Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
-      CreateUsersWithArrayInputSchema body);
+      List<User> body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
   ///
   Future<CreateUsersWithListInputResponse> createUsersWithListInput(
-      CreateUsersWithArrayInputSchema body);
+      List<User> body);
 
   /// Logs user into the system
   /// get: /user/login
@@ -2461,7 +2445,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   ///
   @override
   Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
-      CreateUsersWithArrayInputSchema body) async {
+      List<User> body) async {
     final request = OpenApiClientRequest(
       'post',
       '/user/createWithArray',
@@ -2471,7 +2455,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
       'content-type',
       'application/json',
     );
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    request.setBody(OpenApiClientRequestBodyJson(body));
     return await sendRequest(
       request,
       {
@@ -2487,7 +2471,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   ///
   @override
   Future<CreateUsersWithListInputResponse> createUsersWithListInput(
-      CreateUsersWithArrayInputSchema body) async {
+      List<User> body) async {
     final request = OpenApiClientRequest(
       'post',
       '/user/createWithList',
@@ -2497,7 +2481,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
       'content-type',
       'application/json',
     );
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    request.setBody(OpenApiClientRequestBodyJson(body));
     return await sendRequest(
       request,
       {
@@ -3195,8 +3179,7 @@ class PetstoreRouter extends OpenApiServerRouterBase {
         return await impl.invoke(
           request,
           (Petstore impl) async => impl.createUsersWithArrayInput(
-              CreateUsersWithArrayInputSchema.fromJson(
-                  await request.readJsonBody())),
+              (await request.readJsonBodyDynamic() as List<User>)),
         );
       },
       security: [],
@@ -3208,8 +3191,7 @@ class PetstoreRouter extends OpenApiServerRouterBase {
         return await impl.invoke(
           request,
           (Petstore impl) async => impl.createUsersWithListInput(
-              CreateUsersWithArrayInputSchema.fromJson(
-                  await request.readJsonBody())),
+              (await request.readJsonBodyDynamic() as List<User>)),
         );
       },
       security: [],

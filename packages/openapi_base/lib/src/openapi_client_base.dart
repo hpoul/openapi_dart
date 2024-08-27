@@ -168,7 +168,7 @@ abstract class OpenApiClientRequestBody {
 class OpenApiClientRequestBodyJson extends OpenApiClientRequestBody {
   OpenApiClientRequestBodyJson(this.jsonMap);
 
-  final Map<String, dynamic> jsonMap;
+  final /*Map<String, dynamic>*/ dynamic jsonMap;
 
   @override
   String encodeToString() => json.encode(jsonMap);

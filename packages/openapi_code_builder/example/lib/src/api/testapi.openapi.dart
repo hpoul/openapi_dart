@@ -479,6 +479,55 @@ sealed class UuidExampleMessageIdGetResponse extends OpenApiResponse
   }
 }
 
+class HelloIntegerPutResponse200 extends HelloIntegerPutResponse {
+  /// OK
+  HelloIntegerPutResponse200.response200() : status = 200;
+
+  @override
+  final int status;
+
+  @override
+  final OpenApiContentType? contentType = null;
+
+  @override
+  Map<String, Object?> propertiesToString() => {
+        'status': status,
+        'contentType': contentType,
+      };
+}
+
+sealed class HelloIntegerPutResponse extends OpenApiResponse
+    implements HasSuccessResponse<void> {
+  HelloIntegerPutResponse();
+
+  /// OK
+  factory HelloIntegerPutResponse.response200() =>
+      HelloIntegerPutResponse200.response200();
+
+  R map<R>({
+    required ResponseMap<HelloIntegerPutResponse200, R> on200,
+    ResponseMap<HelloIntegerPutResponse, R>? onElse,
+  }) {
+    if (this is HelloIntegerPutResponse200) {
+      return on200((this as HelloIntegerPutResponse200));
+    } else if (onElse != null) {
+      return onElse(this);
+    } else {
+      throw StateError('Invalid instance of type $this');
+    }
+  }
+
+  /// status 200:  OK
+  @override
+  void requireSuccess() {
+    if (this is HelloIntegerPutResponse200) {
+      return;
+    } else {
+      throw StateError('Expected success response, but got $this');
+    }
+  }
+}
+
 abstract class TestApi implements ApiEndpoint {
   /// Create new user
   /// post: /user/register
@@ -506,6 +555,9 @@ abstract class TestApi implements ApiEndpoint {
   /// get: /uuidExample/{messageId}
   Future<UuidExampleMessageIdGetResponse> uuidExampleMessageIdGet(
       {required ApiUuid messageId});
+
+  /// put: /hello/integer
+  Future<HelloIntegerPutResponse> helloIntegerPut(int body);
 }
 
 abstract class TestApiClient implements OpenApiClient {
@@ -550,6 +602,10 @@ abstract class TestApiClient implements OpenApiClient {
   ///
   Future<UuidExampleMessageIdGetResponse> uuidExampleMessageIdGet(
       {required ApiUuid messageId});
+
+  /// put: /hello/integer
+  ///
+  Future<HelloIntegerPutResponse> helloIntegerPut(int body);
 }
 
 class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
@@ -703,6 +759,29 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
       },
     );
   }
+
+  /// put: /hello/integer
+  ///
+  @override
+  Future<HelloIntegerPutResponse> helloIntegerPut(int body) async {
+    final request = OpenApiClientRequest(
+      'put',
+      '/hello/integer',
+      [],
+    );
+    request.setHeader(
+      'content-type',
+      'application/json',
+    );
+    request.setBody(OpenApiClientRequestBodyJson(body));
+    return await sendRequest(
+      request,
+      {
+        '200': (OpenApiClientResponse response) async =>
+            HelloIntegerPutResponse200.response200()
+      },
+    );
+  }
 }
 
 class TestApiUrlResolve with OpenApiUrlEncodeMixin {
@@ -786,6 +865,17 @@ class TestApiUrlResolve with OpenApiUrlEncodeMixin {
     request.addPathParameter(
       'messageId',
       encodeString(messageId.encodeToString()),
+    );
+    return request;
+  }
+
+  /// put: /hello/integer
+  ///
+  OpenApiClientRequest helloIntegerPut() {
+    final request = OpenApiClientRequest(
+      'put',
+      '/hello/integer',
+      [],
     );
     return request;
   }
@@ -878,6 +968,18 @@ class TestApiRouter extends OpenApiServerRouterBase {
             value: request.pathParameter('messageId'),
             decode: (value) => ApiUuid.parse(paramToString(value)),
           )),
+        );
+      },
+      security: [],
+    );
+    addRoute(
+      '/hello/integer',
+      'put',
+      (OpenApiRequest request) async {
+        return await impl.invoke(
+          request,
+          (TestApi impl) async => impl
+              .helloIntegerPut((await request.readJsonBodyDynamic() as int)),
         );
       },
       security: [],

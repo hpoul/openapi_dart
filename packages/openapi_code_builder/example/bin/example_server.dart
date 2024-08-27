@@ -57,4 +57,9 @@ class TestApiImpl extends TestApi {
     return UuidExampleMessageIdGetResponse.response200(
         UuidExampleMessageIdGetResponseBody200(id: messageId));
   }
+
+  @override
+  Future<HelloIntegerPutResponse> helloIntegerPut(int body) async {
+    return HelloIntegerPutResponse.response200();
+  }
 }

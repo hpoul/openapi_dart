@@ -1005,21 +1005,37 @@ class OpenApiLibraryGenerator {
         refer('request').property('readBodyBytes')([]).awaited,
       );
     } else {
-      final reference = _schemaReference(
-          '${operationName.pascalCase}Schema', reqBody.schema!);
+      // final reference = _schemaReference(
+      //     '${operationName.pascalCase}Schema', reqBody.schema!);
+      final schema = reqBody.schema!;
+      final reference =
+          _toDartType('${operationName.pascalCase}Schema', schema);
 
+      final bodyIsObject = schema.type == null || schema.type == APIType.object;
+
+      final readJsonBodyMethodName =
+          bodyIsObject ? 'readJsonBody' : 'readJsonBodyDynamic';
       final mapExpression = contentType.matches(OpenApiContentType.json)
-          ? refer('request').property('readJsonBody')([]).awaited
+          ? refer('request').property(readJsonBodyMethodName)([]).awaited
           : (contentType.matches(OpenApiContentType.urlencoded)
               ? refer('request').property('readUrlEncodedBodyFlat')([]).awaited
               : literalConstMap({}, refer('String'), refer('dynamic')));
-      addRequestBody(
-          reference,
-          _openApiClientRequestBodyJson
-              .newInstance([refer('body').property('toJson')([])]),
-          reference.property('fromJson')(
+      final jsonReference = switch (bodyIsObject) {
+        true => refer('body').property('toJson')([]),
+        false => refer('body'),
+      };
+      final decodeExpression = switch (bodyIsObject) {
+        true => reference.property('fromJson')(
             [mapExpression],
-          ));
+          ),
+        false => mapExpression.asA(reference),
+      };
+
+      addRequestBody(
+        reference,
+        _openApiClientRequestBodyJson.newInstance([jsonReference]),
+        decodeExpression,
+      );
     }
   }
 
