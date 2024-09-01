@@ -395,8 +395,9 @@ class OpenApiLibraryGenerator {
                       ..type = _openApiContentType
                       ..name = 'contentType'
                       ..toThis = true));
-                    clientResponseParseParams.add(
-                        refer('response').property('responseContentType')([]));
+                    clientResponseParseParams.add(refer('response')
+                        .property('responseContentType')([])
+                        .nullChecked);
                   }
                   cb.requiredParameters.add(Parameter((pb) => pb
                     ..name = 'body'
