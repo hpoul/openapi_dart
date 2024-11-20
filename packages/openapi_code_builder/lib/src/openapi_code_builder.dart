@@ -1240,6 +1240,9 @@ class OpenApiLibraryGenerator {
                         .code
                     ..named = true
                     ..toThis = true)))
+              // TODO we should probably make additional properties immutable.
+              ..constant = additionalPropertyPolicy !=
+                  APISchemaAdditionalPropertyPolicy.freeForm
               ..initializers.addAll(useNullSafetySyntax
                   ? []
                   : required.map((e) => refer('assert')(

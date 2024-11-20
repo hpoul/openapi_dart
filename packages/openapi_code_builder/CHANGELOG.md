@@ -1,3 +1,7 @@
+## 1.4.0
+
+* Make constructors for generated classes `const`.
+
 ## 1.3.3
 
 * Support for `application/json` requests with primitive body types.
