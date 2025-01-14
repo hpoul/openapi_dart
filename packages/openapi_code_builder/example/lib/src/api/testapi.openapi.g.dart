@@ -20,54 +20,30 @@ HelloRequest _$HelloRequestFromJson(Map<String, dynamic> json) => HelloRequest(
       salutation: json['salutation'] as String?,
     );
 
-Map<String, dynamic> _$HelloRequestToJson(HelloRequest instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('salutation', instance.salutation);
-  return val;
-}
+Map<String, dynamic> _$HelloRequestToJson(HelloRequest instance) =>
+    <String, dynamic>{
+      if (instance.salutation case final value?) 'salutation': value,
+    };
 
 HelloResponse _$HelloResponseFromJson(Map<String, dynamic> json) =>
     HelloResponse(
       message: json['message'] as String?,
     );
 
-Map<String, dynamic> _$HelloResponseToJson(HelloResponse instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('message', instance.message);
-  return val;
-}
+Map<String, dynamic> _$HelloResponseToJson(HelloResponse instance) =>
+    <String, dynamic>{
+      if (instance.message case final value?) 'message': value,
+    };
 
 InheritanceBase _$InheritanceBaseFromJson(Map<String, dynamic> json) =>
     InheritanceBase(
       test1: json['test1'] as String?,
     );
 
-Map<String, dynamic> _$InheritanceBaseToJson(InheritanceBase instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('test1', instance.test1);
-  return val;
-}
+Map<String, dynamic> _$InheritanceBaseToJson(InheritanceBase instance) =>
+    <String, dynamic>{
+      if (instance.test1 case final value?) 'test1': value,
+    };
 
 InheritanceChildBase _$InheritanceChildBaseFromJson(
         Map<String, dynamic> json) =>
@@ -76,18 +52,10 @@ InheritanceChildBase _$InheritanceChildBaseFromJson(
     );
 
 Map<String, dynamic> _$InheritanceChildBaseToJson(
-    InheritanceChildBase instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('test2', instance.test2);
-  return val;
-}
+        InheritanceChildBase instance) =>
+    <String, dynamic>{
+      if (instance.test2 case final value?) 'test2': value,
+    };
 
 InheritanceChild _$InheritanceChildFromJson(Map<String, dynamic> json) =>
     InheritanceChild(
@@ -95,19 +63,23 @@ InheritanceChild _$InheritanceChildFromJson(Map<String, dynamic> json) =>
       test1: json['test1'] as String?,
     );
 
-Map<String, dynamic> _$InheritanceChildToJson(InheritanceChild instance) {
-  final val = <String, dynamic>{};
+Map<String, dynamic> _$InheritanceChildToJson(InheritanceChild instance) =>
+    <String, dynamic>{
+      if (instance.test2 case final value?) 'test2': value,
+      if (instance.test1 case final value?) 'test1': value,
+    };
 
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
+RecursiveObject _$RecursiveObjectFromJson(Map<String, dynamic> json) =>
+    RecursiveObject(
+      parent: json['parent'] == null
+          ? null
+          : RecursiveObject.fromJson(json['parent'] as Map<String, dynamic>),
+    );
 
-  writeNotNull('test2', instance.test2);
-  writeNotNull('test1', instance.test1);
-  return val;
-}
+Map<String, dynamic> _$RecursiveObjectToJson(RecursiveObject instance) =>
+    <String, dynamic>{
+      if (instance.parent case final value?) 'parent': value,
+    };
 
 UuidExampleMessageIdGetResponseBody200
     _$UuidExampleMessageIdGetResponseBody200FromJson(

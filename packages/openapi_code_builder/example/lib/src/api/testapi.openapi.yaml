@@ -132,3 +132,7 @@ components:
         - $ref: "#/components/schemas/InheritanceBase"
         - properties:
             test2: { type: string }
+    RecursiveObject:
+      properties:
+        parent:
+          $ref: '#/components/schemas/RecursiveObject'

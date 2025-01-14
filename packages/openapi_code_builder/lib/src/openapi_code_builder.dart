@@ -1113,19 +1113,18 @@ class OpenApiLibraryGenerator {
       _logger.finest('We found it.');
       return found;
     }
+    final reference = refer(componentName);
+    createdSchema[schemaObject] = reference;
 
-    final reference = createdSchema.putIfAbsent(schemaObject, () {
-      _logger.finer(
-          'Creating schema class. for ${schemaObject.referenceURI} / $key');
-      if (schemaObject.enumerated?.isNotEmpty == true) {
-        final e = _createEnum(componentName, schemaObject.enumerated!);
-        return e;
-      }
-      final c = _createSchemaClass(componentName, schemaObject);
-      lb.body.add(c);
+    _logger.finer(
+        'Creating schema class. for ${schemaObject.referenceURI} / $key');
+    if (schemaObject.enumerated?.isNotEmpty == true) {
+      final e = _createEnum(componentName, schemaObject.enumerated!);
+      return e;
+    }
+    final c = _createSchemaClass(componentName, schemaObject);
+    lb.body.add(c);
 
-      return refer(c.name);
-    });
     return reference;
   }
 

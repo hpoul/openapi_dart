@@ -10,7 +10,7 @@ part 'testapi.openapi.g.dart';
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class RegisterRequest implements OpenApiContent {
-  RegisterRequest({required this.email});
+  const RegisterRequest({required this.email});
 
   factory RegisterRequest.fromJson(Map<String, dynamic> jsonMap) =>
       _$RegisterRequestFromJson(jsonMap);
@@ -31,7 +31,7 @@ class RegisterRequest implements OpenApiContent {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class HelloRequest implements OpenApiContent {
-  HelloRequest({this.salutation});
+  const HelloRequest({this.salutation});
 
   factory HelloRequest.fromJson(Map<String, dynamic> jsonMap) =>
       _$HelloRequestFromJson(jsonMap);
@@ -52,7 +52,7 @@ class HelloRequest implements OpenApiContent {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class HelloResponse implements OpenApiContent {
-  HelloResponse({this.message});
+  const HelloResponse({this.message});
 
   factory HelloResponse.fromJson(Map<String, dynamic> jsonMap) =>
       _$HelloResponseFromJson(jsonMap);
@@ -106,7 +106,7 @@ class InheritanceBase implements OpenApiContent {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class InheritanceChildBase implements OpenApiContent {
-  InheritanceChildBase({this.test2});
+  const InheritanceChildBase({this.test2});
 
   factory InheritanceChildBase.fromJson(Map<String, dynamic> jsonMap) =>
       _$InheritanceChildBaseFromJson(jsonMap);
@@ -170,6 +170,26 @@ class InheritanceChild
       _additionalProperties[key] = value;
 
   Object? operator [](String key) => _additionalProperties[key];
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class RecursiveObject implements OpenApiContent {
+  const RecursiveObject({this.parent});
+
+  factory RecursiveObject.fromJson(Map<String, dynamic> jsonMap) =>
+      _$RecursiveObjectFromJson(jsonMap);
+
+  @JsonKey(
+    name: 'parent',
+    includeIfNull: false,
+  )
+  final RecursiveObject? parent;
+
+  Map<String, dynamic> toJson() => _$RecursiveObjectToJson(this);
+
+  @override
+  String toString() => toJson().toString();
 }
 
 class UserRegisterPostResponse200 extends UserRegisterPostResponse {
@@ -398,7 +418,7 @@ sealed class HelloNamePutResponse extends OpenApiResponse
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class UuidExampleMessageIdGetResponseBody200 implements OpenApiContent {
-  UuidExampleMessageIdGetResponseBody200({required this.id});
+  const UuidExampleMessageIdGetResponseBody200({required this.id});
 
   factory UuidExampleMessageIdGetResponseBody200.fromJson(
           Map<String, dynamic> jsonMap) =>

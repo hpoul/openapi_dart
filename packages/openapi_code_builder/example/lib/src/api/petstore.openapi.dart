@@ -34,7 +34,7 @@ extension OrderStatusExt on OrderStatus {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class Order implements OpenApiContent {
-  Order({
+  const Order({
     this.id,
     this.petId,
     this.quantity,
@@ -92,7 +92,7 @@ class Order implements OpenApiContent {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class Category implements OpenApiContent {
-  Category({
+  const Category({
     this.id,
     this.name,
   });
@@ -121,7 +121,7 @@ class Category implements OpenApiContent {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class User implements OpenApiContent {
-  User({
+  const User({
     this.id,
     this.username,
     this.firstName,
@@ -193,7 +193,7 @@ class User implements OpenApiContent {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class Tag implements OpenApiContent {
-  Tag({
+  const Tag({
     this.id,
     this.name,
   });
@@ -242,7 +242,7 @@ extension PetStatusExt on PetStatus {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class Pet implements OpenApiContent {
-  Pet({
+  const Pet({
     this.id,
     this.category,
     required this.name,
@@ -299,7 +299,7 @@ class Pet implements OpenApiContent {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class ApiResponse implements OpenApiContent {
-  ApiResponse({
+  const ApiResponse({
     this.code,
     this.type,
     this.message,
@@ -790,7 +790,7 @@ sealed class UpdatePetWithFormResponse extends OpenApiResponse {
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class UpdatePetWithFormSchema implements OpenApiContent {
-  UpdatePetWithFormSchema({
+  const UpdatePetWithFormSchema({
     this.name,
     this.status,
   });
@@ -941,7 +941,7 @@ sealed class UploadFileResponse extends OpenApiResponse
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class GetInventoryResponseBody200 implements OpenApiContent {
-  GetInventoryResponseBody200();
+  const GetInventoryResponseBody200();
 
   factory GetInventoryResponseBody200.fromJson(Map<String, dynamic> jsonMap) =>
       _$GetInventoryResponseBody200FromJson(jsonMap);
@@ -1420,7 +1420,7 @@ sealed class CreateUsersWithListInputResponse extends OpenApiResponse
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class LoginUserResponseBody200 implements OpenApiContent {
-  LoginUserResponseBody200();
+  const LoginUserResponseBody200();
 
   factory LoginUserResponseBody200.fromJson(Map<String, dynamic> jsonMap) =>
       _$LoginUserResponseBody200FromJson(jsonMap);

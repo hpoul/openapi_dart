@@ -1,3 +1,7 @@
+## 1.5.0
+
+* Support for recursive schemas. (A class referencing itself).
+
 ## 1.4.0
 
 * Make constructors for generated classes `const`.
