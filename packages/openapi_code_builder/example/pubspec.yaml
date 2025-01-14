@@ -17,10 +17,10 @@ dependencies:
 dev_dependencies:
   openapi_code_builder:
     path: ../
-  json_serializable: ^6.7.1
+  json_serializable: ^6.9.0
   freezed: ^2.4.6
   build_runner: ^2.4.8
-  lints: ^3.0.0
+  lints: ^5.0.0
 
 dependency_overrides:
   openapi_base:
