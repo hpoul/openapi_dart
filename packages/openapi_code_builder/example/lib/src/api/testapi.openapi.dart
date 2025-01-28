@@ -96,7 +96,7 @@ class InheritanceBase implements OpenApiContent {
 
   void operator []=(
     String key,
-    Object value,
+    Object? value,
   ) =>
       _additionalProperties[key] = value;
 
@@ -165,7 +165,7 @@ class InheritanceChild
 
   void operator []=(
     String key,
-    Object value,
+    Object? value,
   ) =>
       _additionalProperties[key] = value;
 
@@ -190,6 +190,102 @@ class RecursiveObject implements OpenApiContent {
 
   @override
   String toString() => toJson().toString();
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class TypedAdditionalPropertiesAddProp implements OpenApiContent {
+  const TypedAdditionalPropertiesAddProp({
+    this.foo,
+    this.bar,
+  });
+
+  factory TypedAdditionalPropertiesAddProp.fromJson(
+          Map<String, dynamic> jsonMap) =>
+      _$TypedAdditionalPropertiesAddPropFromJson(jsonMap);
+
+  @JsonKey(
+    name: 'foo',
+    includeIfNull: false,
+  )
+  final int? foo;
+
+  @JsonKey(
+    name: 'bar',
+    includeIfNull: false,
+  )
+  final num? bar;
+
+  Map<String, dynamic> toJson() =>
+      _$TypedAdditionalPropertiesAddPropToJson(this);
+
+  @override
+  String toString() => toJson().toString();
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class TypedAdditionalPropertiesAddPropListItem implements OpenApiContent {
+  const TypedAdditionalPropertiesAddPropListItem({
+    this.foo,
+    this.bar,
+  });
+
+  factory TypedAdditionalPropertiesAddPropListItem.fromJson(
+          Map<String, dynamic> jsonMap) =>
+      _$TypedAdditionalPropertiesAddPropListItemFromJson(jsonMap);
+
+  @JsonKey(
+    name: 'foo',
+    includeIfNull: false,
+  )
+  final int? foo;
+
+  @JsonKey(
+    name: 'bar',
+    includeIfNull: false,
+  )
+  final num? bar;
+
+  Map<String, dynamic> toJson() =>
+      _$TypedAdditionalPropertiesAddPropListItemToJson(this);
+
+  @override
+  String toString() => toJson().toString();
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class TypedAdditionalProperties implements OpenApiContent {
+  TypedAdditionalProperties();
+
+  factory TypedAdditionalProperties.fromJson(Map<String, dynamic> jsonMap) =>
+      _$TypedAdditionalPropertiesFromJson(jsonMap)
+        .._additionalProperties.addEntries(jsonMap.entries
+            .where((e) => !const <String>{}.contains(e.key))
+            .map((e) => MapEntry(
+                  e.key,
+                  e.value.map((e) =>
+                      TypedAdditionalPropertiesAddPropListItem.fromJson(e)),
+                )));
+
+  final Map<String, List<TypedAdditionalPropertiesAddProp>>
+      _additionalProperties =
+      <String, List<TypedAdditionalPropertiesAddProp>>{};
+
+  Map<String, dynamic> toJson() => Map.from(_additionalProperties)
+    ..addAll(_$TypedAdditionalPropertiesToJson(this));
+
+  @override
+  String toString() => toJson().toString();
+
+  void operator []=(
+    String key,
+    List<TypedAdditionalPropertiesAddProp> value,
+  ) =>
+      _additionalProperties[key] = value;
+
+  Object? operator [](String key) => _additionalProperties[key];
 }
 
 class UserRegisterPostResponse200 extends UserRegisterPostResponse {

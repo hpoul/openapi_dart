@@ -941,15 +941,32 @@ sealed class UploadFileResponse extends OpenApiResponse
 @JsonSerializable()
 @ApiUuidJsonConverter()
 class GetInventoryResponseBody200 implements OpenApiContent {
-  const GetInventoryResponseBody200();
+  GetInventoryResponseBody200();
 
   factory GetInventoryResponseBody200.fromJson(Map<String, dynamic> jsonMap) =>
-      _$GetInventoryResponseBody200FromJson(jsonMap);
+      _$GetInventoryResponseBody200FromJson(jsonMap)
+        .._additionalProperties.addEntries(jsonMap.entries
+            .where((e) => !const <String>{}.contains(e.key))
+            .map((e) => MapEntry(
+                  e.key,
+                  (e.value as int),
+                )));
 
-  Map<String, dynamic> toJson() => _$GetInventoryResponseBody200ToJson(this);
+  final Map<String, int> _additionalProperties = <String, int>{};
+
+  Map<String, dynamic> toJson() => Map.from(_additionalProperties)
+    ..addAll(_$GetInventoryResponseBody200ToJson(this));
 
   @override
   String toString() => toJson().toString();
+
+  void operator []=(
+    String key,
+    int value,
+  ) =>
+      _additionalProperties[key] = value;
+
+  Object? operator [](String key) => _additionalProperties[key];
 }
 
 class GetInventoryResponse200 extends GetInventoryResponse

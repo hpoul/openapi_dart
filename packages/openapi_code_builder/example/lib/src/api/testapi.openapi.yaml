@@ -136,3 +136,13 @@ components:
       properties:
         parent:
           $ref: '#/components/schemas/RecursiveObject'
+    TypedAdditionalProperties:
+      additionalProperties:
+        type: array
+        items:
+          type: object
+          properties:
+            foo:
+              type: integer
+            bar:
+              type: number

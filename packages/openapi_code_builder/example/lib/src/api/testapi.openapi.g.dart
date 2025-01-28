@@ -81,6 +81,43 @@ Map<String, dynamic> _$RecursiveObjectToJson(RecursiveObject instance) =>
       if (instance.parent case final value?) 'parent': value,
     };
 
+TypedAdditionalPropertiesAddProp _$TypedAdditionalPropertiesAddPropFromJson(
+        Map<String, dynamic> json) =>
+    TypedAdditionalPropertiesAddProp(
+      foo: (json['foo'] as num?)?.toInt(),
+      bar: json['bar'] as num?,
+    );
+
+Map<String, dynamic> _$TypedAdditionalPropertiesAddPropToJson(
+        TypedAdditionalPropertiesAddProp instance) =>
+    <String, dynamic>{
+      if (instance.foo case final value?) 'foo': value,
+      if (instance.bar case final value?) 'bar': value,
+    };
+
+TypedAdditionalPropertiesAddPropListItem
+    _$TypedAdditionalPropertiesAddPropListItemFromJson(
+            Map<String, dynamic> json) =>
+        TypedAdditionalPropertiesAddPropListItem(
+          foo: (json['foo'] as num?)?.toInt(),
+          bar: json['bar'] as num?,
+        );
+
+Map<String, dynamic> _$TypedAdditionalPropertiesAddPropListItemToJson(
+        TypedAdditionalPropertiesAddPropListItem instance) =>
+    <String, dynamic>{
+      if (instance.foo case final value?) 'foo': value,
+      if (instance.bar case final value?) 'bar': value,
+    };
+
+TypedAdditionalProperties _$TypedAdditionalPropertiesFromJson(
+        Map<String, dynamic> json) =>
+    TypedAdditionalProperties();
+
+Map<String, dynamic> _$TypedAdditionalPropertiesToJson(
+        TypedAdditionalProperties instance) =>
+    <String, dynamic>{};
+
 UuidExampleMessageIdGetResponseBody200
     _$UuidExampleMessageIdGetResponseBody200FromJson(
             Map<String, dynamic> json) =>

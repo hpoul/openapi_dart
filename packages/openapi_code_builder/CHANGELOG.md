@@ -1,3 +1,7 @@
+## 1.6.0-dev.1
+
+* Support for restricted `additionalProperties`
+
 ## 1.5.0
 
 * Support for recursive schemas. (A class referencing itself).

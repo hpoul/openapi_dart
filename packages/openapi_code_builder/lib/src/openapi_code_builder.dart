@@ -120,6 +120,8 @@ class OpenApiLibraryGenerator {
   final _void = refer('void');
   final _uint8List = refer('Uint8List', 'dart:typed_data');
   final _typeString = refer('String');
+  final _typeDouble = refer('double');
+  final _typeInteger = refer('int');
   final _typeDateTime = refer('DateTime');
   final _literalNullCode = literalNull.code;
 
@@ -618,60 +620,6 @@ class OpenApiLibraryGenerator {
               //   ..name = paramNameCamelCase
               //   ..modifier = FieldModifier.final$
               //   ..type = paramType.asNullable(!param.isRequired)));
-              Expression decodeParameterFrom(
-                  APIParameter param, Expression expression) {
-                final schemaType = ArgumentError.checkNotNull(
-                    param.schema?.type, 'param.schema.type');
-                switch (schemaType) {
-                  case APIType.string:
-                    final asString = refer('paramToString')([expression]);
-                    if (param.schema!.format == 'uuid') {
-                      assert(paramType == _apiUuid);
-                      return _apiUuid.newInstanceNamed('parse', [asString]);
-                    } else if (param.schema?.enumerated?.isNotEmpty == true) {
-                      final paramEnumType = paramType;
-                      return refer('${paramEnumType.symbol!}Ext')
-                          .property('fromName')([asString]);
-                    } else if (paramType == _typeDateTime) {
-                      return _typeDateTime.property('parse')([asString]);
-                    } else if (paramType != _typeString) {
-                      throw StateError(
-                          'Unsupported paramType for string $paramType');
-                    }
-                    return asString;
-                  case APIType.number:
-                    return refer('paramToNum')([expression]);
-                  case APIType.integer:
-                    return refer('paramToInt')([expression]);
-                  case APIType.boolean:
-                    return refer('paramToBool')([expression]);
-                  case APIType.array:
-                    checkState(param.schema!.items!.type == APIType.string);
-                    if (param.schema!.items!.enumerated != null &&
-                        param.schema!.items!.enumerated!.isNotEmpty) {
-                      final paramEnumType =
-                          (paramType as TypeReference).types.first;
-                      return expression
-                          .property('map')([
-                            Method(
-                              (mb) => mb
-                                ..lambda = true
-                                ..requiredParameters
-                                    .add(Parameter((pb) => pb..name = 'e'))
-                                ..body = refer('${paramEnumType.symbol!}Ext')
-                                    .property('fromName')([refer('e')])
-                                    .code,
-                            ).closure
-                          ])
-                          .property('toList')([]);
-                    }
-                    return expression;
-                  case APIType.object:
-                    return expression;
-                  // default:
-                  //   throw StateError('Invalid schema type $schemaType');
-                }
-              }
 
               Expression decodeParameter(Expression? expression) {
                 return refer(param.isRequired ? 'paramRequired' : 'paramOpt')(
@@ -680,72 +628,16 @@ class OpenApiLibraryGenerator {
                       'name': literalString(param.name!),
                       'value': expression!,
                       'decode': Method((mb) => mb
-                            ..lambda = true
-                            ..requiredParameters
-                                .add(Parameter((pb) => pb..name = 'value'))
-                            ..body =
-                                decodeParameterFrom(param, refer('value')).code)
-                          .closure,
+                        ..lambda = true
+                        ..requiredParameters
+                            .add(Parameter((pb) => pb..name = 'value'))
+                        ..body = _decodeParameterFrom(
+                          parentName: operationName,
+                          schema: param.schema,
+                          type: paramType,
+                          expression: refer('value'),
+                        ).code).closure,
                     });
-              }
-
-              Expression encodeParameter(Expression expression) {
-                final schemaType = ArgumentError.checkNotNull(
-                    param.schema?.type, 'param.schema.type');
-                switch (schemaType) {
-                  case APIType.string:
-                    if (param.schema!.format == 'uuid') {
-                      assert(paramType == _apiUuid);
-                      if (param.isRequired) {
-                        expression = expression.property('encodeToString')([]);
-                      } else {
-                        expression =
-                            expression.nullSafeProperty('encodeToString')([]);
-                      }
-                    } else if (param.schema?.enumerated?.isNotEmpty == true) {
-                      if (param.isRequired) {
-                        expression = expression.property('name');
-                      } else {
-                        expression = expression.nullSafeProperty('name');
-                      }
-                    } else if (paramType == _typeDateTime) {
-                      if (param.isRequired) {
-                        expression = expression.property('toIso8601String')([]);
-                      } else {
-                        expression =
-                            expression.nullSafeProperty('toIso8601String')([]);
-                      }
-                    } else if (paramType != _typeString) {
-                      // TODO not sure if this makes sense, maybe we should just
-                      //      use `toString`?
-                      throw StateError(
-                          'encodeParameter: Unsupported paramType for string $paramType');
-                    }
-                    return refer('encodeString')([expression]);
-                  case APIType.number:
-                    return refer('encodeNum')([expression]);
-                  case APIType.integer:
-                    return refer('encodeInt')([expression]);
-                  case APIType.boolean:
-                    return refer('encodeBool')([expression]);
-                  case APIType.array:
-                    checkState(param.schema!.items!.type == APIType.string);
-                    if (param.schema!.items!.enumerated != null &&
-                        param.schema!.items!.enumerated!.isNotEmpty) {
-                      return expression.property('map')([
-                        Method(
-                          (mb) => mb
-                            ..lambda = true
-                            ..requiredParameters
-                                .add(Parameter((pb) => pb..name = 'e'))
-                            ..body = refer('e').property('name').code,
-                        ).closure
-                      ]);
-                    }
-                    return expression;
-                  case APIType.object:
-                    return expression;
-                }
               }
 
               final paramLocation = ArgumentError.checkNotNull(param.location);
@@ -756,7 +648,12 @@ class OpenApiLibraryGenerator {
                 clientCodeRequest,
                 paramLocation,
                 paramName,
-                encodeParameter(refer(paramNameCamelCase)),
+                _encodeParameter(
+                  schema: param.schema,
+                  type: paramType,
+                  expression: refer(paramNameCamelCase),
+                  isRequired: param.isRequired,
+                ),
               ).statement);
             }
             final urlResolverMethod = clientMethod.build().toBuilder()
@@ -1137,6 +1034,7 @@ class OpenApiLibraryGenerator {
 
     // check for inheritance
     var additionalPropertyPolicy = obj.additionalPropertyPolicy;
+    var additionalPropertySchema = obj.additionalPropertySchema;
     if (obj.allOf != null) {
       for (final baseObj in obj.allOf!) {
         implements.add(_schemaReference('${className}Base', baseObj!));
@@ -1150,14 +1048,32 @@ class OpenApiLibraryGenerator {
         if (baseObj.additionalPropertyPolicy ==
             APISchemaAdditionalPropertyPolicy.freeForm) {
           additionalPropertyPolicy = baseObj.additionalPropertyPolicy;
+        } else {
+          additionalPropertySchema ??= baseObj.additionalPropertySchema;
         }
       }
     }
-    if (obj.additionalPropertyPolicy ==
-        APISchemaAdditionalPropertyPolicy.restricted) {
-      _logger.warning(
-          'additionalProperties with restrictions are currently not supported. ${obj.referenceURI}');
+    // imho this is a bug.. if policy is "restricted" there has to be a schema.
+    if (additionalPropertyPolicy ==
+            APISchemaAdditionalPropertyPolicy.restricted &&
+        additionalPropertySchema == null) {
+      additionalPropertyPolicy = APISchemaAdditionalPropertyPolicy.disallowed;
     }
+    final additionalPropertyType =
+        switch ((additionalPropertyPolicy, additionalPropertySchema)) {
+      (null, _) => null,
+      (APISchemaAdditionalPropertyPolicy.disallowed, _) => null,
+      (APISchemaAdditionalPropertyPolicy.freeForm, _) =>
+        _referType('Object', isNullable: true),
+      (
+        APISchemaAdditionalPropertyPolicy.restricted,
+        final additionalPropertySchema?
+      ) =>
+        _toDartType('${className}AddProp', additionalPropertySchema),
+      (APISchemaAdditionalPropertyPolicy.restricted, null) =>
+        throw UnimplementedError(
+            '$obj has restricted `additionalProperties` but no schema assigned.'),
+    };
 
     final fields = properties.map((key, e) => MapEntry(key, Field((fb) {
           final fieldType = _toDartType('$className${key.pascalCase}', e!);
@@ -1192,25 +1108,48 @@ class OpenApiLibraryGenerator {
       Expression? fromJsonExpression =
           refer('_\$${className}FromJson').call([refer('jsonMap')]);
 
-      if (additionalPropertyPolicy ==
-          APISchemaAdditionalPropertyPolicy.freeForm) {
+      if (additionalPropertyType != null) {
         toJsonExpression = refer('Map')
             .property('from')([refer('_additionalProperties')])
             .cascade('addAll')([toJsonExpression]);
         fromJsonExpression = fromJsonExpression
             .cascade('_additionalProperties')
             .property('addEntries')([
-          refer('jsonMap').property('entries').property('where')([
-            Method((mb) => mb
-              ..lambda = true
-              ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
-              ..body = literalConstSet(
-                      fields.entries.map((e) => literalString(e.key)).toSet(),
-                      _typeString)
-                  .property('contains')([refer('e').property('key')])
-                  .negate()
-                  .code).closure
-          ])
+          refer('jsonMap')
+              .property('entries')
+              .property('where')([
+                Method((mb) => mb
+                  ..lambda = true
+                  ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+                  ..body = literalConstSet(
+                          fields.entries
+                              .map((e) => literalString(e.key))
+                              .toSet(),
+                          _typeString)
+                      .property('contains')([refer('e').property('key')])
+                      .negate()
+                      .code).closure
+              ])
+              .let((e) {
+            if (additionalPropertyPolicy !=
+                APISchemaAdditionalPropertyPolicy.restricted) {
+              return e;
+            }
+            return e.property('map')([
+              Method((mb) => mb
+                ..lambda = true
+                ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+                ..body = refer('MapEntry')([
+                  refer('e').property('key'),
+                  _parseJson(
+                    parentName: '${className}AddProp',
+                    schema: additionalPropertySchema,
+                    type: additionalPropertyType,
+                    expression: refer('e').property('value'),
+                  ),
+                ]).code).closure
+            ]);
+          })
         ]);
       }
 
@@ -1241,8 +1180,7 @@ class OpenApiLibraryGenerator {
                     ..named = true
                     ..toThis = true)))
               // TODO we should probably make additional properties immutable.
-              ..constant = additionalPropertyPolicy !=
-                  APISchemaAdditionalPropertyPolicy.freeForm
+              ..constant = additionalPropertyType == null
               ..initializers.addAll(useNullSafetySyntax
                   ? []
                   : required.map((e) => refer('assert')(
@@ -1302,17 +1240,15 @@ class OpenApiLibraryGenerator {
           ..lambda = true
           ..body = refer('toJson')([]).property('toString')([]).code));
 
-      if (additionalPropertyPolicy ==
-          APISchemaAdditionalPropertyPolicy.freeForm) {
+      if (additionalPropertyType != null) {
         cb.fields.add(Field((fb) => fb
           ..name = '_additionalProperties'
           ..type = _referType(
             'Map',
-            generics: [_typeString, _referType('Object', isNullable: true)],
+            generics: [_typeString, additionalPropertyType],
           )
-          ..assignment = literalMap(
-                  {}, _typeString, _referType('Object', isNullable: true))
-              .code
+          ..assignment =
+              literalMap({}, _typeString, additionalPropertyType).code
           ..modifier = FieldModifier.final$));
         cb.methods.add(
           Method((mb) => mb
@@ -1323,7 +1259,7 @@ class OpenApiLibraryGenerator {
               ..type = _typeString))
             ..requiredParameters.add(Parameter((pb) => pb
               ..name = 'value'
-              ..type = refer('Object')))
+              ..type = additionalPropertyType))
             ..lambda = true
             ..body = refer('_additionalProperties')
                 .index(refer('key'))
@@ -1445,6 +1381,201 @@ class OpenApiLibraryGenerator {
     }
     // throw StateError(
     //     'Should not happen - unsupported security scheme ${value.type}');
+  }
+
+  Expression _parseJson({
+    required String parentName,
+    required APISchemaObject? schema,
+    required Reference type,
+    required Expression expression,
+  }) {
+    if (schema == null) {
+      throw ArgumentError('schema must not be null');
+    }
+    final schemaType =
+        ArgumentError.checkNotNull(schema.type, 'param.schema.type');
+    return switch (schemaType) {
+      APIType.string => expression.asA(_typeString),
+      APIType.number => expression.asA(_typeDouble),
+      APIType.integer => expression.asA(_typeInteger),
+      APIType.boolean => expression.asA(refer('bool')),
+      APIType.array => switch (schema.items) {
+          final itemSchema? => expression.property('map')([
+              Method(
+                (mb) => mb
+                  ..lambda = true
+                  ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+                  ..body = _decodeParameterFrom(
+                          parentName: '${parentName}ListItem',
+                          schema: itemSchema,
+                          type:
+                              _toDartType('${parentName}ListItem', itemSchema),
+                          expression: refer('e'))
+                      .code,
+              ).closure
+            ]),
+          null => throw UnimplementedError(),
+        },
+      APIType.object => type.property('fromJson')([expression]),
+    };
+  }
+
+  Expression _decodeParameterFrom({
+    required String parentName,
+    required APISchemaObject? schema,
+    required Reference type,
+    required Expression expression,
+  }) {
+    if (schema == null) {
+      throw ArgumentError('schema must not be null');
+    }
+    final schemaType =
+        ArgumentError.checkNotNull(schema.type, 'param.schema.type');
+    switch (schemaType) {
+      case APIType.string:
+        final asString = refer('paramToString')([expression]);
+        if (schema.format == 'uuid') {
+          assert(type == _apiUuid);
+          return _apiUuid.newInstanceNamed('parse', [asString]);
+        } else if (schema.enumerated?.isNotEmpty == true) {
+          final paramEnumType = type;
+          return refer('${paramEnumType.symbol!}Ext')
+              .property('fromName')([asString]);
+        } else if (type == _typeDateTime) {
+          return _typeDateTime.property('parse')([asString]);
+        } else if (type != _typeString) {
+          throw StateError('Unsupported paramType for string $type');
+        }
+        return asString;
+      case APIType.number:
+        return refer('paramToNum')([expression]);
+      case APIType.integer:
+        return refer('paramToInt')([expression]);
+      case APIType.boolean:
+        return refer('paramToBool')([expression]);
+      case APIType.array:
+        // if (![APIType.string, APIType.number, APIType.integer, APIType.]
+        //     .contains(schema.items!.type)) {
+        //   throw ArgumentError(
+        //       'Unsupported array item type ${schema.items?.type}');
+        // }
+        if (schema.items!.enumerated != null &&
+            schema.items!.enumerated!.isNotEmpty) {
+          final paramEnumType = (type as TypeReference).types.first;
+          return expression
+              .property('map')([
+                Method(
+                  (mb) => mb
+                    ..lambda = true
+                    ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+                    ..body = refer('${paramEnumType.symbol!}Ext')
+                        .property('fromName')([refer('e')])
+                        .code,
+                ).closure
+              ])
+              .property('toList')([]);
+        } else if (schema.items case final itemSchema?) {
+          checkState(schema.items!.type == APIType.string);
+          if (schema.items!.enumerated != null &&
+              schema.items!.enumerated!.isNotEmpty) {
+            return expression.property('map')([
+              Method(
+                (mb) => mb
+                  ..lambda = true
+                  ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+                  ..body = refer('e').property('name').code,
+              ).closure
+            ]);
+          }
+          return expression;
+          // final itemType = _toDartType('${parentName}ListItem', itemSchema);
+          // return expression
+          //     .property('map')([
+          //       Method(
+          //         (mb) => mb
+          //           ..lambda = true
+          //           ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+          //           ..body = _decodeParameterFrom(
+          //                   parentName: '${parentName}ListItem',
+          //                   schema: itemSchema,
+          //                   type: itemType,
+          //                   expression: refer('e'))
+          //               .code,
+          //       ).closure
+          //     ])
+          //     .property('toList')([]);
+        }
+        return expression;
+      case APIType.object:
+        return type.property('fromJson')([expression]);
+      // return expression;
+      // default:
+      //   throw StateError('Invalid schema type $schemaType');
+    }
+  }
+
+  Expression _encodeParameter({
+    APISchemaObject? schema,
+    required Reference type,
+    required Expression expression,
+    required bool isRequired,
+  }) {
+    if (schema == null) {
+      throw ArgumentError('schema');
+    }
+    final schemaType =
+        ArgumentError.checkNotNull(schema.type, 'param.schema.type');
+    switch (schemaType) {
+      case APIType.string:
+        if (schema.format == 'uuid') {
+          assert(type == _apiUuid);
+          if (isRequired) {
+            expression = expression.property('encodeToString')([]);
+          } else {
+            expression = expression.nullSafeProperty('encodeToString')([]);
+          }
+        } else if (schema.enumerated?.isNotEmpty == true) {
+          if (isRequired) {
+            expression = expression.property('name');
+          } else {
+            expression = expression.nullSafeProperty('name');
+          }
+        } else if (type == _typeDateTime) {
+          if (isRequired) {
+            expression = expression.property('toIso8601String')([]);
+          } else {
+            expression = expression.nullSafeProperty('toIso8601String')([]);
+          }
+        } else if (type != _typeString) {
+          // TODO not sure if this makes sense, maybe we should just
+          //      use `toString`?
+          throw StateError(
+              'encodeParameter: Unsupported paramType for string $type');
+        }
+        return refer('encodeString')([expression]);
+      case APIType.number:
+        return refer('encodeNum')([expression]);
+      case APIType.integer:
+        return refer('encodeInt')([expression]);
+      case APIType.boolean:
+        return refer('encodeBool')([expression]);
+      case APIType.array:
+        checkState(schema.items!.type == APIType.string);
+        if (schema.items!.enumerated != null &&
+            schema.items!.enumerated!.isNotEmpty) {
+          return expression.property('map')([
+            Method(
+              (mb) => mb
+                ..lambda = true
+                ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+                ..body = refer('e').property('name').code,
+            ).closure
+          ]);
+        }
+        return expression;
+      case APIType.object:
+        return expression;
+    }
   }
 }
 
