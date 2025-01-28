@@ -1405,7 +1405,7 @@ class OpenApiLibraryGenerator {
                 (mb) => mb
                   ..lambda = true
                   ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
-                  ..body = _decodeParameterFrom(
+                  ..body = _parseJson(
                           parentName: '${parentName}ListItem',
                           schema: itemSchema,
                           type:
