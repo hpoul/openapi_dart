@@ -94,6 +94,8 @@ class InheritanceBase implements OpenApiContent {
   @override
   String toString() => toJson().toString();
 
+  Map<String, Object?> get additionalProperties => _additionalProperties;
+
   void operator []=(
     String key,
     Object? value,
@@ -162,6 +164,8 @@ class InheritanceChild
 
   @override
   String toString() => toJson().toString();
+
+  Map<String, Object?> get additionalProperties => _additionalProperties;
 
   void operator []=(
     String key,
@@ -278,6 +282,9 @@ class TypedAdditionalProperties implements OpenApiContent {
 
   @override
   String toString() => toJson().toString();
+
+  Map<String, List<TypedAdditionalPropertiesAddProp>>
+      get additionalProperties => _additionalProperties;
 
   void operator []=(
     String key,

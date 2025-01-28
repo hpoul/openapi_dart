@@ -1241,6 +1241,15 @@ class OpenApiLibraryGenerator {
           ..body = refer('toJson')([]).property('toString')([]).code));
 
       if (additionalPropertyType != null) {
+        cb.methods.add(Method((mb) => mb
+          ..type = MethodType.getter
+          ..name = 'additionalProperties'
+          ..returns = _referType(
+            'Map',
+            generics: [_typeString, additionalPropertyType],
+          )
+          ..lambda = true
+          ..body = refer('_additionalProperties').code));
         cb.fields.add(Field((fb) => fb
           ..name = '_additionalProperties'
           ..type = _referType(

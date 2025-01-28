@@ -960,6 +960,8 @@ class GetInventoryResponseBody200 implements OpenApiContent {
   @override
   String toString() => toJson().toString();
 
+  Map<String, int> get additionalProperties => _additionalProperties;
+
   void operator []=(
     String key,
     int value,
