@@ -1283,7 +1283,7 @@ class OpenApiLibraryGenerator {
         cb.methods.add(
           Method((mb) => mb
             ..name = 'operator[]'
-            ..returns = _referType('Object', isNullable: true)
+            ..returns = additionalPropertyType.asNullable(true)
             ..requiredParameters.add(Parameter((pb) => pb
               ..name = 'key'
               ..type = _typeString))

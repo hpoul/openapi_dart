@@ -968,7 +968,7 @@ class GetInventoryResponseBody200 implements OpenApiContent {
   ) =>
       _additionalProperties[key] = value;
 
-  Object? operator [](String key) => _additionalProperties[key];
+  int? operator [](String key) => _additionalProperties[key];
 }
 
 class GetInventoryResponse200 extends GetInventoryResponse

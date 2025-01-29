@@ -238,7 +238,7 @@ class TypedAdditionalProperties implements OpenApiContent {
             .where((e) => !const <String>{}.contains(e.key))
             .map((e) => MapEntry(
                   e.key,
-                  e.value
+                  (e.value as Iterable<dynamic>)
                       .map((e) => TypedAdditionalPropertiesAddProp.fromJson(e))
                       .toList(),
                 )));
@@ -262,7 +262,8 @@ class TypedAdditionalProperties implements OpenApiContent {
   ) =>
       _additionalProperties[key] = value;
 
-  Object? operator [](String key) => _additionalProperties[key];
+  List<TypedAdditionalPropertiesAddProp>? operator [](String key) =>
+      _additionalProperties[key];
 }
 
 class UserRegisterPostResponse200 extends UserRegisterPostResponse {
