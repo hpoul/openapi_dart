@@ -238,7 +238,7 @@ class TypedAdditionalProperties implements OpenApiContent {
             .where((e) => !const <String>{}.contains(e.key))
             .map((e) => MapEntry(
                   e.key,
-                  (e.value as List<dynamic>)
+                  e.value
                       .map((e) => TypedAdditionalPropertiesAddProp.fromJson(e))
                       .toList(),
                 )));

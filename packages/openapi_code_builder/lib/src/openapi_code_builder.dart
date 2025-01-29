@@ -1415,7 +1415,7 @@ class OpenApiLibraryGenerator {
       APIType.boolean => expression.asA(refer('bool')),
       APIType.array => switch (schema.items) {
           final itemSchema? => expression
-              .asA(_referType('List', generics: [refer('dynamic')]))
+              .asA(_referType('Iterable', generics: [refer('dynamic')]))
               .property('map')([
                 Method(
                   (mb) => mb
