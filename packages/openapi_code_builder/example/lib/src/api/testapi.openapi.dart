@@ -229,37 +229,6 @@ class TypedAdditionalPropertiesAddProp implements OpenApiContent {
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
-class TypedAdditionalPropertiesAddPropListItem implements OpenApiContent {
-  const TypedAdditionalPropertiesAddPropListItem({
-    this.foo,
-    this.bar,
-  });
-
-  factory TypedAdditionalPropertiesAddPropListItem.fromJson(
-          Map<String, dynamic> jsonMap) =>
-      _$TypedAdditionalPropertiesAddPropListItemFromJson(jsonMap);
-
-  @JsonKey(
-    name: 'foo',
-    includeIfNull: false,
-  )
-  final int? foo;
-
-  @JsonKey(
-    name: 'bar',
-    includeIfNull: false,
-  )
-  final num? bar;
-
-  Map<String, dynamic> toJson() =>
-      _$TypedAdditionalPropertiesAddPropListItemToJson(this);
-
-  @override
-  String toString() => toJson().toString();
-}
-
-@JsonSerializable()
-@ApiUuidJsonConverter()
 class TypedAdditionalProperties implements OpenApiContent {
   TypedAdditionalProperties();
 
@@ -269,8 +238,9 @@ class TypedAdditionalProperties implements OpenApiContent {
             .where((e) => !const <String>{}.contains(e.key))
             .map((e) => MapEntry(
                   e.key,
-                  e.value.map((e) =>
-                      TypedAdditionalPropertiesAddPropListItem.fromJson(e)),
+                  (e.value as List<dynamic>)
+                      .map((e) => TypedAdditionalPropertiesAddProp.fromJson(e))
+                      .toList(),
                 )));
 
   final Map<String, List<TypedAdditionalPropertiesAddProp>>

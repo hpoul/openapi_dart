@@ -1005,6 +1005,11 @@ class OpenApiLibraryGenerator {
     final componentName =
         _componentNameFromReferenceUri(uri) ?? _classNameForComponent(key);
 
+    if (createdSchema[schemaObject] case final ref?) {
+      _logger.finest('Found already created for this schema reference.');
+      return ref;
+    }
+
     final found = createdSchema.values
         .firstWhereOrNull((element) => element.symbol == componentName);
     if (found != null) {
@@ -1409,20 +1414,23 @@ class OpenApiLibraryGenerator {
       APIType.integer => expression.asA(_typeInteger),
       APIType.boolean => expression.asA(refer('bool')),
       APIType.array => switch (schema.items) {
-          final itemSchema? => expression.property('map')([
-              Method(
-                (mb) => mb
-                  ..lambda = true
-                  ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
-                  ..body = _parseJson(
-                          parentName: '${parentName}ListItem',
-                          schema: itemSchema,
-                          type:
-                              _toDartType('${parentName}ListItem', itemSchema),
-                          expression: refer('e'))
-                      .code,
-              ).closure
-            ]),
+          final itemSchema? => expression
+              .asA(_referType('List', generics: [refer('dynamic')]))
+              .property('map')([
+                Method(
+                  (mb) => mb
+                    ..lambda = true
+                    ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+                    ..body = _parseJson(
+                            parentName: '${parentName}ListItem',
+                            schema: itemSchema,
+                            type: _toDartType(
+                                '${parentName}ListItem', itemSchema),
+                            expression: refer('e'))
+                        .code,
+                ).closure
+              ])
+              .property('toList')([]),
           null => throw UnimplementedError(),
         },
       APIType.object => type.property('fromJson')([expression]),

@@ -95,21 +95,6 @@ Map<String, dynamic> _$TypedAdditionalPropertiesAddPropToJson(
       if (instance.bar case final value?) 'bar': value,
     };
 
-TypedAdditionalPropertiesAddPropListItem
-    _$TypedAdditionalPropertiesAddPropListItemFromJson(
-            Map<String, dynamic> json) =>
-        TypedAdditionalPropertiesAddPropListItem(
-          foo: (json['foo'] as num?)?.toInt(),
-          bar: json['bar'] as num?,
-        );
-
-Map<String, dynamic> _$TypedAdditionalPropertiesAddPropListItemToJson(
-        TypedAdditionalPropertiesAddPropListItem instance) =>
-    <String, dynamic>{
-      if (instance.foo case final value?) 'foo': value,
-      if (instance.bar case final value?) 'bar': value,
-    };
-
 TypedAdditionalProperties _$TypedAdditionalPropertiesFromJson(
         Map<String, dynamic> json) =>
     TypedAdditionalProperties();

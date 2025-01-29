@@ -1,4 +1,4 @@
-## 1.6.0-dev.3
+## 1.6.0-dev.4
 
 * Support for restricted `additionalProperties`
 
