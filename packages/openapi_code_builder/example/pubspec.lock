@@ -394,7 +394,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.6.0-dev.6"
+    version: "1.6.0-dev.7"
   package_config:
     dependency: transitive
     description:
