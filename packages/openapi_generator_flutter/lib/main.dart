@@ -123,12 +123,12 @@ See [GitHub project for details](https://github.com/hpoul/openapi_dart).
 
 class CodeWidget extends StatelessWidget {
   const CodeWidget({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onChanged,
     this.style,
     this.labelText,
-  }) : super(key: key);
+  });
 
   final TextEditingController controller;
   final void Function(String changed) onChanged;
