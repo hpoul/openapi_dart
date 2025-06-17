@@ -1,4 +1,4 @@
-## 1.6.0
+## 1.6.0+1
 
 * Support for restricted `additionalProperties`
 * Support for json responses of type String (instead of Object/Array).
