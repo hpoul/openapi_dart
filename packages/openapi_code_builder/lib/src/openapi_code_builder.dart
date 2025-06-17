@@ -313,7 +313,26 @@ class OpenApiLibraryGenerator {
                     .newInstanceNamed('parse',
                         [literalString(responseContentType.toString())]).code;
                 final responseSchema = content.schema!;
-                if (responseSchema.type == APIType.array) {
+                if (responseSchema.type == APIType.string) {
+                  // TODO add server side support for string types.
+                  bodyType =
+                      _toDartType('${responseClass.name}Body', responseSchema);
+                  cb.initializers
+                      .add(refer('bodyJson').assign(literalMap({})).code);
+                  cb.requiredParameters.add(Parameter((pb) => pb
+                    ..name = 'body'
+                    ..type = bodyType
+                    ..toThis = true));
+                  clientResponseParseParams.add(
+                    _decodeStringType(
+                        schema: responseSchema,
+                        asString: refer('response')
+                            .property('responseBodyJsonDynamic')([])
+                            .awaited
+                            .asA(_typeString),
+                        type: bodyType),
+                  );
+                } else if (responseSchema.type == APIType.array) {
                   final bodyItemType = _schemaReference(
                       '${responseClass.name}Body$codeName',
                       responseSchema.items!);
@@ -1406,8 +1425,10 @@ class OpenApiLibraryGenerator {
     if (schema == null) {
       throw ArgumentError('schema must not be null');
     }
-    final schemaType =
-        ArgumentError.checkNotNull(schema.type, 'param.schema.type');
+    final schemaType = schema.type ??
+        APIType
+            .object; /*ArgumentError.checkNotNull(
+        schema.type, 'param.schema.type $parentName $type');*/
     return switch (schemaType) {
       APIType.string => expression.asA(_typeString),
       APIType.number => expression.asA(_typeDouble),
@@ -1437,6 +1458,26 @@ class OpenApiLibraryGenerator {
     };
   }
 
+  Expression _decodeStringType({
+    required APISchemaObject schema,
+    required Expression asString,
+    required Reference type,
+  }) {
+    if (schema.format == 'uuid') {
+      assert(type == _apiUuid);
+      return _apiUuid.newInstanceNamed('parse', [asString]);
+    } else if (schema.enumerated?.isNotEmpty == true) {
+      final paramEnumType = type;
+      return refer('${paramEnumType.symbol!}Ext')
+          .property('fromName')([asString]);
+    } else if (type == _typeDateTime) {
+      return _typeDateTime.property('parse')([asString]);
+    } else if (type != _typeString) {
+      throw StateError('Unsupported paramType for string $type');
+    }
+    return asString;
+  }
+
   Expression _decodeParameterFrom({
     required String parentName,
     required APISchemaObject? schema,
@@ -1451,19 +1492,8 @@ class OpenApiLibraryGenerator {
     switch (schemaType) {
       case APIType.string:
         final asString = refer('paramToString')([expression]);
-        if (schema.format == 'uuid') {
-          assert(type == _apiUuid);
-          return _apiUuid.newInstanceNamed('parse', [asString]);
-        } else if (schema.enumerated?.isNotEmpty == true) {
-          final paramEnumType = type;
-          return refer('${paramEnumType.symbol!}Ext')
-              .property('fromName')([asString]);
-        } else if (type == _typeDateTime) {
-          return _typeDateTime.property('parse')([asString]);
-        } else if (type != _typeString) {
-          throw StateError('Unsupported paramType for string $type');
-        }
-        return asString;
+        return _decodeStringType(
+            schema: schema, asString: asString, type: type);
       case APIType.number:
         return refer('paramToNum')([expression]);
       case APIType.integer:

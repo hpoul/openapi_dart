@@ -1,6 +1,7 @@
-## 1.6.0-dev.7
+## 1.6.0
 
 * Support for restricted `additionalProperties`
+* Support for json responses of type String (instead of Object/Array).
 
 ## 1.5.0
 
