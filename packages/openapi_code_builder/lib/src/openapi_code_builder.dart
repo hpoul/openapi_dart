@@ -1522,9 +1522,9 @@ class OpenApiLibraryGenerator {
               ])
               .property('toList')([]);
         } else if (schema.items case final itemSchema?) {
-          checkState(schema.items!.type == APIType.string);
-          if (schema.items!.enumerated != null &&
-              schema.items!.enumerated!.isNotEmpty) {
+          checkState(itemSchema.type == APIType.string);
+          if (itemSchema.enumerated != null &&
+              itemSchema.enumerated!.isNotEmpty) {
             return expression.property('map')([
               Method(
                 (mb) => mb
