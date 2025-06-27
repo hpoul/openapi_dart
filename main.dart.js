@@ -31101,7 +31101,7 @@ $S:2}
 A.aHn.prototype={
 $1(a){var s=A.fk().b
 s=s==null?null:s.canvasKitBaseUrl
-return(s==null?"https://www.gstatic.com/flutter-canvaskit/8cd19e509d6bece8ccd74aef027c4ca947363095/":s)+a},
+return(s==null?"https://www.gstatic.com/flutter-canvaskit/dd93de6fb1776398bf586cbd477deade1391c7e4/":s)+a},
 $S:29}
 A.aaR.prototype={
 hz(a,b){var s,r=this.a
@@ -109573,7 +109573,7 @@ o=A.b3z(p,"ExampleApi","example.dart")
 j=o.aeu()
 g=A.ayJ(3,2,0)
 f=A.a([],t.s)
-n=new A.acx(g,80,0,f).ck("// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api\n\n"+new A.Py(new A.Pv(A.l(k,t.S)),!1,!0,!1).adM(j,null).j(0)+"\n\nT _throwStateError<T>(String message) => throw StateError(message);\n\n")
+n=new A.acx(g,80,0,f).ck("// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides\n\n"+new A.Py(new A.Pv(A.l(k,t.S)),!1,!0,!1).adM(j,null).j(0)+"\n\nT _throwStateError<T>(String message) => throw StateError(message);\n\n")
 q.e.scI(n)
 $.aNZ().mL(B.rX,"Updated output.",null,null)}catch(d){m=A.as(d)
 l=A.b0(d)
