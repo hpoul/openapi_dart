@@ -1,3 +1,7 @@
+## 1.6.0+2
+
+* Add ignore `annotate_overrides`.
+
 ## 1.6.0+1
 
 * Support for restricted `additionalProperties`

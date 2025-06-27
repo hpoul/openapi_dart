@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api
+// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';

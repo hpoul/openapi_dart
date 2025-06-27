@@ -140,11 +140,3 @@ GetInventoryResponseBody200 _$GetInventoryResponseBody200FromJson(
 Map<String, dynamic> _$GetInventoryResponseBody200ToJson(
         GetInventoryResponseBody200 instance) =>
     <String, dynamic>{};
-
-LoginUserResponseBody200 _$LoginUserResponseBody200FromJson(
-        Map<String, dynamic> json) =>
-    LoginUserResponseBody200();
-
-Map<String, dynamic> _$LoginUserResponseBody200ToJson(
-        LoginUserResponseBody200 instance) =>
-    <String, dynamic>{};

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api
+// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:typed_data' as _i1;
@@ -1436,31 +1436,17 @@ sealed class CreateUsersWithListInputResponse extends OpenApiResponse
   }
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class LoginUserResponseBody200 implements OpenApiContent {
-  const LoginUserResponseBody200();
-
-  factory LoginUserResponseBody200.fromJson(Map<String, dynamic> jsonMap) =>
-      _$LoginUserResponseBody200FromJson(jsonMap);
-
-  Map<String, dynamic> toJson() => _$LoginUserResponseBody200ToJson(this);
-
-  @override
-  String toString() => toJson().toString();
-}
-
 class LoginUserResponse200 extends LoginUserResponse
     implements OpenApiResponseBodyJson {
   /// successful operation
   LoginUserResponse200.response200(this.body)
       : status = 200,
-        bodyJson = body.toJson();
+        bodyJson = {};
 
   @override
   final int status;
 
-  final LoginUserResponseBody200 body;
+  final String body;
 
   @override
   final Map<String, dynamic> bodyJson;
@@ -1496,11 +1482,11 @@ class LoginUserResponse400 extends LoginUserResponse {
 }
 
 sealed class LoginUserResponse extends OpenApiResponse
-    implements HasSuccessResponse<LoginUserResponseBody200> {
+    implements HasSuccessResponse<String> {
   LoginUserResponse();
 
   /// successful operation
-  factory LoginUserResponse.response200(LoginUserResponseBody200 body) =>
+  factory LoginUserResponse.response200(String body) =>
       LoginUserResponse200.response200(body);
 
   /// Invalid username/password supplied
@@ -1524,7 +1510,7 @@ sealed class LoginUserResponse extends OpenApiResponse
 
   /// status 200:  successful operation
   @override
-  LoginUserResponseBody200 requireSuccess() {
+  String requireSuccess() {
     if (this is LoginUserResponse200) {
       return (this as LoginUserResponse200).body;
     } else {
@@ -2538,8 +2524,8 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
       request,
       {
         '200': (OpenApiClientResponse response) async =>
-            LoginUserResponse200.response200(LoginUserResponseBody200.fromJson(
-                await response.responseBodyJson())),
+            LoginUserResponse200.response200(
+                (await response.responseBodyJsonDynamic() as String)),
         '400': (OpenApiClientResponse response) async =>
             LoginUserResponse400.response400(),
       },
