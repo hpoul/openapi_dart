@@ -170,3 +170,5 @@ linter:
     - valid_regexps
     - void_checks
 
+formatter:
+  trailing_commas: preserve

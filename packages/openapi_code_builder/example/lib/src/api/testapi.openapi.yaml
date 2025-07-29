@@ -16,7 +16,7 @@ paths:
               $ref: '#/components/schemas/RegisterRequest'
       responses:
         '200':
-          description: OK
+          description: "OK\nmulti\nline"
   /hello/{name}/html:
     parameters:
       - name: name

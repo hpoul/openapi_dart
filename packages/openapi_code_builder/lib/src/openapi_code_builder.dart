@@ -2318,13 +2318,13 @@ extension on Reference {
 }
 
 extension on ListBuilder<String> {
+  static final lineBreak = RegExp('[\r\n]');
+
   /// adds the given helpText as `docs` if it is not null.
   void addDartDoc(String? helpText, {String? prefix}) {
     if (helpText != null) {
-      if (prefix == null) {
-        add('/// $helpText');
-      } else {
-        add('/// $prefix $helpText');
+      for (final (index, line) in helpText.split(lineBreak).indexed) {
+        add(['///', ?(index == 0 ? prefix : null), line].join(' '));
       }
     }
   }

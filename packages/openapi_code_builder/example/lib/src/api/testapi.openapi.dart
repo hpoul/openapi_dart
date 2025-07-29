@@ -268,6 +268,8 @@ class TypedAdditionalProperties implements OpenApiContent {
 
 class UserRegisterPostResponse200 extends UserRegisterPostResponse {
   /// OK
+  /// multi
+  /// line
   UserRegisterPostResponse200.response200() : status = 200;
 
   @override
@@ -288,6 +290,8 @@ sealed class UserRegisterPostResponse extends OpenApiResponse
   UserRegisterPostResponse();
 
   /// OK
+  /// multi
+  /// line
   factory UserRegisterPostResponse.response200() =>
       UserRegisterPostResponse200.response200();
 
@@ -305,6 +309,8 @@ sealed class UserRegisterPostResponse extends OpenApiResponse
   }
 
   /// status 200:  OK
+  /// multi
+  /// line
   @override
   void requireSuccess() {
     if (this is UserRegisterPostResponse200) {
