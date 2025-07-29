@@ -2,6 +2,7 @@
 
 * Dart 3.8
 * Upgrade `source_gen` (3.x), `build` (3.x), etc.
+* Don't break on multi-line descriptions/docs.
 
 ## 1.6.0+2
 
