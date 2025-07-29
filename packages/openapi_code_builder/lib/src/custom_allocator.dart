@@ -32,11 +32,11 @@ class CustomAllocator implements Allocator {
   @override
   Iterable<Directive> get imports {
     return _imports.keys
-        .map(
-          (u) => Directive.import(u, as: '_i${_imports[u]}'),
-        )
-        .followedBy(_doNotPrefix
-            .where((element) => element.startsWith('package:'))
-            .map((e) => Directive.import(e)));
+        .map((u) => Directive.import(u, as: '_i${_imports[u]}'))
+        .followedBy(
+          _doNotPrefix
+              .where((element) => element.startsWith('package:'))
+              .map((e) => Directive.import(e)),
+        );
   }
 }
