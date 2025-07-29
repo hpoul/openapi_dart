@@ -4,10 +4,10 @@ description: Example use of openapi code builder.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: '>=3.8.0 <4.0.0'
 
 dependencies:
-  freezed_annotation: ^2.4.1
+  freezed_annotation: ^3.1.0
   json_annotation: ^4.8.1
   logging: ^1.0.0
   logging_appenders: ^1.0.0
@@ -18,9 +18,9 @@ dev_dependencies:
   openapi_code_builder:
     path: ../
   json_serializable: ^6.9.0
-  freezed: ^2.4.6
+  freezed: ^3.2.0
   build_runner: ^2.4.8
-  lints: ^5.0.0
+  lints: ^6.0.0
 
 dependency_overrides:
   openapi_base:

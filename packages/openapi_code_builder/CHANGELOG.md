@@ -1,3 +1,8 @@
+## 1.7.0
+
+* Dart 3.8
+* Upgrade `source_gen` (3.x), `build` (3.x), etc.
+
 ## 1.6.0+2
 
 * Add ignore `annotate_overrides`.
