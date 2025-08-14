@@ -799,6 +799,7 @@ class OpenApiLibraryGenerator {
 
           final clientDataClass = ClassBuilder()
             ..name = operationName.pascalCase
+            ..sealed = true
             ..mixins.add(refer('_\$${operationName.pascalCase}'))
             ..annotations.add(_freezed);
           final clientDataConstructor = ConstructorBuilder()

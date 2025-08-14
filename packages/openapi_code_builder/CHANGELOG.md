@@ -1,3 +1,7 @@
+## 1.7.0+1
+
+* Make `@freezed` classes `sealed`.
+
 ## 1.7.0
 
 * Dart 3.8
