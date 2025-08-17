@@ -198,9 +198,10 @@ class OpenApiLibraryGenerator {
   final lb = LibraryBuilder();
   final securitySchemesClass = ClassBuilder()..name = 'SecuritySchemes';
   final List<Expression?> routerConfig = <Expression>[];
+  bool createdSchemaClass = false;
+  bool createdSchemaEnum = false;
 
   Library generate() {
-    lb.body.add(Directive.part(partFileName));
     var myRequireFreezed = false;
     void requireFreezed() {
       if (myRequireFreezed) {
@@ -216,10 +217,12 @@ class OpenApiLibraryGenerator {
     }
 
     // create class for each schema..
-    for (final schemaEntry in api.components!.schemas!.entries) {
-      _schemaReference(schemaEntry.key, schemaEntry.value!);
+    if (api.components?.schemas != null) {
+      for (final schemaEntry in api.components!.schemas!.entries) {
+        _schemaReference(schemaEntry.key, schemaEntry.value!);
+      }
     }
-    if (api.components!.securitySchemes != null && !ignoreSecuritySchemes) {
+    if (api.components?.securitySchemes != null && !ignoreSecuritySchemes) {
       for (final securityScheme in api.components!.securitySchemes!.entries) {
         _securitySchemeReference(securityScheme.key, securityScheme.value!);
       }
@@ -1094,6 +1097,9 @@ class OpenApiLibraryGenerator {
           }
         }
       }
+      if (createdSchemaClass || createdSchemaEnum) {
+        lb.body.insert(1, Directive.part(partFileName));
+      }
     });
     lb.body.add(c);
     lb.body.add(clientInterface.build());
@@ -1392,11 +1398,12 @@ class OpenApiLibraryGenerator {
     );
     if (schemaObject.enumerated?.isNotEmpty == true) {
       final e = _createEnum(componentName, schemaObject.enumerated!);
+      createdSchemaEnum = true;
       return e;
     }
     final c = _createSchemaClass(componentName, schemaObject);
     lb.body.add(c);
-
+    createdSchemaClass = true;
     return reference;
   }
 
