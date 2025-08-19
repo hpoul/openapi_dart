@@ -11,7 +11,6 @@ import 'package:logging/logging.dart';
 import 'package:open_api_forked/v3.dart';
 import 'package:openapi_base/openapi_base.dart';
 import 'package:openapi_code_builder/src/custom_allocator.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:quiver/check.dart';
 import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
@@ -2209,12 +2208,15 @@ class OpenApiCodeBuilderUtils {
       orderDirectives: orderDirectives,
       useNullSafetySyntax: useNullSafetySyntax,
     );
-    final libraryOutput = DartFormatter(languageVersion: Version(3, 2, 0)).format(
-      '// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
-      '// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides\n\n'
-      '${library.accept(emitter)}\n\n'
-      'T _throwStateError<T>(String message) => throw StateError(message);\n\n',
-    );
+    final libraryOutput =
+        DartFormatter(
+          languageVersion: DartFormatter.latestLanguageVersion,
+        ).format(
+          '// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
+          '// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides\n\n'
+          '${library.accept(emitter)}\n\n'
+          'T _throwStateError<T>(String message) => throw StateError(message);\n\n',
+        );
     return libraryOutput;
   }
 }

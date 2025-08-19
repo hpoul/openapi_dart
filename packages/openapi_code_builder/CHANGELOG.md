@@ -1,3 +1,7 @@
+## 1.7.0+2
+
+* Use latest language version for formatter.
+
 ## 1.7.0+1
 
 * Make `@freezed` classes `sealed`.
