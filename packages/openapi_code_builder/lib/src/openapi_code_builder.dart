@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:build/build.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:code_builder/src/visitors.dart'; // ignore: implementation_imports
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dart_style/dart_style.dart';
 import 'package:logging/logging.dart';
@@ -1750,7 +1749,7 @@ class OpenApiLibraryGenerator {
                   annotations: [
                     jsonValue([literalString(e.toString())]),
                   ],
-                  name: e.toString(),
+                  name: e.toString().camelCase,
                 ),
               )
               .toList(),

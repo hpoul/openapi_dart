@@ -1,3 +1,7 @@
+## 1.8.0
+
+* Enum constant values now enforce snake case. (possible incompatibility)
+
 ## 1.7.0+2
 
 * Use latest language version for formatter.
