@@ -1,3 +1,7 @@
+## 1.8.1
+
+* Improve array query parameter support. (Support for Enums/UUIDs in arrays).
+
 ## 1.8.0
 
 * Enum constant values now enforce snake case. (possible incompatibility)

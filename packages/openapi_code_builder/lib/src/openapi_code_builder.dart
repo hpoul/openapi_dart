@@ -1989,6 +1989,24 @@ class OpenApiLibraryGenerator {
                   ..body = refer('e').property('name').code,
               ).closure,
             ]);
+          } else {
+            return expression
+                .property('map')([
+                  Method(
+                    (mb) => mb
+                      ..lambda = true
+                      ..requiredParameters.add(
+                        Parameter((pb) => pb..name = 'e'),
+                      )
+                      ..body = _decodeParameterFrom(
+                        parentName: parentName,
+                        schema: itemSchema,
+                        type: type,
+                        expression: literalList([refer('e')]),
+                      ).code,
+                  ).closure,
+                ])
+                .property('toList')([]);
           }
           return expression;
           // final itemType = _toDartType('${parentName}ListItem', itemSchema);
@@ -2067,9 +2085,12 @@ class OpenApiLibraryGenerator {
         return refer('encodeBool')([expression]);
       case APIType.array:
         checkState(schema.items!.type == APIType.string);
+        final propertyAccess = isRequired
+            ? expression.property
+            : expression.nullSafeProperty;
         if (schema.items!.enumerated != null &&
             schema.items!.enumerated!.isNotEmpty) {
-          return expression.property('map')([
+          return propertyAccess('map')([
             Method(
               (mb) => mb
                 ..lambda = true
@@ -2077,8 +2098,21 @@ class OpenApiLibraryGenerator {
                 ..body = refer('e').property('name').code,
             ).closure,
           ]);
+        } else {
+          return propertyAccess('expand')([
+            Method(
+              (mb) => mb
+                ..lambda = true
+                ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+                ..body = _encodeParameter(
+                  schema: schema.items,
+                  type: type,
+                  expression: refer('e'),
+                  isRequired: true,
+                ).code,
+            ).closure,
+          ]);
         }
-        return expression;
       case APIType.object:
         return expression;
     }
