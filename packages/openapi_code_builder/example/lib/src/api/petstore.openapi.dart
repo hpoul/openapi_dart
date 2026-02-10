@@ -2026,7 +2026,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     required List<String> tags,
   }) async {
     final request = OpenApiClientRequest('get', '/pet/findByTags', []);
-    request.addQueryParameter('tags', tags);
+    request.addQueryParameter('tags', tags.expand((e) => encodeString(e)));
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           FindPetsByTagsResponse200.response200(
@@ -2386,7 +2386,7 @@ class PetstoreUrlResolve with OpenApiUrlEncodeMixin {
   /// * [tags]: Tags to filter by
   OpenApiClientRequest findPetsByTags({required List<String> tags}) {
     final request = OpenApiClientRequest('get', '/pet/findByTags', []);
-    request.addQueryParameter('tags', tags);
+    request.addQueryParameter('tags', tags.expand((e) => encodeString(e)));
     return request;
   }
 
@@ -2601,7 +2601,7 @@ class PetstoreRouter extends OpenApiServerRouterBase {
           tags: paramRequired(
             name: 'tags',
             value: request.queryParameter('tags'),
-            decode: (value) => value,
+            decode: (value) => value.map((e) => paramToString([e])).toList(),
           ),
         ),
       );

@@ -541,6 +541,55 @@ sealed class UuidExampleMessageIdGetResponse extends OpenApiResponse
   }
 }
 
+class HelloArrayqueryGetResponse200 extends HelloArrayqueryGetResponse {
+  /// OK
+  HelloArrayqueryGetResponse200.response200() : status = 200;
+
+  @override
+  final int status;
+
+  @override
+  final OpenApiContentType? contentType = null;
+
+  @override
+  Map<String, Object?> propertiesToString() => {
+    'status': status,
+    'contentType': contentType,
+  };
+}
+
+sealed class HelloArrayqueryGetResponse extends OpenApiResponse
+    implements HasSuccessResponse<void> {
+  HelloArrayqueryGetResponse();
+
+  /// OK
+  factory HelloArrayqueryGetResponse.response200() =>
+      HelloArrayqueryGetResponse200.response200();
+
+  R map<R>({
+    required ResponseMap<HelloArrayqueryGetResponse200, R> on200,
+    ResponseMap<HelloArrayqueryGetResponse, R>? onElse,
+  }) {
+    if (this is HelloArrayqueryGetResponse200) {
+      return on200((this as HelloArrayqueryGetResponse200));
+    } else if (onElse != null) {
+      return onElse(this);
+    } else {
+      throw StateError('Invalid instance of type $this');
+    }
+  }
+
+  /// status 200:  OK
+  @override
+  void requireSuccess() {
+    if (this is HelloArrayqueryGetResponse200) {
+      return;
+    } else {
+      throw StateError('Expected success response, but got $this');
+    }
+  }
+}
+
 class HelloIntegerPutResponse200 extends HelloIntegerPutResponse {
   /// OK
   HelloIntegerPutResponse200.response200() : status = 200;
@@ -619,6 +668,9 @@ abstract class TestApi implements ApiEndpoint {
     required ApiUuid messageId,
   });
 
+  /// get: /hello/arrayquery
+  Future<HelloArrayqueryGetResponse> helloArrayqueryGet({List<String>? test});
+
   /// put: /hello/integer
   Future<HelloIntegerPutResponse> helloIntegerPut(int body);
 }
@@ -660,6 +712,10 @@ abstract class TestApiClient implements OpenApiClient {
   Future<UuidExampleMessageIdGetResponse> uuidExampleMessageIdGet({
     required ApiUuid messageId,
   });
+
+  /// get: /hello/arrayquery
+  ///
+  Future<HelloArrayqueryGetResponse> helloArrayqueryGet({List<String>? test});
 
   /// put: /hello/integer
   ///
@@ -770,6 +826,20 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
     });
   }
 
+  /// get: /hello/arrayquery
+  ///
+  @override
+  Future<HelloArrayqueryGetResponse> helloArrayqueryGet({
+    List<String>? test,
+  }) async {
+    final request = OpenApiClientRequest('get', '/hello/arrayquery', []);
+    request.addQueryParameter('test', test?.expand((e) => encodeString(e)));
+    return await sendRequest(request, {
+      '200': (OpenApiClientResponse response) async =>
+          HelloArrayqueryGetResponse200.response200(),
+    });
+  }
+
   /// put: /hello/integer
   ///
   @override
@@ -834,6 +904,14 @@ class TestApiUrlResolve with OpenApiUrlEncodeMixin {
       'messageId',
       encodeString(messageId.encodeToString()),
     );
+    return request;
+  }
+
+  /// get: /hello/arrayquery
+  ///
+  OpenApiClientRequest helloArrayqueryGet({List<String>? test}) {
+    final request = OpenApiClientRequest('get', '/hello/arrayquery', []);
+    request.addQueryParameter('test', test?.expand((e) => encodeString(e)));
     return request;
   }
 
@@ -910,6 +988,18 @@ class TestApiRouter extends OpenApiServerRouterBase {
             name: 'messageId',
             value: request.pathParameter('messageId'),
             decode: (value) => ApiUuid.parse(paramToString(value)),
+          ),
+        ),
+      );
+    }, security: []);
+    addRoute('/hello/arrayquery', 'get', (OpenApiRequest request) async {
+      return await impl.invoke(
+        request,
+        (TestApi impl) async => impl.helloArrayqueryGet(
+          test: paramOpt(
+            name: 'test',
+            value: request.queryParameter('test'),
+            decode: (value) => value.map((e) => paramToString([e])).toList(),
           ),
         ),
       );

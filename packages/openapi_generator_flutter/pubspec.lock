@@ -381,7 +381,7 @@ packages:
       path: "../openapi_code_builder"
       relative: true
     source: path
-    version: "1.8.1"
+    version: "1.8.1+1"
   package_config:
     dependency: transitive
     description:
