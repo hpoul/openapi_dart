@@ -93,6 +93,18 @@ paths:
                     format: uuid
                 required:
                   - id
+  /hello/arrayquery:
+    parameters:
+      - name: test
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+    get:
+      responses:
+        '200':
+          description: 'OK'
   /hello/integer:
     put:
       requestBody:

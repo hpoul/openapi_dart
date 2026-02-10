@@ -928,6 +928,7 @@ class OpenApiLibraryGenerator {
                       type: paramType,
                       expression: refer(paramNameCamelCase),
                       isRequired: param.isRequired,
+                      explode: param.explodeOrDefault,
                     ),
                   ).statement,
                 );
@@ -1990,6 +1991,10 @@ class OpenApiLibraryGenerator {
               ).closure,
             ]);
           } else {
+            final itemType = switch (type) {
+              final TypeReference type => type.types.first,
+              _ => type,
+            };
             return expression
                 .property('map')([
                   Method(
@@ -2001,7 +2006,7 @@ class OpenApiLibraryGenerator {
                       ..body = _decodeParameterFrom(
                         parentName: parentName,
                         schema: itemSchema,
-                        type: type,
+                        type: itemType,
                         expression: literalList([refer('e')]),
                       ).code,
                   ).closure,
@@ -2040,6 +2045,7 @@ class OpenApiLibraryGenerator {
     required Reference type,
     required Expression expression,
     required bool isRequired,
+    required bool explode,
   }) {
     if (schema == null) {
       throw ArgumentError('schema');
@@ -2099,6 +2105,10 @@ class OpenApiLibraryGenerator {
             ).closure,
           ]);
         } else {
+          final itemType = switch (type) {
+            final TypeReference type => type.types.first,
+            _ => type,
+          };
           return propertyAccess('expand')([
             Method(
               (mb) => mb
@@ -2106,9 +2116,11 @@ class OpenApiLibraryGenerator {
                 ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
                 ..body = _encodeParameter(
                   schema: schema.items,
-                  type: type,
+                  type: itemType,
                   expression: refer('e'),
                   isRequired: true,
+                  // TODO support explode true/false
+                  explode: explode,
                 ).code,
             ).closure,
           ]);
@@ -2117,6 +2129,18 @@ class OpenApiLibraryGenerator {
         return expression;
     }
   }
+}
+
+extension on APIParameter {
+  bool get explodeOrDefault =>
+      explode ??
+      switch (location) {
+        null => throw UnimplementedError(),
+        APIParameterLocation.query => true,
+        APIParameterLocation.header => false,
+        APIParameterLocation.path => false,
+        APIParameterLocation.cookie => true,
+      };
 }
 
 class EnumSpec extends Spec {

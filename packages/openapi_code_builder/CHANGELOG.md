@@ -1,3 +1,7 @@
+## 1.8.1+1
+
+* Fix string array query parameters.
+
 ## 1.8.1
 
 * Improve array query parameter support. (Support for Enums/UUIDs in arrays).
