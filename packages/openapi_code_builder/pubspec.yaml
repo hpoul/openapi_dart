@@ -4,7 +4,7 @@ version: 1.8.1
 homepage: https://github.com/hpoul/openapi_dart/tree/master/packages/openapi_code_builder
 
 environment:
-  sdk: '>=3.8.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
   logging: ">=1.0.1 <2.0.0"

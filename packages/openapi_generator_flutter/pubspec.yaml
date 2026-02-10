@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -27,14 +27,14 @@ dependencies:
     path: ../openapi_code_builder
   flutter_markdown: ^0.7.5
   url_launcher: ^6.1.7
-  google_fonts: ^6.2.1
+  google_fonts: ^8.0.1
   logging: ^1.1.0
-  logging_appenders: ^1.0.0
+  logging_appenders: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 dependency_overrides:
   openapi_base:
