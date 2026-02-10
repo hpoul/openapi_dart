@@ -2013,7 +2013,7 @@ class OpenApiLibraryGenerator {
                 ])
                 .property('toList')([]);
           }
-          return expression;
+          // return expression;
           // final itemType = _toDartType('${parentName}ListItem', itemSchema);
           // return expression
           //     .property('map')([
