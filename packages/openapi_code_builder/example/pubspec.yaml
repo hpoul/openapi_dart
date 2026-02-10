@@ -10,7 +10,7 @@ dependencies:
   freezed_annotation: ^3.1.0
   json_annotation: ^4.8.1
   logging: ^1.0.0
-  logging_appenders: ^1.0.0
+  logging_appenders: ^2.0.0
   openapi_base:
     path: ../../openapi_base
 
