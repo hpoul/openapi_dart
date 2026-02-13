@@ -1,5 +1,9 @@
-## 2.0.0
+## 2.0.0+1
 
+* Remove dependency on [logging_appenders](https://pub.dev/packages/logging_appenders)
+
+## 2.0.0
+ 
 * Use UTF-8 encoding by default for json responses.
 * Support for dynamic request bodys (instead of just `Map<String, dynamic>`).
 
