@@ -6,7 +6,15 @@ part of 'petstore.openapi.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Order _$OrderFromJson(Map<String, dynamic> json) => Order(
+GetInventoryResponseBody200 _$GetInventoryResponseBody200FromJson(
+  Map<String, dynamic> json,
+) => GetInventoryResponseBody200();
+
+Map<String, dynamic> _$GetInventoryResponseBody200ToJson(
+  GetInventoryResponseBody200 instance,
+) => <String, dynamic>{};
+
+_Order _$OrderFromJson(Map<String, dynamic> json) => _Order(
   id: (json['id'] as num?)?.toInt(),
   petId: (json['petId'] as num?)?.toInt(),
   quantity: (json['quantity'] as num?)?.toInt(),
@@ -17,7 +25,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   complete: json['complete'] as bool? ?? false,
 );
 
-Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
+Map<String, dynamic> _$OrderToJson(_Order instance) => <String, dynamic>{
   'id': ?instance.id,
   'petId': ?instance.petId,
   'quantity': ?instance.quantity,
@@ -32,15 +40,15 @@ const _$OrderStatusEnumMap = {
   OrderStatus.delivered: 'delivered',
 };
 
-Category _$CategoryFromJson(Map<String, dynamic> json) =>
-    Category(id: (json['id'] as num?)?.toInt(), name: json['name'] as String?);
+_Category _$CategoryFromJson(Map<String, dynamic> json) =>
+    _Category(id: (json['id'] as num?)?.toInt(), name: json['name'] as String?);
 
-Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
+Map<String, dynamic> _$CategoryToJson(_Category instance) => <String, dynamic>{
   'id': ?instance.id,
   'name': ?instance.name,
 };
 
-User _$UserFromJson(Map<String, dynamic> json) => User(
+_User _$UserFromJson(Map<String, dynamic> json) => _User(
   id: (json['id'] as num?)?.toInt(),
   username: json['username'] as String?,
   firstName: json['firstName'] as String?,
@@ -51,7 +59,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
   userStatus: (json['userStatus'] as num?)?.toInt(),
 );
 
-Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
   'id': ?instance.id,
   'username': ?instance.username,
   'firstName': ?instance.firstName,
@@ -62,15 +70,15 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
   'userStatus': ?instance.userStatus,
 };
 
-Tag _$TagFromJson(Map<String, dynamic> json) =>
-    Tag(id: (json['id'] as num?)?.toInt(), name: json['name'] as String?);
+_Tag _$TagFromJson(Map<String, dynamic> json) =>
+    _Tag(id: (json['id'] as num?)?.toInt(), name: json['name'] as String?);
 
-Map<String, dynamic> _$TagToJson(Tag instance) => <String, dynamic>{
+Map<String, dynamic> _$TagToJson(_Tag instance) => <String, dynamic>{
   'id': ?instance.id,
   'name': ?instance.name,
 };
 
-Pet _$PetFromJson(Map<String, dynamic> json) => Pet(
+_Pet _$PetFromJson(Map<String, dynamic> json) => _Pet(
   id: (json['id'] as num?)?.toInt(),
   category: json['category'] == null
       ? null
@@ -85,7 +93,7 @@ Pet _$PetFromJson(Map<String, dynamic> json) => Pet(
   status: $enumDecodeNullable(_$PetStatusEnumMap, json['status']),
 );
 
-Map<String, dynamic> _$PetToJson(Pet instance) => <String, dynamic>{
+Map<String, dynamic> _$PetToJson(_Pet instance) => <String, dynamic>{
   'id': ?instance.id,
   'category': ?instance.category,
   'name': instance.name,
@@ -100,34 +108,26 @@ const _$PetStatusEnumMap = {
   PetStatus.sold: 'sold',
 };
 
-ApiResponse _$ApiResponseFromJson(Map<String, dynamic> json) => ApiResponse(
+_ApiResponse _$ApiResponseFromJson(Map<String, dynamic> json) => _ApiResponse(
   code: (json['code'] as num?)?.toInt(),
   type: json['type'] as String?,
   message: json['message'] as String?,
 );
 
-Map<String, dynamic> _$ApiResponseToJson(ApiResponse instance) =>
+Map<String, dynamic> _$ApiResponseToJson(_ApiResponse instance) =>
     <String, dynamic>{
       'code': ?instance.code,
       'type': ?instance.type,
       'message': ?instance.message,
     };
 
-UpdatePetWithFormSchema _$UpdatePetWithFormSchemaFromJson(
+_UpdatePetWithFormSchema _$UpdatePetWithFormSchemaFromJson(
   Map<String, dynamic> json,
-) => UpdatePetWithFormSchema(
+) => _UpdatePetWithFormSchema(
   name: json['name'] as String?,
   status: json['status'] as String?,
 );
 
 Map<String, dynamic> _$UpdatePetWithFormSchemaToJson(
-  UpdatePetWithFormSchema instance,
+  _UpdatePetWithFormSchema instance,
 ) => <String, dynamic>{'name': ?instance.name, 'status': ?instance.status};
-
-GetInventoryResponseBody200 _$GetInventoryResponseBody200FromJson(
-  Map<String, dynamic> json,
-) => GetInventoryResponseBody200();
-
-Map<String, dynamic> _$GetInventoryResponseBody200ToJson(
-  GetInventoryResponseBody200 instance,
-) => <String, dynamic>{};

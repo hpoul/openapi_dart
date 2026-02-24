@@ -1,61 +1,53 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides
+// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides, sort_unnamed_constructors_first, unnecessary_import
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:openapi_base/openapi_base.dart';
 part 'testapi.openapi.g.dart';
+part 'testapi.openapi.freezed.dart';
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class RegisterRequest implements OpenApiContent {
-  const RegisterRequest({required this.email});
+@freezed
+sealed class RegisterRequest with _$RegisterRequest implements OpenApiContent {
+  const RegisterRequest._();
+
+  const factory RegisterRequest({
+    @JsonKey(name: 'email', includeIfNull: false) required String email,
+  }) = _RegisterRequest;
 
   factory RegisterRequest.fromJson(Map<String, dynamic> jsonMap) =>
       _$RegisterRequestFromJson(jsonMap);
 
-  /// Email address for the current user.
-  @JsonKey(name: 'email', includeIfNull: false)
-  final String email;
-
-  Map<String, dynamic> toJson() => _$RegisterRequestToJson(this);
-
   @override
   String toString() => toJson().toString();
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class HelloRequest implements OpenApiContent {
-  const HelloRequest({this.salutation});
+@freezed
+sealed class HelloRequest with _$HelloRequest implements OpenApiContent {
+  const HelloRequest._();
+
+  const factory HelloRequest({
+    @JsonKey(name: 'salutation', includeIfNull: false) String? salutation,
+  }) = _HelloRequest;
 
   factory HelloRequest.fromJson(Map<String, dynamic> jsonMap) =>
       _$HelloRequestFromJson(jsonMap);
 
-  /// Salutation used for greetings.
-  @JsonKey(name: 'salutation', includeIfNull: false)
-  final String? salutation;
-
-  Map<String, dynamic> toJson() => _$HelloRequestToJson(this);
-
   @override
   String toString() => toJson().toString();
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class HelloResponse implements OpenApiContent {
-  const HelloResponse({this.message});
+@freezed
+sealed class HelloResponse with _$HelloResponse implements OpenApiContent {
+  const HelloResponse._();
+
+  const factory HelloResponse({
+    @JsonKey(name: 'message', includeIfNull: false) String? message,
+  }) = _HelloResponse;
 
   factory HelloResponse.fromJson(Map<String, dynamic> jsonMap) =>
       _$HelloResponseFromJson(jsonMap);
-
-  /// The Hello World greeting ;-)
-  @JsonKey(name: 'message', includeIfNull: false)
-  final String? message;
-
-  Map<String, dynamic> toJson() => _$HelloResponseToJson(this);
 
   @override
   String toString() => toJson().toString();
@@ -149,40 +141,35 @@ class InheritanceChild
   Object? operator [](String key) => _additionalProperties[key];
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class RecursiveObject implements OpenApiContent {
-  const RecursiveObject({this.parent});
+@freezed
+sealed class RecursiveObject with _$RecursiveObject implements OpenApiContent {
+  const RecursiveObject._();
+
+  const factory RecursiveObject({
+    @JsonKey(name: 'parent', includeIfNull: false) RecursiveObject? parent,
+  }) = _RecursiveObject;
 
   factory RecursiveObject.fromJson(Map<String, dynamic> jsonMap) =>
       _$RecursiveObjectFromJson(jsonMap);
-
-  @JsonKey(name: 'parent', includeIfNull: false)
-  final RecursiveObject? parent;
-
-  Map<String, dynamic> toJson() => _$RecursiveObjectToJson(this);
 
   @override
   String toString() => toJson().toString();
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class TypedAdditionalPropertiesAddProp implements OpenApiContent {
-  const TypedAdditionalPropertiesAddProp({this.foo, this.bar});
+@freezed
+sealed class TypedAdditionalPropertiesAddProp
+    with _$TypedAdditionalPropertiesAddProp
+    implements OpenApiContent {
+  const TypedAdditionalPropertiesAddProp._();
+
+  const factory TypedAdditionalPropertiesAddProp({
+    @JsonKey(name: 'foo', includeIfNull: false) int? foo,
+    @JsonKey(name: 'bar', includeIfNull: false) num? bar,
+  }) = _TypedAdditionalPropertiesAddProp;
 
   factory TypedAdditionalPropertiesAddProp.fromJson(
     Map<String, dynamic> jsonMap,
   ) => _$TypedAdditionalPropertiesAddPropFromJson(jsonMap);
-
-  @JsonKey(name: 'foo', includeIfNull: false)
-  final int? foo;
-
-  @JsonKey(name: 'bar', includeIfNull: false)
-  final num? bar;
-
-  Map<String, dynamic> toJson() =>
-      _$TypedAdditionalPropertiesAddPropToJson(this);
 
   @override
   String toString() => toJson().toString();
@@ -459,21 +446,21 @@ sealed class HelloNamePutResponse extends OpenApiResponse
   }
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class UuidExampleMessageIdGetResponseBody200 implements OpenApiContent {
-  const UuidExampleMessageIdGetResponseBody200({required this.id});
+@freezed
+sealed class UuidExampleMessageIdGetResponseBody200
+    with _$UuidExampleMessageIdGetResponseBody200
+    implements OpenApiContent {
+  const UuidExampleMessageIdGetResponseBody200._();
+
+  const factory UuidExampleMessageIdGetResponseBody200({
+    @JsonKey(name: 'id', includeIfNull: false)
+    @ApiUuidJsonConverter()
+    required ApiUuid id,
+  }) = _UuidExampleMessageIdGetResponseBody200;
 
   factory UuidExampleMessageIdGetResponseBody200.fromJson(
     Map<String, dynamic> jsonMap,
   ) => _$UuidExampleMessageIdGetResponseBody200FromJson(jsonMap);
-
-  @JsonKey(name: 'id', includeIfNull: false)
-  @ApiUuidJsonConverter()
-  final ApiUuid id;
-
-  Map<String, dynamic> toJson() =>
-      _$UuidExampleMessageIdGetResponseBody200ToJson(this);
 
   @override
   String toString() => toJson().toString();

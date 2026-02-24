@@ -1,3 +1,7 @@
+## 1.8.2-dev.1
+
+* Use freezed to generate classes.
+
 ## 1.8.1+1
 
 * Fix string array query parameters.

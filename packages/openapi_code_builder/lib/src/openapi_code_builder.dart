@@ -172,6 +172,10 @@ class OpenApiLibraryGenerator {
     'freezed',
     'package:freezed_annotation/freezed_annotation.dart',
   );
+  final _default = refer(
+    'Default',
+    'package:freezed_annotation/freezed_annotation.dart',
+  );
   final _provider = refer('Provider', 'package:riverpod/riverpod.dart');
   final _streamProvider = refer(
     'StreamProvider',
@@ -197,21 +201,22 @@ class OpenApiLibraryGenerator {
   final securitySchemesClass = ClassBuilder()..name = 'SecuritySchemes';
   final List<Expression?> routerConfig = <Expression>[];
 
+  var myRequireFreezed = false;
+  void requireFreezed() {
+    if (myRequireFreezed) {
+      return;
+    }
+    if (freezedPartFileName.isEmpty) {
+      throw StateError(
+        'freeze is required, but no freezedPartFileName was given.',
+      );
+    }
+    lb.body.insert(1, Directive.part(freezedPartFileName));
+    myRequireFreezed = true;
+  }
+
   Library generate() {
     lb.body.add(Directive.part(partFileName));
-    var myRequireFreezed = false;
-    void requireFreezed() {
-      if (myRequireFreezed) {
-        return;
-      }
-      if (freezedPartFileName.isEmpty) {
-        throw StateError(
-          'freeze is required, but no freezedPartFileName was given.',
-        );
-      }
-      lb.body.insert(1, Directive.part(freezedPartFileName));
-      myRequireFreezed = true;
-    }
 
     // create class for each schema..
     for (final schemaEntry in api.components!.schemas!.entries) {
@@ -1365,7 +1370,11 @@ class OpenApiLibraryGenerator {
     return null;
   }
 
-  Reference _schemaReference(String key, APISchemaObject schemaObject) {
+  Reference _schemaReference(
+    String key,
+    APISchemaObject schemaObject, {
+    bool isBaseClass = false,
+  }) {
     _logger.finer('Looking up ${schemaObject.referenceURI}');
     final uri = schemaObject.referenceURI;
     final componentName =
@@ -1393,13 +1402,21 @@ class OpenApiLibraryGenerator {
       final e = _createEnum(componentName, schemaObject.enumerated!);
       return e;
     }
-    final c = _createSchemaClass(componentName, schemaObject);
+    final c = _createSchemaClass(
+      componentName,
+      schemaObject,
+      isBaseClass: isBaseClass,
+    );
     lb.body.add(c);
 
     return reference;
   }
 
-  Class _createSchemaClass(String className, APISchemaObject obj) {
+  Class _createSchemaClass(
+    String className,
+    APISchemaObject obj, {
+    bool isBaseClass = false,
+  }) {
     var properties = obj.properties ?? {};
     final override = <String>{};
     final required = obj.required ?? [];
@@ -1410,7 +1427,9 @@ class OpenApiLibraryGenerator {
     var additionalPropertySchema = obj.additionalPropertySchema;
     if (obj.allOf != null) {
       for (final baseObj in obj.allOf!) {
-        implements.add(_schemaReference('${className}Base', baseObj!));
+        implements.add(
+          _schemaReference('${className}Base', baseObj!, isBaseClass: true),
+        );
         properties = {...baseObj.properties!, ...properties};
         override.addAll(baseObj.properties!.entries.map((e) => e.key));
         required.addAll(baseObj.required ?? []);
@@ -1471,7 +1490,9 @@ class OpenApiLibraryGenerator {
             ..type = fieldType.asNullable(
               !required.contains(key) && e.defaultValue == null,
             );
-          if (fieldType == _apiUuid) {
+          if (fieldType == _apiUuid ||
+              (fieldType is TypeReference &&
+                  fieldType.types.contains(_apiUuid))) {
             fb.annotations.add(_apiUuidJsonConverter([]));
           }
         }),
@@ -1561,42 +1582,100 @@ class OpenApiLibraryGenerator {
           );
         }
       }
+
+      final isBaseClassX =
+          isBaseClass ||
+          (api.components?.schemas?.values.nonNulls
+                  .expand((obj) => obj.allOf ?? <APISchemaObject?>[])
+                  .nonNulls
+                  .map(
+                    (obj) => _componentNameFromReferenceUri(obj.referenceURI),
+                  )
+                  .contains(className) ??
+              false);
+      final useFreezed =
+          additionalPropertyType == null && implements.isEmpty && !isBaseClassX;
+
+      if (useFreezed) {
+        requireFreezed();
+        cb
+          ..sealed = true
+          ..annotations.add(_freezed)
+          ..mixins.add(refer('_\$${className.pascalCase}'))
+          ..constructors.add(
+            Constructor(
+              (cb) => cb
+                ..constant = true
+                ..name = '_',
+            ),
+          );
+      } else {
+        cb
+          ..annotations.add(jsonSerializable([]))
+          ..annotations.add(_apiUuidJsonConverter([]));
+      }
       cb
-        ..annotations.add(jsonSerializable([]))
-        ..annotations.add(_apiUuidJsonConverter([]))
         ..name = className
         ..implements.add(_openApiContent)
         ..implements.addAll(implements)
         ..docs.addDartDoc(obj.description)
         ..constructors.add(
           Constructor(
-            (cb) => cb
-              ..optionalParameters.addAll(
-                fields.entries.map(
-                  (f) => Parameter(
-                    (pb) => pb
-                      //            ..docs.addAll(f.docs)
-                      ..name = f.value.name
-                      ..asRequired(this, required.contains(f.key))
-                      ..defaultTo = (properties[f.key]?.defaultValue as Object?)
-                          ?.let((dynamic it) => literal(it))
-                          .code
-                      ..named = true
-                      ..toThis = true,
+            (cb) {
+              if (useFreezed) {
+                cb
+                  ..factory = true
+                  ..redirect = refer('_${className.pascalCase}');
+              }
+              cb
+                ..optionalParameters.addAll(
+                  fields.entries.map(
+                    (f) => Parameter(
+                      (pb) {
+                        if (useFreezed) {
+                          pb
+                            ..type = f.value.type
+                            ..annotations.addAll([
+                              ...f.value.annotations,
+                              ?(properties[f.key]?.defaultValue as Object?)
+                                  ?.let((dynamic it) => literal(it))
+                                  .let((e) => _default([e])),
+                            ])
+                            ..toThis = false;
+                        } else {
+                          pb
+                            ..defaultTo =
+                                (properties[f.key]?.defaultValue as Object?)
+                                    ?.let((dynamic it) => literal(it))
+                                    .code
+                            ..toThis = true;
+                        }
+                        pb
+                          //            ..docs.addAll(f.docs)
+                          ..name = f.value.name
+                          // ..annotations.addAll(
+                          //   f.value.type == _apiUuid
+                          //       ? [_apiUuidJsonConverter([])]
+                          //       : [],
+                          // )
+                          ..asRequired(this, required.contains(f.key))
+                          ..named = true;
+                      },
+                    ),
                   ),
-                ),
-              )
-              // TODO we should probably make additional properties immutable.
-              ..constant = additionalPropertyType == null
-              ..initializers.addAll(
-                useNullSafetySyntax
-                    ? []
-                    : required.map(
-                        (e) => refer('assert')([
-                          refer(fields[e]!.name).notEqualTo(literalNull),
-                        ]).code,
-                      ),
-              ),
+                )
+                // TODO we should probably make additional properties immutable.
+                ..constant = additionalPropertyType == null
+                ..initializers.addAll(
+                  useNullSafetySyntax
+                      ? []
+                      : required.map(
+                          (e) => refer('assert')([
+                            refer(fields[e]!.name).notEqualTo(literalNull),
+                          ]).code,
+                        ),
+                );
+            },
           ),
         )
         ..constructors.add(
@@ -1627,41 +1706,45 @@ class OpenApiLibraryGenerator {
             //              ]
             //            )
           ),
-        )
-        ..fields.addAll(fields.values)
-        ..methods.add(
-          Method(
-            (mb) => mb
-              ..name = 'toJson'
-              ..returns = refer('Map<String, dynamic>')
-              ..annotations.addAll(implements.isEmpty ? [] : [_override])
-              ..lambda = true
-              ..body = toJsonExpression!.code,
-          ),
-          //                ..methods.add(
-          //                Method(
-          //                (mb) => mb
-          //        ..name = 'toJson'
-          //        ..returns = refer('Map<String, dynamic>')
-          //          ..lambda = true
-          //          ..body = literalMap(
-          //            obj.properties
-          //                .map((key, value) => MapEntry(key, refer(key))),
-          //            _typeString,
-          //            refer('dynamic'),
-          //          ).code,
-          //      ),
-        )
-        ..methods.add(
-          Method(
-            (mb) => mb
-              ..name = 'toString'
-              ..returns = _typeString
-              ..annotations.add(_override)
-              ..lambda = true
-              ..body = refer('toJson')([]).property('toString')([]).code,
-          ),
         );
+      if (!useFreezed) {
+        cb
+          ..fields.addAll(fields.values)
+          ..methods.add(
+            Method(
+              (mb) => mb
+                ..name = 'toJson'
+                ..returns = refer('Map<String, dynamic>')
+                ..annotations.addAll(implements.isEmpty ? [] : [_override])
+                ..lambda = true
+                ..body = toJsonExpression!.code,
+            ),
+          );
+      }
+      //   //                ..methods.add(
+      //   //                Method(
+      //   //                (mb) => mb
+      //   //        ..name = 'toJson'
+      //   //        ..returns = refer('Map<String, dynamic>')
+      //   //          ..lambda = true
+      //   //          ..body = literalMap(
+      //   //            obj.properties
+      //   //                .map((key, value) => MapEntry(key, refer(key))),
+      //   //            _typeString,
+      //   //            refer('dynamic'),
+      //   //          ).code,
+      //   //      ),
+      // )
+      cb.methods.add(
+        Method(
+          (mb) => mb
+            ..name = 'toString'
+            ..returns = _typeString
+            ..annotations.add(_override)
+            ..lambda = true
+            ..body = refer('toJson')([]).property('toString')([]).code,
+        ),
+      );
 
       if (additionalPropertyType != null) {
         cb.methods.add(
@@ -2270,7 +2353,7 @@ class OpenApiCodeBuilderUtils {
           languageVersion: DartFormatter.latestLanguageVersion,
         ).format(
           '// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
-          '// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides\n\n'
+          '// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides, sort_unnamed_constructors_first, unnecessary_import\n\n'
           '${library.accept(emitter)}\n\n'
           'T _throwStateError<T>(String message) => throw StateError(message);\n\n',
         );

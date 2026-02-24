@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides
+// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides, sort_unnamed_constructors_first, unnecessary_import
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:typed_data' as _i1;
@@ -9,6 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:openapi_base/openapi_base.dart';
 part 'petstore.openapi.g.dart';
+part 'petstore.openapi.freezed.dart';
 
 enum OrderStatus {
   @JsonValue('placed')
@@ -31,128 +32,76 @@ extension OrderStatusExt on OrderStatus {
   String get name => toString().substring(12);
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class Order implements OpenApiContent {
-  const Order({
-    this.id,
-    this.petId,
-    this.quantity,
-    this.shipDate,
-    this.status,
-    this.complete = false,
-  });
+@freezed
+sealed class Order with _$Order implements OpenApiContent {
+  const Order._();
+
+  const factory Order({
+    @JsonKey(name: 'id', includeIfNull: false) int? id,
+    @JsonKey(name: 'petId', includeIfNull: false) int? petId,
+    @JsonKey(name: 'quantity', includeIfNull: false) int? quantity,
+    @JsonKey(name: 'shipDate', includeIfNull: false) DateTime? shipDate,
+    @JsonKey(name: 'status', includeIfNull: false) OrderStatus? status,
+    @JsonKey(name: 'complete', includeIfNull: false)
+    @Default(false)
+    bool complete,
+  }) = _Order;
 
   factory Order.fromJson(Map<String, dynamic> jsonMap) =>
       _$OrderFromJson(jsonMap);
 
-  @JsonKey(name: 'id', includeIfNull: false)
-  final int? id;
-
-  @JsonKey(name: 'petId', includeIfNull: false)
-  final int? petId;
-
-  @JsonKey(name: 'quantity', includeIfNull: false)
-  final int? quantity;
-
-  @JsonKey(name: 'shipDate', includeIfNull: false)
-  final DateTime? shipDate;
-
-  /// Order Status
-  @JsonKey(name: 'status', includeIfNull: false)
-  final OrderStatus? status;
-
-  @JsonKey(name: 'complete', includeIfNull: false)
-  final bool complete;
-
-  Map<String, dynamic> toJson() => _$OrderToJson(this);
-
   @override
   String toString() => toJson().toString();
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class Category implements OpenApiContent {
-  const Category({this.id, this.name});
+@freezed
+sealed class Category with _$Category implements OpenApiContent {
+  const Category._();
+
+  const factory Category({
+    @JsonKey(name: 'id', includeIfNull: false) int? id,
+    @JsonKey(name: 'name', includeIfNull: false) String? name,
+  }) = _Category;
 
   factory Category.fromJson(Map<String, dynamic> jsonMap) =>
       _$CategoryFromJson(jsonMap);
 
-  @JsonKey(name: 'id', includeIfNull: false)
-  final int? id;
-
-  @JsonKey(name: 'name', includeIfNull: false)
-  final String? name;
-
-  Map<String, dynamic> toJson() => _$CategoryToJson(this);
-
   @override
   String toString() => toJson().toString();
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class User implements OpenApiContent {
-  const User({
-    this.id,
-    this.username,
-    this.firstName,
-    this.lastName,
-    this.email,
-    this.password,
-    this.phone,
-    this.userStatus,
-  });
+@freezed
+sealed class User with _$User implements OpenApiContent {
+  const User._();
+
+  const factory User({
+    @JsonKey(name: 'id', includeIfNull: false) int? id,
+    @JsonKey(name: 'username', includeIfNull: false) String? username,
+    @JsonKey(name: 'firstName', includeIfNull: false) String? firstName,
+    @JsonKey(name: 'lastName', includeIfNull: false) String? lastName,
+    @JsonKey(name: 'email', includeIfNull: false) String? email,
+    @JsonKey(name: 'password', includeIfNull: false) String? password,
+    @JsonKey(name: 'phone', includeIfNull: false) String? phone,
+    @JsonKey(name: 'userStatus', includeIfNull: false) int? userStatus,
+  }) = _User;
 
   factory User.fromJson(Map<String, dynamic> jsonMap) =>
       _$UserFromJson(jsonMap);
 
-  @JsonKey(name: 'id', includeIfNull: false)
-  final int? id;
-
-  @JsonKey(name: 'username', includeIfNull: false)
-  final String? username;
-
-  @JsonKey(name: 'firstName', includeIfNull: false)
-  final String? firstName;
-
-  @JsonKey(name: 'lastName', includeIfNull: false)
-  final String? lastName;
-
-  @JsonKey(name: 'email', includeIfNull: false)
-  final String? email;
-
-  @JsonKey(name: 'password', includeIfNull: false)
-  final String? password;
-
-  @JsonKey(name: 'phone', includeIfNull: false)
-  final String? phone;
-
-  /// User Status
-  @JsonKey(name: 'userStatus', includeIfNull: false)
-  final int? userStatus;
-
-  Map<String, dynamic> toJson() => _$UserToJson(this);
-
   @override
   String toString() => toJson().toString();
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class Tag implements OpenApiContent {
-  const Tag({this.id, this.name});
+@freezed
+sealed class Tag with _$Tag implements OpenApiContent {
+  const Tag._();
+
+  const factory Tag({
+    @JsonKey(name: 'id', includeIfNull: false) int? id,
+    @JsonKey(name: 'name', includeIfNull: false) String? name,
+  }) = _Tag;
 
   factory Tag.fromJson(Map<String, dynamic> jsonMap) => _$TagFromJson(jsonMap);
-
-  @JsonKey(name: 'id', includeIfNull: false)
-  final int? id;
-
-  @JsonKey(name: 'name', includeIfNull: false)
-  final String? name;
-
-  Map<String, dynamic> toJson() => _$TagToJson(this);
 
   @override
   String toString() => toJson().toString();
@@ -179,63 +128,38 @@ extension PetStatusExt on PetStatus {
   String get name => toString().substring(10);
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class Pet implements OpenApiContent {
-  const Pet({
-    this.id,
-    this.category,
-    required this.name,
-    required this.photoUrls,
-    this.tags,
-    this.status,
-  });
+@freezed
+sealed class Pet with _$Pet implements OpenApiContent {
+  const Pet._();
+
+  const factory Pet({
+    @JsonKey(name: 'id', includeIfNull: false) int? id,
+    @JsonKey(name: 'category', includeIfNull: false) Category? category,
+    @JsonKey(name: 'name', includeIfNull: false) required String name,
+    @JsonKey(name: 'photoUrls', includeIfNull: false)
+    required List<String> photoUrls,
+    @JsonKey(name: 'tags', includeIfNull: false) List<Tag>? tags,
+    @JsonKey(name: 'status', includeIfNull: false) PetStatus? status,
+  }) = _Pet;
 
   factory Pet.fromJson(Map<String, dynamic> jsonMap) => _$PetFromJson(jsonMap);
-
-  @JsonKey(name: 'id', includeIfNull: false)
-  final int? id;
-
-  @JsonKey(name: 'category', includeIfNull: false)
-  final Category? category;
-
-  @JsonKey(name: 'name', includeIfNull: false)
-  final String name;
-
-  @JsonKey(name: 'photoUrls', includeIfNull: false)
-  final List<String> photoUrls;
-
-  @JsonKey(name: 'tags', includeIfNull: false)
-  final List<Tag>? tags;
-
-  /// pet status in the store
-  @JsonKey(name: 'status', includeIfNull: false)
-  final PetStatus? status;
-
-  Map<String, dynamic> toJson() => _$PetToJson(this);
 
   @override
   String toString() => toJson().toString();
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class ApiResponse implements OpenApiContent {
-  const ApiResponse({this.code, this.type, this.message});
+@freezed
+sealed class ApiResponse with _$ApiResponse implements OpenApiContent {
+  const ApiResponse._();
+
+  const factory ApiResponse({
+    @JsonKey(name: 'code', includeIfNull: false) int? code,
+    @JsonKey(name: 'type', includeIfNull: false) String? type,
+    @JsonKey(name: 'message', includeIfNull: false) String? message,
+  }) = _ApiResponse;
 
   factory ApiResponse.fromJson(Map<String, dynamic> jsonMap) =>
       _$ApiResponseFromJson(jsonMap);
-
-  @JsonKey(name: 'code', includeIfNull: false)
-  final int? code;
-
-  @JsonKey(name: 'type', includeIfNull: false)
-  final String? type;
-
-  @JsonKey(name: 'message', includeIfNull: false)
-  final String? message;
-
-  Map<String, dynamic> toJson() => _$ApiResponseToJson(this);
 
   @override
   String toString() => toJson().toString();
@@ -699,23 +623,19 @@ sealed class UpdatePetWithFormResponse extends OpenApiResponse {
   }
 }
 
-@JsonSerializable()
-@ApiUuidJsonConverter()
-class UpdatePetWithFormSchema implements OpenApiContent {
-  const UpdatePetWithFormSchema({this.name, this.status});
+@freezed
+sealed class UpdatePetWithFormSchema
+    with _$UpdatePetWithFormSchema
+    implements OpenApiContent {
+  const UpdatePetWithFormSchema._();
+
+  const factory UpdatePetWithFormSchema({
+    @JsonKey(name: 'name', includeIfNull: false) String? name,
+    @JsonKey(name: 'status', includeIfNull: false) String? status,
+  }) = _UpdatePetWithFormSchema;
 
   factory UpdatePetWithFormSchema.fromJson(Map<String, dynamic> jsonMap) =>
       _$UpdatePetWithFormSchemaFromJson(jsonMap);
-
-  /// Updated name of the pet
-  @JsonKey(name: 'name', includeIfNull: false)
-  final String? name;
-
-  /// Updated status of the pet
-  @JsonKey(name: 'status', includeIfNull: false)
-  final String? status;
-
-  Map<String, dynamic> toJson() => _$UpdatePetWithFormSchemaToJson(this);
 
   @override
   String toString() => toJson().toString();
