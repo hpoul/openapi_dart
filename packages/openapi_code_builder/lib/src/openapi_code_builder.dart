@@ -820,7 +820,7 @@ class OpenApiLibraryGenerator {
               generics: [refer(responseClass.name!)],
             )
             ..modifier = MethodModifier.async;
-          final clientCode = <Code>[
+          final createClientRequestCode = <Code>[
             declareFinal('request')
                 .assign(
                   _openApiClientRequest.newInstance([
@@ -923,7 +923,7 @@ class OpenApiLibraryGenerator {
                 routerParamsNamed[paramNameCamelCase] = decodeParameter(
                   _readFromRequest(paramLocation, paramName),
                 );
-                clientCode.add(
+                createClientRequestCode.add(
                   _writeToRequest(
                     clientCodeRequest,
                     paramLocation,
@@ -942,7 +942,8 @@ class OpenApiLibraryGenerator {
                 ..returns = _openApiClientRequest
                 ..modifier = null
                 ..body = Block.of(
-                  clientCode + [clientCodeRequest.returned.statement],
+                  createClientRequestCode +
+                      [clientCodeRequest.returned.statement],
                 );
               urlResolveClass.methods.add(urlResolverMethod.build());
 
@@ -968,7 +969,7 @@ class OpenApiLibraryGenerator {
                     mb,
                     routerParams,
                     clientMethod,
-                    clientCode,
+                    createClientRequestCode,
                   );
                 });
               }
@@ -1003,16 +1004,51 @@ class OpenApiLibraryGenerator {
             }),
           );
 
-          clientCode.add(
+          final clientMethodCreateRequest = MethodBuilder()
+            ..name = 'create${operationName.pascalCase}Request'
+            ..requiredParameters = clientMethod.requiredParameters
+            ..optionalParameters = clientMethod.optionalParameters
+            ..returns = _openApiClientRequest
+            ..body = Block.of([
+              ...createClientRequestCode,
+              refer('request').returned.statement,
+            ]);
+          final x = clientMethodCreateRequest.build();
+
+          clientMethod.body = Block.of([
+            declareFinal(
+                  'request',
+                )
+                .assign(
+                  refer(clientMethodCreateRequest.name ?? '')(
+                    [
+                      ...x.requiredParameters,
+                      ...x.optionalParameters,
+                    ].where((p) => !p.named).map((p) => refer(p.name)).toList(),
+                    Map.fromEntries(
+                      [...x.requiredParameters, ...x.optionalParameters]
+                          .where((p) => p.named)
+                          .map((p) => MapEntry(p.name, refer(p.name))),
+                    ),
+                  ),
+                )
+                .statement,
             refer('sendRequest')([
               refer('request'),
               literalMap(clientResponseParse),
             ]).awaited.returned.statement,
+          ]);
+          clientClass.methods.add(
+            (clientMethodCreateRequest..annotations.add(_override)).build(),
           );
-
-          clientMethod.body = Block.of(clientCode);
           clientClass.methods.add(
             (clientMethod..annotations.add(_override)).build(),
+          );
+          clientInterface.methods.add(
+            (clientMethodCreateRequest.build().toBuilder()
+                  ..annotations.clear()
+                  ..body = null)
+                .build(),
           );
           clientInterface.methods.add(
             (clientMethod.build().toBuilder()
@@ -1208,7 +1244,7 @@ class OpenApiLibraryGenerator {
     MethodBuilder mb,
     List<Expression?> routerParams,
     MethodBuilder clientMethod,
-    List<Code> clientCode,
+    List<Code> createClientRequestCode,
   ) {
     _logger.finer('reqBody.schema: ${reqBody.schema}');
 
@@ -1234,13 +1270,13 @@ class OpenApiLibraryGenerator {
         ),
       );
 
-      clientCode.add(
+      createClientRequestCode.add(
         refer('request').property('setBody')([encodeBody]).statement,
       );
       routerParams.add(decodeBody);
     }
 
-    clientCode.add(
+    createClientRequestCode.add(
       refer('request')
           .property('setHeader')([
             literalString(OpenApiHttpHeaders.contentType),

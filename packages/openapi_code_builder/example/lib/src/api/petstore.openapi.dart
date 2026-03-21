@@ -1734,15 +1734,21 @@ abstract class PetstoreClient implements OpenApiClient {
   factory PetstoreClient(Uri baseUri, OpenApiRequestSender requestSender) =>
       _PetstoreClientImpl._(baseUri, requestSender);
 
+  OpenApiClientRequest createUpdatePetRequest(Pet body);
+
   /// Update an existing pet
   /// put: /pet
   ///
   Future<UpdatePetResponse> updatePet(Pet body);
+  OpenApiClientRequest createAddPetRequest(Pet body);
 
   /// Add a new pet to the store
   /// post: /pet
   ///
   Future<AddPetResponse> addPet(Pet body);
+  OpenApiClientRequest createFindPetsByStatusRequest({
+    required List<FindPetsByStatus> status,
+  });
 
   /// Finds Pets by status
   /// Multiple status values can be provided with comma separated strings
@@ -1752,6 +1758,9 @@ abstract class PetstoreClient implements OpenApiClient {
   Future<FindPetsByStatusResponse> findPetsByStatus({
     required List<FindPetsByStatus> status,
   });
+  OpenApiClientRequest createFindPetsByTagsRequest({
+    required List<String> tags,
+  });
 
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
@@ -1759,6 +1768,7 @@ abstract class PetstoreClient implements OpenApiClient {
   ///
   /// * [tags]: Tags to filter by
   Future<FindPetsByTagsResponse> findPetsByTags({required List<String> tags});
+  OpenApiClientRequest createGetPetByIdRequest({required int petId});
 
   /// Find pet by ID
   /// Returns a single pet
@@ -1766,6 +1776,10 @@ abstract class PetstoreClient implements OpenApiClient {
   ///
   /// * [petId]: ID of pet to return
   Future<GetPetByIdResponse> getPetById({required int petId});
+  OpenApiClientRequest createUpdatePetWithFormRequest(
+    UpdatePetWithFormSchema body, {
+    required int petId,
+  });
 
   /// Updates a pet in the store with form data
   /// post: /pet/{petId}
@@ -1775,12 +1789,20 @@ abstract class PetstoreClient implements OpenApiClient {
     UpdatePetWithFormSchema body, {
     required int petId,
   });
+  OpenApiClientRequest createDeletePetRequest({
+    String? apiKey,
+    required int petId,
+  });
 
   /// Deletes a pet
   /// delete: /pet/{petId}
   ///
   /// * [petId]: Pet id to delete
   Future<DeletePetResponse> deletePet({String? apiKey, required int petId});
+  OpenApiClientRequest createUploadFileRequest(
+    _i1.Uint8List body, {
+    required int petId,
+  });
 
   /// uploads an image
   /// post: /pet/{petId}/uploadImage
@@ -1790,17 +1812,20 @@ abstract class PetstoreClient implements OpenApiClient {
     _i1.Uint8List body, {
     required int petId,
   });
+  OpenApiClientRequest createGetInventoryRequest();
 
   /// Returns pet inventories by status
   /// Returns a map of status codes to quantities
   /// get: /store/inventory
   ///
   Future<GetInventoryResponse> getInventory();
+  OpenApiClientRequest createPlaceOrderRequest(Order body);
 
   /// Place an order for a pet
   /// post: /store/order
   ///
   Future<PlaceOrderResponse> placeOrder(Order body);
+  OpenApiClientRequest createGetOrderByIdRequest({required int orderId});
 
   /// Find purchase order by ID
   /// For valid response try integer IDs with value >= 1 and <= 10.\ \ Other values will generated exceptions
@@ -1808,6 +1833,7 @@ abstract class PetstoreClient implements OpenApiClient {
   ///
   /// * [orderId]: ID of pet that needs to be fetched
   Future<GetOrderByIdResponse> getOrderById({required int orderId});
+  OpenApiClientRequest createDeleteOrderRequest({required int orderId});
 
   /// Delete purchase order by ID
   /// For valid response try integer IDs with positive integer value.\ \ Negative or non-integer values will generate API errors
@@ -1815,12 +1841,14 @@ abstract class PetstoreClient implements OpenApiClient {
   ///
   /// * [orderId]: ID of the order that needs to be deleted
   Future<DeleteOrderResponse> deleteOrder({required int orderId});
+  OpenApiClientRequest createCreateUserRequest(User body);
 
   /// Create user
   /// This can only be done by the logged in user.
   /// post: /user
   ///
   Future<CreateUserResponse> createUser(User body);
+  OpenApiClientRequest createCreateUsersWithArrayInputRequest(List<User> body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithArray
@@ -1828,6 +1856,7 @@ abstract class PetstoreClient implements OpenApiClient {
   Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
     List<User> body,
   );
+  OpenApiClientRequest createCreateUsersWithListInputRequest(List<User> body);
 
   /// Creates list of users with given input array
   /// post: /user/createWithList
@@ -1835,6 +1864,10 @@ abstract class PetstoreClient implements OpenApiClient {
   Future<CreateUsersWithListInputResponse> createUsersWithListInput(
     List<User> body,
   );
+  OpenApiClientRequest createLoginUserRequest({
+    required String username,
+    required String password,
+  });
 
   /// Logs user into the system
   /// get: /user/login
@@ -1845,17 +1878,23 @@ abstract class PetstoreClient implements OpenApiClient {
     required String username,
     required String password,
   });
+  OpenApiClientRequest createLogoutUserRequest();
 
   /// Logs out current logged in user session
   /// get: /user/logout
   ///
   Future<LogoutUserResponse> logoutUser();
+  OpenApiClientRequest createGetUserByNameRequest({required String username});
 
   /// Get user by user name
   /// get: /user/{username}
   ///
   /// * [username]: The name that needs to be fetched. Use user1 for testing.
   Future<GetUserByNameResponse> getUserByName({required String username});
+  OpenApiClientRequest createUpdateUserRequest(
+    User body, {
+    required String username,
+  });
 
   /// Updated user
   /// This can only be done by the logged in user.
@@ -1863,6 +1902,7 @@ abstract class PetstoreClient implements OpenApiClient {
   ///
   /// * [username]: name that need to be updated
   Future<UpdateUserResponse> updateUser(User body, {required String username});
+  OpenApiClientRequest createDeleteUserRequest({required String username});
 
   /// Delete user
   /// This can only be done by the logged in user.
@@ -1881,14 +1921,20 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   @override
   final OpenApiRequestSender requestSender;
 
+  @override
+  OpenApiClientRequest createUpdatePetRequest(Pet body) {
+    final request = OpenApiClientRequest('put', '/pet', []);
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    return request;
+  }
+
   /// Update an existing pet
   /// put: /pet
   ///
   @override
   Future<UpdatePetResponse> updatePet(Pet body) async {
-    final request = OpenApiClientRequest('put', '/pet', []);
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    final request = createUpdatePetRequest(body);
     return await sendRequest(request, {
       '400': (OpenApiClientResponse response) async =>
           UpdatePetResponse400.response400(),
@@ -1899,18 +1945,33 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createAddPetRequest(Pet body) {
+    final request = OpenApiClientRequest('post', '/pet', []);
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    return request;
+  }
+
   /// Add a new pet to the store
   /// post: /pet
   ///
   @override
   Future<AddPetResponse> addPet(Pet body) async {
-    final request = OpenApiClientRequest('post', '/pet', []);
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    final request = createAddPetRequest(body);
     return await sendRequest(request, {
       '405': (OpenApiClientResponse response) async =>
           AddPetResponse405.response405(),
     });
+  }
+
+  @override
+  OpenApiClientRequest createFindPetsByStatusRequest({
+    required List<FindPetsByStatus> status,
+  }) {
+    final request = OpenApiClientRequest('get', '/pet/findByStatus', []);
+    request.addQueryParameter('status', status.map((e) => e.name));
+    return request;
   }
 
   /// Finds Pets by status
@@ -1922,8 +1983,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   Future<FindPetsByStatusResponse> findPetsByStatus({
     required List<FindPetsByStatus> status,
   }) async {
-    final request = OpenApiClientRequest('get', '/pet/findByStatus', []);
-    request.addQueryParameter('status', status.map((e) => e.name));
+    final request = createFindPetsByStatusRequest(status: status);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           FindPetsByStatusResponse200.response200(
@@ -1936,6 +1996,15 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createFindPetsByTagsRequest({
+    required List<String> tags,
+  }) {
+    final request = OpenApiClientRequest('get', '/pet/findByTags', []);
+    request.addQueryParameter('tags', tags.expand((e) => encodeString(e)));
+    return request;
+  }
+
   /// Finds Pets by tags
   /// Muliple tags can be provided with comma separated strings. Use\ \ tag1, tag2, tag3 for testing.
   /// get: /pet/findByTags
@@ -1945,8 +2014,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   Future<FindPetsByTagsResponse> findPetsByTags({
     required List<String> tags,
   }) async {
-    final request = OpenApiClientRequest('get', '/pet/findByTags', []);
-    request.addQueryParameter('tags', tags.expand((e) => encodeString(e)));
+    final request = createFindPetsByTagsRequest(tags: tags);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           FindPetsByTagsResponse200.response200(
@@ -1959,6 +2027,13 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createGetPetByIdRequest({required int petId}) {
+    final request = OpenApiClientRequest('get', '/pet/{petId}', []);
+    request.addPathParameter('petId', encodeInt(petId));
+    return request;
+  }
+
   /// Find pet by ID
   /// Returns a single pet
   /// get: /pet/{petId}
@@ -1966,8 +2041,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   /// * [petId]: ID of pet to return
   @override
   Future<GetPetByIdResponse> getPetById({required int petId}) async {
-    final request = OpenApiClientRequest('get', '/pet/{petId}', []);
-    request.addPathParameter('petId', encodeInt(petId));
+    final request = createGetPetByIdRequest(petId: petId);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           GetPetByIdResponse200.response200(
@@ -1980,6 +2054,18 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createUpdatePetWithFormRequest(
+    UpdatePetWithFormSchema body, {
+    required int petId,
+  }) {
+    final request = OpenApiClientRequest('post', '/pet/{petId}', []);
+    request.addPathParameter('petId', encodeInt(petId));
+    request.setHeader('content-type', 'application/x-www-form-urlencoded');
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    return request;
+  }
+
   /// Updates a pet in the store with form data
   /// post: /pet/{petId}
   ///
@@ -1989,14 +2075,22 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     UpdatePetWithFormSchema body, {
     required int petId,
   }) async {
-    final request = OpenApiClientRequest('post', '/pet/{petId}', []);
-    request.addPathParameter('petId', encodeInt(petId));
-    request.setHeader('content-type', 'application/x-www-form-urlencoded');
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    final request = createUpdatePetWithFormRequest(body, petId: petId);
     return await sendRequest(request, {
       '405': (OpenApiClientResponse response) async =>
           UpdatePetWithFormResponse405.response405(),
     });
+  }
+
+  @override
+  OpenApiClientRequest createDeletePetRequest({
+    String? apiKey,
+    required int petId,
+  }) {
+    final request = OpenApiClientRequest('delete', '/pet/{petId}', []);
+    request.addHeaderParameter('api_key', encodeString(apiKey));
+    request.addPathParameter('petId', encodeInt(petId));
+    return request;
   }
 
   /// Deletes a pet
@@ -2008,15 +2102,29 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     String? apiKey,
     required int petId,
   }) async {
-    final request = OpenApiClientRequest('delete', '/pet/{petId}', []);
-    request.addHeaderParameter('api_key', encodeString(apiKey));
-    request.addPathParameter('petId', encodeInt(petId));
+    final request = createDeletePetRequest(apiKey: apiKey, petId: petId);
     return await sendRequest(request, {
       '400': (OpenApiClientResponse response) async =>
           DeletePetResponse400.response400(),
       '404': (OpenApiClientResponse response) async =>
           DeletePetResponse404.response404(),
     });
+  }
+
+  @override
+  OpenApiClientRequest createUploadFileRequest(
+    _i1.Uint8List body, {
+    required int petId,
+  }) {
+    final request = OpenApiClientRequest(
+      'post',
+      '/pet/{petId}/uploadImage',
+      [],
+    );
+    request.addPathParameter('petId', encodeInt(petId));
+    request.setHeader('content-type', 'application/octet-stream');
+    request.setBody(OpenApiClientRequestBodyBinary(body));
+    return request;
   }
 
   /// uploads an image
@@ -2028,14 +2136,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     _i1.Uint8List body, {
     required int petId,
   }) async {
-    final request = OpenApiClientRequest(
-      'post',
-      '/pet/{petId}/uploadImage',
-      [],
-    );
-    request.addPathParameter('petId', encodeInt(petId));
-    request.setHeader('content-type', 'application/octet-stream');
-    request.setBody(OpenApiClientRequestBodyBinary(body));
+    final request = createUploadFileRequest(body, petId: petId);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           UploadFileResponse200.response200(
@@ -2044,13 +2145,19 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createGetInventoryRequest() {
+    final request = OpenApiClientRequest('get', '/store/inventory', []);
+    return request;
+  }
+
   /// Returns pet inventories by status
   /// Returns a map of status codes to quantities
   /// get: /store/inventory
   ///
   @override
   Future<GetInventoryResponse> getInventory() async {
-    final request = OpenApiClientRequest('get', '/store/inventory', []);
+    final request = createGetInventoryRequest();
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           GetInventoryResponse200.response200(
@@ -2061,14 +2168,20 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createPlaceOrderRequest(Order body) {
+    final request = OpenApiClientRequest('post', '/store/order', []);
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    return request;
+  }
+
   /// Place an order for a pet
   /// post: /store/order
   ///
   @override
   Future<PlaceOrderResponse> placeOrder(Order body) async {
-    final request = OpenApiClientRequest('post', '/store/order', []);
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    final request = createPlaceOrderRequest(body);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           PlaceOrderResponse200.response200(
@@ -2079,6 +2192,13 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createGetOrderByIdRequest({required int orderId}) {
+    final request = OpenApiClientRequest('get', '/store/order/{orderId}', []);
+    request.addPathParameter('orderId', encodeInt(orderId));
+    return request;
+  }
+
   /// Find purchase order by ID
   /// For valid response try integer IDs with value >= 1 and <= 10.\ \ Other values will generated exceptions
   /// get: /store/order/{orderId}
@@ -2086,8 +2206,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   /// * [orderId]: ID of pet that needs to be fetched
   @override
   Future<GetOrderByIdResponse> getOrderById({required int orderId}) async {
-    final request = OpenApiClientRequest('get', '/store/order/{orderId}', []);
-    request.addPathParameter('orderId', encodeInt(orderId));
+    final request = createGetOrderByIdRequest(orderId: orderId);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           GetOrderByIdResponse200.response200(
@@ -2100,6 +2219,17 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createDeleteOrderRequest({required int orderId}) {
+    final request = OpenApiClientRequest(
+      'delete',
+      '/store/order/{orderId}',
+      [],
+    );
+    request.addPathParameter('orderId', encodeInt(orderId));
+    return request;
+  }
+
   /// Delete purchase order by ID
   /// For valid response try integer IDs with positive integer value.\ \ Negative or non-integer values will generate API errors
   /// delete: /store/order/{orderId}
@@ -2107,12 +2237,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   /// * [orderId]: ID of the order that needs to be deleted
   @override
   Future<DeleteOrderResponse> deleteOrder({required int orderId}) async {
-    final request = OpenApiClientRequest(
-      'delete',
-      '/store/order/{orderId}',
-      [],
-    );
-    request.addPathParameter('orderId', encodeInt(orderId));
+    final request = createDeleteOrderRequest(orderId: orderId);
     return await sendRequest(request, {
       '400': (OpenApiClientResponse response) async =>
           DeleteOrderResponse400.response400(),
@@ -2121,19 +2246,33 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createCreateUserRequest(User body) {
+    final request = OpenApiClientRequest('post', '/user', []);
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    return request;
+  }
+
   /// Create user
   /// This can only be done by the logged in user.
   /// post: /user
   ///
   @override
   Future<CreateUserResponse> createUser(User body) async {
-    final request = OpenApiClientRequest('post', '/user', []);
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    final request = createCreateUserRequest(body);
     return await sendRequest(request, {
       'default': (OpenApiClientResponse response) async =>
           CreateUserResponseDefault.responseDefault(response.status),
     });
+  }
+
+  @override
+  OpenApiClientRequest createCreateUsersWithArrayInputRequest(List<User> body) {
+    final request = OpenApiClientRequest('post', '/user/createWithArray', []);
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body));
+    return request;
   }
 
   /// Creates list of users with given input array
@@ -2143,15 +2282,21 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   Future<CreateUsersWithArrayInputResponse> createUsersWithArrayInput(
     List<User> body,
   ) async {
-    final request = OpenApiClientRequest('post', '/user/createWithArray', []);
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body));
+    final request = createCreateUsersWithArrayInputRequest(body);
     return await sendRequest(request, {
       'default': (OpenApiClientResponse response) async =>
           CreateUsersWithArrayInputResponseDefault.responseDefault(
             response.status,
           ),
     });
+  }
+
+  @override
+  OpenApiClientRequest createCreateUsersWithListInputRequest(List<User> body) {
+    final request = OpenApiClientRequest('post', '/user/createWithList', []);
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body));
+    return request;
   }
 
   /// Creates list of users with given input array
@@ -2161,15 +2306,24 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   Future<CreateUsersWithListInputResponse> createUsersWithListInput(
     List<User> body,
   ) async {
-    final request = OpenApiClientRequest('post', '/user/createWithList', []);
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body));
+    final request = createCreateUsersWithListInputRequest(body);
     return await sendRequest(request, {
       'default': (OpenApiClientResponse response) async =>
           CreateUsersWithListInputResponseDefault.responseDefault(
             response.status,
           ),
     });
+  }
+
+  @override
+  OpenApiClientRequest createLoginUserRequest({
+    required String username,
+    required String password,
+  }) {
+    final request = OpenApiClientRequest('get', '/user/login', []);
+    request.addQueryParameter('username', encodeString(username));
+    request.addQueryParameter('password', encodeString(password));
+    return request;
   }
 
   /// Logs user into the system
@@ -2182,9 +2336,10 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     required String username,
     required String password,
   }) async {
-    final request = OpenApiClientRequest('get', '/user/login', []);
-    request.addQueryParameter('username', encodeString(username));
-    request.addQueryParameter('password', encodeString(password));
+    final request = createLoginUserRequest(
+      username: username,
+      password: password,
+    );
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           LoginUserResponse200.response200(
@@ -2195,16 +2350,29 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createLogoutUserRequest() {
+    final request = OpenApiClientRequest('get', '/user/logout', []);
+    return request;
+  }
+
   /// Logs out current logged in user session
   /// get: /user/logout
   ///
   @override
   Future<LogoutUserResponse> logoutUser() async {
-    final request = OpenApiClientRequest('get', '/user/logout', []);
+    final request = createLogoutUserRequest();
     return await sendRequest(request, {
       'default': (OpenApiClientResponse response) async =>
           LogoutUserResponseDefault.responseDefault(response.status),
     });
+  }
+
+  @override
+  OpenApiClientRequest createGetUserByNameRequest({required String username}) {
+    final request = OpenApiClientRequest('get', '/user/{username}', []);
+    request.addPathParameter('username', encodeString(username));
+    return request;
   }
 
   /// Get user by user name
@@ -2215,8 +2383,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   Future<GetUserByNameResponse> getUserByName({
     required String username,
   }) async {
-    final request = OpenApiClientRequest('get', '/user/{username}', []);
-    request.addPathParameter('username', encodeString(username));
+    final request = createGetUserByNameRequest(username: username);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           GetUserByNameResponse200.response200(
@@ -2229,6 +2396,18 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createUpdateUserRequest(
+    User body, {
+    required String username,
+  }) {
+    final request = OpenApiClientRequest('put', '/user/{username}', []);
+    request.addPathParameter('username', encodeString(username));
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    return request;
+  }
+
   /// Updated user
   /// This can only be done by the logged in user.
   /// put: /user/{username}
@@ -2239,16 +2418,20 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
     User body, {
     required String username,
   }) async {
-    final request = OpenApiClientRequest('put', '/user/{username}', []);
-    request.addPathParameter('username', encodeString(username));
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    final request = createUpdateUserRequest(body, username: username);
     return await sendRequest(request, {
       '400': (OpenApiClientResponse response) async =>
           UpdateUserResponse400.response400(),
       '404': (OpenApiClientResponse response) async =>
           UpdateUserResponse404.response404(),
     });
+  }
+
+  @override
+  OpenApiClientRequest createDeleteUserRequest({required String username}) {
+    final request = OpenApiClientRequest('delete', '/user/{username}', []);
+    request.addPathParameter('username', encodeString(username));
+    return request;
   }
 
   /// Delete user
@@ -2258,8 +2441,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
   /// * [username]: The name that needs to be deleted
   @override
   Future<DeleteUserResponse> deleteUser({required String username}) async {
-    final request = OpenApiClientRequest('delete', '/user/{username}', []);
-    request.addPathParameter('username', encodeString(username));
+    final request = createDeleteUserRequest(username: username);
     return await sendRequest(request, {
       '400': (OpenApiClientResponse response) async =>
           DeleteUserResponse400.response400(),

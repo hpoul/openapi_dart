@@ -666,15 +666,22 @@ abstract class TestApiClient implements OpenApiClient {
   factory TestApiClient(Uri baseUri, OpenApiRequestSender requestSender) =>
       _TestApiClientImpl._(baseUri, requestSender);
 
+  OpenApiClientRequest createUserRegisterPostRequest(RegisterRequest body);
+
   /// Create new user
   /// post: /user/register
   ///
   Future<UserRegisterPostResponse> userRegisterPost(RegisterRequest body);
+  OpenApiClientRequest createHelloNameHtmlGetRequest({required String name});
 
   /// Say Hello World to {name} with a nice html page.
   /// get: /hello/{name}/html
   ///
   Future<HelloNameHtmlGetResponse> helloNameHtmlGet({required String name});
+  OpenApiClientRequest createHelloNameGetRequest({
+    required String name,
+    String? salutation,
+  });
 
   /// Say Hello World to {name}
   /// get: /hello/{name}
@@ -684,6 +691,10 @@ abstract class TestApiClient implements OpenApiClient {
     required String name,
     String? salutation,
   });
+  OpenApiClientRequest createHelloNamePutRequest(
+    HelloRequest body, {
+    required String name,
+  });
 
   /// Say Hello World to {name} with some parameters
   /// put: /hello/{name}
@@ -692,6 +703,9 @@ abstract class TestApiClient implements OpenApiClient {
     HelloRequest body, {
     required String name,
   });
+  OpenApiClientRequest createUuidExampleMessageIdGetRequest({
+    required ApiUuid messageId,
+  });
 
   /// details of uuid.
   /// get: /uuidExample/{messageId}
@@ -699,10 +713,12 @@ abstract class TestApiClient implements OpenApiClient {
   Future<UuidExampleMessageIdGetResponse> uuidExampleMessageIdGet({
     required ApiUuid messageId,
   });
+  OpenApiClientRequest createHelloArrayqueryGetRequest({List<String>? test});
 
   /// get: /hello/arrayquery
   ///
   Future<HelloArrayqueryGetResponse> helloArrayqueryGet({List<String>? test});
+  OpenApiClientRequest createHelloIntegerPutRequest(int body);
 
   /// put: /hello/integer
   ///
@@ -718,6 +734,14 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
   @override
   final OpenApiRequestSender requestSender;
 
+  @override
+  OpenApiClientRequest createUserRegisterPostRequest(RegisterRequest body) {
+    final request = OpenApiClientRequest('post', '/user/register', []);
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    return request;
+  }
+
   /// Create new user
   /// post: /user/register
   ///
@@ -725,13 +749,18 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
   Future<UserRegisterPostResponse> userRegisterPost(
     RegisterRequest body,
   ) async {
-    final request = OpenApiClientRequest('post', '/user/register', []);
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    final request = createUserRegisterPostRequest(body);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           UserRegisterPostResponse200.response200(),
     });
+  }
+
+  @override
+  OpenApiClientRequest createHelloNameHtmlGetRequest({required String name}) {
+    final request = OpenApiClientRequest('get', '/hello/{name}/html', []);
+    request.addPathParameter('name', encodeString(name));
+    return request;
   }
 
   /// Say Hello World to {name} with a nice html page.
@@ -741,14 +770,24 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
   Future<HelloNameHtmlGetResponse> helloNameHtmlGet({
     required String name,
   }) async {
-    final request = OpenApiClientRequest('get', '/hello/{name}/html', []);
-    request.addPathParameter('name', encodeString(name));
+    final request = createHelloNameHtmlGetRequest(name: name);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           HelloNameHtmlGetResponse200.response200(
             await response.responseBodyString(),
           ),
     });
+  }
+
+  @override
+  OpenApiClientRequest createHelloNameGetRequest({
+    required String name,
+    String? salutation,
+  }) {
+    final request = OpenApiClientRequest('get', '/hello/{name}', []);
+    request.addPathParameter('name', encodeString(name));
+    request.addQueryParameter('salutation', encodeString(salutation));
+    return request;
   }
 
   /// Say Hello World to {name}
@@ -760,15 +799,28 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
     required String name,
     String? salutation,
   }) async {
-    final request = OpenApiClientRequest('get', '/hello/{name}', []);
-    request.addPathParameter('name', encodeString(name));
-    request.addQueryParameter('salutation', encodeString(salutation));
+    final request = createHelloNameGetRequest(
+      name: name,
+      salutation: salutation,
+    );
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           HelloNameGetResponse200.response200(
             HelloResponse.fromJson(await response.responseBodyJson()),
           ),
     });
+  }
+
+  @override
+  OpenApiClientRequest createHelloNamePutRequest(
+    HelloRequest body, {
+    required String name,
+  }) {
+    final request = OpenApiClientRequest('put', '/hello/{name}', []);
+    request.addPathParameter('name', encodeString(name));
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    return request;
   }
 
   /// Say Hello World to {name} with some parameters
@@ -779,16 +831,25 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
     HelloRequest body, {
     required String name,
   }) async {
-    final request = OpenApiClientRequest('put', '/hello/{name}', []);
-    request.addPathParameter('name', encodeString(name));
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body.toJson()));
+    final request = createHelloNamePutRequest(body, name: name);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           HelloNamePutResponse200.response200(
             HelloResponse.fromJson(await response.responseBodyJson()),
           ),
     });
+  }
+
+  @override
+  OpenApiClientRequest createUuidExampleMessageIdGetRequest({
+    required ApiUuid messageId,
+  }) {
+    final request = OpenApiClientRequest('get', '/uuidExample/{messageId}', []);
+    request.addPathParameter(
+      'messageId',
+      encodeString(messageId.encodeToString()),
+    );
+    return request;
   }
 
   /// details of uuid.
@@ -798,11 +859,7 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
   Future<UuidExampleMessageIdGetResponse> uuidExampleMessageIdGet({
     required ApiUuid messageId,
   }) async {
-    final request = OpenApiClientRequest('get', '/uuidExample/{messageId}', []);
-    request.addPathParameter(
-      'messageId',
-      encodeString(messageId.encodeToString()),
-    );
+    final request = createUuidExampleMessageIdGetRequest(messageId: messageId);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           UuidExampleMessageIdGetResponse200.response200(
@@ -813,27 +870,39 @@ class _TestApiClientImpl extends OpenApiClientBase implements TestApiClient {
     });
   }
 
+  @override
+  OpenApiClientRequest createHelloArrayqueryGetRequest({List<String>? test}) {
+    final request = OpenApiClientRequest('get', '/hello/arrayquery', []);
+    request.addQueryParameter('test', test?.expand((e) => encodeString(e)));
+    return request;
+  }
+
   /// get: /hello/arrayquery
   ///
   @override
   Future<HelloArrayqueryGetResponse> helloArrayqueryGet({
     List<String>? test,
   }) async {
-    final request = OpenApiClientRequest('get', '/hello/arrayquery', []);
-    request.addQueryParameter('test', test?.expand((e) => encodeString(e)));
+    final request = createHelloArrayqueryGetRequest(test: test);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           HelloArrayqueryGetResponse200.response200(),
     });
   }
 
+  @override
+  OpenApiClientRequest createHelloIntegerPutRequest(int body) {
+    final request = OpenApiClientRequest('put', '/hello/integer', []);
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body));
+    return request;
+  }
+
   /// put: /hello/integer
   ///
   @override
   Future<HelloIntegerPutResponse> helloIntegerPut(int body) async {
-    final request = OpenApiClientRequest('put', '/hello/integer', []);
-    request.setHeader('content-type', 'application/json');
-    request.setBody(OpenApiClientRequestBodyJson(body));
+    final request = createHelloIntegerPutRequest(body);
     return await sendRequest(request, {
       '200': (OpenApiClientResponse response) async =>
           HelloIntegerPutResponse200.response200(),
