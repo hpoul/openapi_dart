@@ -53,6 +53,14 @@ class OpenApiLibraryGenerator {
     'JsonKey',
     'package:json_annotation/json_annotation.dart',
   );
+  final jsonEnum = refer(
+    'JsonEnum',
+    'package:json_annotation/json_annotation.dart',
+  );
+  final $enumDecode = refer(
+    '\$enumDecode',
+    'package:json_annotation/json_annotation.dart',
+  );
   final _openApiContent = refer(
     'OpenApiContent',
     'package:openapi_base/openapi_base.dart',
@@ -1860,21 +1868,77 @@ class OpenApiLibraryGenerator {
 
   Reference _createEnum(String name, List<dynamic>? values) {
     return createdEnums.putIfAbsent(name, () {
-      lb.body.add(
-        EnumSpec(
-          name: name,
-          values: values!
-              .map(
-                (dynamic e) => EnumValueSpec(
-                  annotations: [
-                    jsonValue([literalString(e.toString())]),
-                  ],
-                  name: e.toString().camelCase,
-                ),
-              )
-              .toList(),
-        ),
+      final enum_ = Enum((eb) {
+        eb.annotations.add(jsonEnum([], {'alwaysCreate': literalTrue}));
+        eb.name = name;
+        if (values != null) {
+          eb.values.addAll(
+            values
+                .map(
+                  (v) => EnumValue(
+                    (ev) => ev
+                      ..name = v.toString().camelCase
+                      ..annotations.add(
+                        jsonValue([literalString(v.toString())]),
+                      ),
+                  ),
+                )
+                .toList(),
+          );
+        }
+      });
+      final enumExt = Extension(
+        (eb) => eb
+          ..name = '${name}Ext'
+          ..on = refer(enum_.name)
+          ..methods.add(
+            Method(
+              (mb) => mb
+                ..name = 'fromName'
+                ..static = true
+                ..returns = refer(enum_.name)
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..type = _typeString
+                      ..name = 'name',
+                  ),
+                )
+                ..body = $enumDecode([
+                  refer(
+                    '_\$${name}EnumMap',
+                  ),
+                  refer('name'),
+                ]).returned.statement,
+            ),
+          )
+          ..methods.add(
+            Method(
+              (mb) => mb
+                ..type = MethodType.getter
+                ..name = 'jsonValue'
+                ..lambda = true
+                ..returns = _typeString
+                ..body =
+                    refer(
+                          '_\$${name}EnumMap',
+                        )
+                        .index(refer('this'))
+                        .ifNullThen(
+                          Method(
+                            (m2) => m2
+                              ..lambda = true
+                              ..body = refer('StateError')([
+                                literalString('Invalid enum.'),
+                              ]).thrown.code,
+                          ).closure.parenthesized([]),
+                        )
+                        .code,
+            ),
+          ),
       );
+      lb.body.add(enum_);
+      lb.body.add(enumExt);
       return refer(name);
     });
   }
@@ -2184,9 +2248,9 @@ class OpenApiLibraryGenerator {
           }
         } else if (schema.enumerated?.isNotEmpty == true) {
           if (isRequired) {
-            expression = expression.property('name');
+            expression = expression.property('jsonValue');
           } else {
-            expression = expression.nullSafeProperty('name');
+            expression = expression.nullSafeProperty('jsonValue');
           }
         } else if (type == _typeDateTime) {
           if (isRequired) {
@@ -2262,66 +2326,6 @@ extension on APIParameter {
       };
 }
 
-class EnumSpec extends Spec {
-  EnumSpec({this.name, this.values});
-
-  final String? name;
-  final List<EnumValueSpec>? values;
-
-  @override
-  R accept<R>(SpecVisitor<R> visitor, [R? context]) {
-    assert(context is StringSink);
-    final ctx = context as StringSink;
-    ctx.write('enum $name {');
-    for (final value in values!) {
-      visitor.visitSpec(value, context);
-      ctx.write(',');
-    }
-    ctx.writeln('}');
-    ctx.write('extension ${name}Ext on $name {');
-    ctx.write('static final Map<String, $name> _names = ');
-    visitor.visitSpec(
-      literalMap(
-        Map.fromEntries(
-          values!.map(
-            (e) => MapEntry(
-              literalString(e.name!),
-              refer(name!).property(e.name!),
-            ),
-          ),
-        ),
-      ),
-      context,
-    );
-    ctx.write(';');
-    ctx.write(
-      'static $name fromName(String name) => _names[name] ??'
-      ' _throwStateError(\'Invalid enum name: \$name for $name\');',
-    );
-    ctx.write('String get name => toString().substring(${name!.length + 1});');
-    ctx.writeln('}');
-    return context;
-  }
-}
-
-class EnumValueSpec extends Spec {
-  EnumValueSpec({this.annotations, this.name});
-
-  final List<Expression?>? annotations;
-  final String? name;
-
-  @override
-  R accept<R>(SpecVisitor<R> visitor, [R? context]) {
-    assert(context is StringSink);
-    final ctx = context as StringSink;
-    for (final annotation in annotations!) {
-      visitor.visitAnnotation(annotation!, context);
-    }
-    ctx.write(name);
-    return context;
-  }
-}
-
 class OpenApiCodeBuilderUtils {
   static Map<String, dynamic>? _loadYaml(String source) {
     final dynamic tmp = loadYaml(source) as dynamic;
@@ -2390,8 +2394,8 @@ class OpenApiCodeBuilderUtils {
         ).format(
           '// GENERATED CODE - DO NOT MODIFY BY HAND\n\n\n'
           '// ignore_for_file: prefer_initializing_formals, library_private_types_in_public_api, annotate_overrides, sort_unnamed_constructors_first, unnecessary_import\n\n'
-          '${library.accept(emitter)}\n\n'
-          'T _throwStateError<T>(String message) => throw StateError(message);\n\n',
+          '${library.accept(emitter)}\n\n',
+          // 'T _throwStateError<T>(String message) => throw StateError(message);\n\n',
         );
     return libraryOutput;
   }

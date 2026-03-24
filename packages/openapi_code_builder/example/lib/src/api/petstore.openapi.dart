@@ -11,6 +11,7 @@ import 'package:openapi_base/openapi_base.dart';
 part 'petstore.openapi.g.dart';
 part 'petstore.openapi.freezed.dart';
 
+@JsonEnum(alwaysCreate: true)
 enum OrderStatus {
   @JsonValue('placed')
   placed,
@@ -21,15 +22,12 @@ enum OrderStatus {
 }
 
 extension OrderStatusExt on OrderStatus {
-  static final Map<String, OrderStatus> _names = {
-    'placed': OrderStatus.placed,
-    'approved': OrderStatus.approved,
-    'delivered': OrderStatus.delivered,
-  };
-  static OrderStatus fromName(String name) =>
-      _names[name] ??
-      _throwStateError('Invalid enum name: $name for OrderStatus');
-  String get name => toString().substring(12);
+  static OrderStatus fromName(String name) {
+    return $enumDecode(_$OrderStatusEnumMap, name);
+  }
+
+  String get jsonValue =>
+      _$OrderStatusEnumMap[this] ?? (() => throw StateError('Invalid enum.'))();
 }
 
 @freezed
@@ -107,6 +105,7 @@ sealed class Tag with _$Tag implements OpenApiContent {
   String toString() => toJson().toString();
 }
 
+@JsonEnum(alwaysCreate: true)
 enum PetStatus {
   @JsonValue('available')
   available,
@@ -117,15 +116,12 @@ enum PetStatus {
 }
 
 extension PetStatusExt on PetStatus {
-  static final Map<String, PetStatus> _names = {
-    'available': PetStatus.available,
-    'pending': PetStatus.pending,
-    'sold': PetStatus.sold,
-  };
-  static PetStatus fromName(String name) =>
-      _names[name] ??
-      _throwStateError('Invalid enum name: $name for PetStatus');
-  String get name => toString().substring(10);
+  static PetStatus fromName(String name) {
+    return $enumDecode(_$PetStatusEnumMap, name);
+  }
+
+  String get jsonValue =>
+      _$PetStatusEnumMap[this] ?? (() => throw StateError('Invalid enum.'))();
 }
 
 @freezed
@@ -370,6 +366,7 @@ sealed class FindPetsByStatusResponse extends OpenApiResponse
   }
 }
 
+@JsonEnum(alwaysCreate: true)
 enum FindPetsByStatus {
   @JsonValue('available')
   available,
@@ -380,15 +377,13 @@ enum FindPetsByStatus {
 }
 
 extension FindPetsByStatusExt on FindPetsByStatus {
-  static final Map<String, FindPetsByStatus> _names = {
-    'available': FindPetsByStatus.available,
-    'pending': FindPetsByStatus.pending,
-    'sold': FindPetsByStatus.sold,
-  };
-  static FindPetsByStatus fromName(String name) =>
-      _names[name] ??
-      _throwStateError('Invalid enum name: $name for FindPetsByStatus');
-  String get name => toString().substring(17);
+  static FindPetsByStatus fromName(String name) {
+    return $enumDecode(_$FindPetsByStatusEnumMap, name);
+  }
+
+  String get jsonValue =>
+      _$FindPetsByStatusEnumMap[this] ??
+      (() => throw StateError('Invalid enum.'))();
 }
 
 class FindPetsByTagsResponse200 extends FindPetsByTagsResponse

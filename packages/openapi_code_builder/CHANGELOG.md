@@ -1,3 +1,7 @@
+## 1.8.2-dev.2
+
+* Fix enum serializing.
+
 ## 1.8.2-dev.1
 
 * Use freezed to generate classes.

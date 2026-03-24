@@ -131,3 +131,9 @@ _UpdatePetWithFormSchema _$UpdatePetWithFormSchemaFromJson(
 Map<String, dynamic> _$UpdatePetWithFormSchemaToJson(
   _UpdatePetWithFormSchema instance,
 ) => <String, dynamic>{'name': ?instance.name, 'status': ?instance.status};
+
+const _$FindPetsByStatusEnumMap = {
+  FindPetsByStatus.available: 'available',
+  FindPetsByStatus.pending: 'pending',
+  FindPetsByStatus.sold: 'sold',
+};
