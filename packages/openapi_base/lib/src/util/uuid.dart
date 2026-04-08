@@ -33,6 +33,8 @@ class ApiUuid {
   @override
   String toString() => _uuid;
 
+  dynamic toJson() => encodeToString();
+
   @override
   bool operator ==(Object other) => other is ApiUuid && _uuid == other._uuid;
 

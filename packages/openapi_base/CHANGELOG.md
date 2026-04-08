@@ -1,3 +1,7 @@
+## 2.0.0+2
+
+* Add ApiUuid.toJson() method.
+
 ## 2.0.0+1
 
 * Remove dependency on [logging_appenders](https://pub.dev/packages/logging_appenders)
