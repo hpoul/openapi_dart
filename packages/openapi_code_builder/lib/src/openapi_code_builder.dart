@@ -1137,7 +1137,14 @@ class OpenApiLibraryGenerator {
                   );
             }
             lb.body.add(
-              declareFinal(providerName).assign(createProvider).statement,
+              Field(
+                (fb) => fb
+                  ..name = providerName
+                  ..modifier = FieldModifier.final$
+                  ..addDartDoc(operation.value!.summary)
+                  ..addDartDoc(operation.value!.description)
+                  ..assignment = createProvider.code,
+              ),
             );
           }
         }
