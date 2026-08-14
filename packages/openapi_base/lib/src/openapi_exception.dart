@@ -34,6 +34,17 @@ class UnexpectedResponseException extends OpenApiResponseException {
   final OpenApiClientRequest request;
 }
 
+/// Thrown by the generated `requireSuccess()` when the response is not the
+/// success response of the operation. [response] is the response which was
+/// actually received, so it can be inspected (e.g. for its status or the
+/// error body it carries) instead of only being available as message text.
+class OpenApiRequireSuccessException extends StateError {
+  OpenApiRequireSuccessException(this.response)
+      : super('Expected success response, but got $response');
+
+  final OpenApiResponse response;
+}
+
 /// Server exception which can be thrown by implementations of
 /// the server endpoint to indicate a 401 response status.
 class UnauthorizedException extends OpenApiResponseException

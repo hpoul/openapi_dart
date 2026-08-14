@@ -1,3 +1,8 @@
+## 2.0.0+3
+
+* Add `OpenApiRequireSuccessException`, thrown by the generated
+  `requireSuccess()` and carrying the actual response object.
+
 ## 2.0.0+2
 
 * Add ApiUuid.toJson() method.

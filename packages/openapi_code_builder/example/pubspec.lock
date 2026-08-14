@@ -334,14 +334,14 @@ packages:
       path: "../../openapi_base"
       relative: true
     source: path
-    version: "2.0.0+1"
+    version: "2.0.0+3"
   openapi_code_builder:
     dependency: "direct dev"
     description:
       path: ".."
       relative: true
     source: path
-    version: "1.8.2-dev.2"
+    version: "1.8.2-dev.4"
   package_config:
     dependency: transitive
     description:

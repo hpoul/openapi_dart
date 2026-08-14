@@ -1,3 +1,8 @@
+## 1.8.2-dev.4
+
+* `requireSuccess()` throws `OpenApiRequireSuccessException` (a `StateError`
+  carrying the actual response) instead of a plain `StateError`.
+
 ## 1.8.2-dev.3
 
 * Add dartdoc (summary/description) from the openapi operation to generated riverpod providers.

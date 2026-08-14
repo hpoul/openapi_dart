@@ -109,6 +109,10 @@ class OpenApiLibraryGenerator {
     'HasSuccessResponse',
     'package:openapi_base/openapi_base.dart',
   );
+  final _requireSuccessException = refer(
+    'OpenApiRequireSuccessException',
+    'package:openapi_base/openapi_base.dart',
+  );
 
   //  final _openApiHttpHeaders =
   //      refer('OpenApiHttpHeaders', 'package:openapi_base/openapi_base.dart');
@@ -797,9 +801,10 @@ class OpenApiLibraryGenerator {
                               .returned
                               .statement,
                     const Code('} else {'),
-                    const Code(
-                      r'''throw StateError('Expected success response, but got $this');''',
-                    ),
+                    _requireSuccessException
+                        .newInstance([refer('this')])
+                        .thrown
+                        .statement,
                     const Code('}'),
                   ]),
               ),

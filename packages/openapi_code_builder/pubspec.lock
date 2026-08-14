@@ -238,7 +238,7 @@ packages:
       path: "../openapi_base"
       relative: true
     source: path
-    version: "2.0.0+1"
+    version: "2.0.0+3"
   package_config:
     dependency: transitive
     description:
