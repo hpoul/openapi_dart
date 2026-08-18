@@ -1,3 +1,9 @@
+## 1.8.2-dev.6
+
+* Encode request bodies which are arrays of enums with their json values.
+  `json.encode` cannot handle enums, so sending such a body threw
+  `Converting object to an encodable object failed`.
+
 ## 1.8.2-dev.5
 
 * Generate valid dart identifiers for enum values which are dart keywords

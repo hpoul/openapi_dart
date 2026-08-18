@@ -1340,7 +1340,7 @@ class OpenApiLibraryGenerator {
                 : literalConstMap({}, refer('String'), refer('dynamic')));
       final jsonReference = switch (bodyIsObject) {
         true => refer('body').property('toJson')([]),
-        false => refer('body'),
+        false => _encodeJsonRequestBody(schema, refer('body')),
       };
       final decodeExpression = switch (bodyIsObject) {
         true => reference.property('fromJson')([mapExpression]),
@@ -1353,6 +1353,33 @@ class OpenApiLibraryGenerator {
         decodeExpression,
       );
     }
+  }
+
+  /// Makes a non object request body encodable by `json.encode`.
+  ///
+  /// Lists of generated objects work as they are, since json encoding falls
+  /// back to their `toJson()`. Enums have no such method, so a list of them
+  /// has to be mapped to the json values explicitly.
+  Expression _encodeJsonRequestBody(
+    APISchemaObject schema,
+    Expression body,
+  ) {
+    final items = schema.items;
+    if (schema.type != APIType.array ||
+        items == null ||
+        items.enumerated?.isNotEmpty != true) {
+      return body;
+    }
+    return body
+        .property('map')([
+          Method(
+            (mb) => mb
+              ..lambda = true
+              ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+              ..body = refer('e').property('jsonValue').code,
+          ).closure,
+        ])
+        .property('toList')([]);
   }
 
   void _routerConfig(
