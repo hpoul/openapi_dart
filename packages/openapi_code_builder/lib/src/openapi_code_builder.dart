@@ -1884,12 +1884,13 @@ class OpenApiLibraryGenerator {
         eb.annotations.add(jsonEnum([], {'alwaysCreate': literalTrue}));
         eb.name = name;
         if (values != null) {
+          final usedNames = <String>{};
           eb.values.addAll(
             values
                 .map(
                   (v) => EnumValue(
                     (ev) => ev
-                      ..name = v.toString().camelCase
+                      ..name = dartEnumValueName(v.toString(), usedNames)
                       ..annotations.add(
                         jsonValue([literalString(v.toString())]),
                       ),
@@ -2555,6 +2556,76 @@ extension ObjectExt<T> on T {
   T? takeIf(bool Function(T that) predicate) => predicate(this) ? this : null;
 
   R let<R>(R Function(T that) op) => op(this);
+}
+
+/// Dart keywords which can't be used as an identifier at all, plus the members
+/// which are implicitly declared on every enum and would therefore conflict
+/// with an enum value of the same name.
+const _dartReservedNames = {
+  'assert',
+  'break',
+  'case',
+  'catch',
+  'class',
+  'const',
+  'continue',
+  'default',
+  'do',
+  'else',
+  'enum',
+  'extends',
+  'false',
+  'final',
+  'finally',
+  'for',
+  'if',
+  'in',
+  'is',
+  'new',
+  'null',
+  'rethrow',
+  'return',
+  'super',
+  'switch',
+  'this',
+  'throw',
+  'true',
+  'try',
+  'var',
+  'void',
+  'while',
+  'with',
+  // implicitly declared enum members.
+  'hashCode',
+  'index',
+  'noSuchMethod',
+  'runtimeType',
+  'toString',
+  'values',
+};
+
+final _invalidIdentifierChars = RegExp(r'[^A-Za-z0-9_$]');
+final _identifierStart = RegExp(r'^[A-Za-z_$]');
+
+/// Converts an openapi enum value into a valid dart identifier.
+///
+/// [usedNames] collects the names already generated for the same enum, so that
+/// values which only differ in characters dropped by the camel casing (e.g.
+/// `a-b` and `a.b`) don't end up as duplicate enum values.
+String dartEnumValueName(String value, Set<String> usedNames) {
+  var name = value.camelCase.replaceAll(_invalidIdentifierChars, '');
+  if (!_identifierStart.hasMatch(name)) {
+    // empty, or starting with a digit (e.g. `2xx`).
+    name = '\$$name';
+  }
+  if (_dartReservedNames.contains(name)) {
+    name = '$name\$';
+  }
+  var candidate = name;
+  for (var i = 2; !usedNames.add(candidate); i++) {
+    candidate = '$name\$$i';
+  }
+  return candidate;
 }
 
 Block ifStatement(Expression conditional, Code body, {Code? elseCode}) =>

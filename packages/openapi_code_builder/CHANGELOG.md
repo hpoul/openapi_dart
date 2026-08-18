@@ -1,3 +1,9 @@
+## 1.8.2-dev.5
+
+* Generate valid dart identifiers for enum values which are dart keywords
+  (e.g. the country codes `IN`, `IS`, `DO`), start with a digit, or would
+  collide with an implicit enum member. Those get a `$` appended/prepended.
+
 ## 1.8.2-dev.4
 
 * `requireSuccess()` throws `OpenApiRequireSuccessException` (a `StateError`
