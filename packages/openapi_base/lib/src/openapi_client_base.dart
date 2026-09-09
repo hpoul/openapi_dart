@@ -311,7 +311,16 @@ class HttpRequestSender extends OpenApiRequestSender {
     _logger.finest('Expanded Uri for request to $uri '
         ' (baseUri: $baseUri)');
 
-    final req = Request(request.operation, uri);
+    // OpenAPI spec path-item keys (and thus `request.operation`, generated
+    // from them) are always lowercase, e.g. "get", "patch". Most HTTP
+    // stacks normalize well-known methods to uppercase regardless (dart:io
+    // HttpClient does this for every verb; the WHATWG Fetch spec used by
+    // web does it for DELETE/GET/HEAD/OPTIONS/POST/PUT), but PATCH is
+    // notably excluded from that browser normalization list and gets sent
+    // verbatim - so on Flutter/Dart web a lowercase "patch" reaches the
+    // server unchanged and can be rejected. Uppercase here once so the
+    // method is canonical on every platform.
+    final req = Request(request.operation.toUpperCase(), uri);
     final requestBody = request.body;
     if (requestBody != null) {
       if (requestBody.isBytes) {
