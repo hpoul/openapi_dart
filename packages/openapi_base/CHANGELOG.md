@@ -1,3 +1,12 @@
+## 2.0.0+4
+
+* Fix `HttpRequestSender` sending the HTTP method in whatever case the
+  OpenAPI spec used (always lowercase). Most stacks normalize this
+  regardless, but the Fetch API used on web only uppercases a fixed set of
+  methods that excludes PATCH, so a lowercase `patch` reached the server
+  verbatim and could be rejected. The method is now uppercased before the
+  request is built.
+
 ## 2.0.0+3
 
 * Add `OpenApiRequireSuccessException`, thrown by the generated
