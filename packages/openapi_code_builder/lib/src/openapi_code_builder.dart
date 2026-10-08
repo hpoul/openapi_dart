@@ -442,8 +442,11 @@ class OpenApiLibraryGenerator {
                     ])
                     .code;
                 final responseSchema = content.schema!;
-                if (responseSchema.type == APIType.string) {
-                  // TODO add server side support for string types.
+                if (responseSchema.type == APIType.string ||
+                    responseSchema.type == APIType.number ||
+                    responseSchema.type == APIType.integer ||
+                    responseSchema.type == APIType.boolean) {
+                  // TODO add server side support for primitive types.
                   bodyType = _toDartType(
                     '${responseClass.name}Body',
                     responseSchema,
@@ -459,15 +462,21 @@ class OpenApiLibraryGenerator {
                         ..toThis = true,
                     ),
                   );
+                  final dynamicBody = refer(
+                    'response',
+                  ).property('responseBodyJsonDynamic')([]).awaited;
                   clientResponseParseParams.add(
-                    _decodeStringType(
-                      schema: responseSchema,
-                      asString: refer('response')
-                          .property('responseBodyJsonDynamic')([])
-                          .awaited
-                          .asA(_typeString),
-                      type: bodyType,
-                    ),
+                    switch (responseSchema.type) {
+                      APIType.number =>
+                        dynamicBody.asA(refer('num')).property('toDouble')([]),
+                      APIType.integer => dynamicBody.asA(_typeInteger),
+                      APIType.boolean => dynamicBody.asA(refer('bool')),
+                      _ => _decodeStringType(
+                        schema: responseSchema,
+                        asString: dynamicBody.asA(_typeString),
+                        type: bodyType,
+                      ),
+                    },
                   );
                 } else if (responseSchema.type == APIType.array) {
                   final bodyItemType = _schemaReference(
