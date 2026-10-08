@@ -1,3 +1,8 @@
+## 1.8.2-dev.7
+
+* Decode `number`, `integer` and `boolean` response bodies in the generated
+  client instead of treating them as objects.
+
 ## 1.8.2-dev.6
 
 * Encode request bodies which are arrays of enums with their json values.
