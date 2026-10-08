@@ -97,14 +97,14 @@ void main() {
       );
     });
 
-    test('number body is decoded to double', () {
+    test('number body is cast from dynamic json', () {
       expect(generated, contains(_normalize('final num body;')));
       expect(
         generated,
         contains(
           _normalize(
             'GetRatioResponse200.response200('
-            ' (await response.responseBodyJsonDynamic() as num).toDouble()',
+            ' (await response.responseBodyJsonDynamic() as num)',
           ),
         ),
       );

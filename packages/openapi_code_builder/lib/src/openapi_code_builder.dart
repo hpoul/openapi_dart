@@ -467,8 +467,7 @@ class OpenApiLibraryGenerator {
                   ).property('responseBodyJsonDynamic')([]).awaited;
                   clientResponseParseParams.add(
                     switch (responseSchema.type) {
-                      APIType.number =>
-                        dynamicBody.asA(refer('num')).property('toDouble')([]),
+                      APIType.number => dynamicBody.asA(refer('num')),
                       APIType.integer => dynamicBody.asA(_typeInteger),
                       APIType.boolean => dynamicBody.asA(refer('bool')),
                       _ => _decodeStringType(
