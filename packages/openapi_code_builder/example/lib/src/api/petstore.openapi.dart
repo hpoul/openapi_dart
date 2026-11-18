@@ -282,11 +282,11 @@ sealed class AddPetResponse extends OpenApiResponse {
 }
 
 class FindPetsByStatusResponse200 extends FindPetsByStatusResponse
-    implements OpenApiResponseBodyJson {
+    implements OpenApiResponseBodyJsonValue {
   /// successful operation
   FindPetsByStatusResponse200.response200(this.body)
     : status = 200,
-      bodyJson = {};
+      bodyJsonValue = body;
 
   @override
   final int status;
@@ -294,7 +294,7 @@ class FindPetsByStatusResponse200 extends FindPetsByStatusResponse
   final List<Pet> body;
 
   @override
-  final Map<String, dynamic> bodyJson;
+  final Object? bodyJsonValue;
 
   @override
   final OpenApiContentType contentType = OpenApiContentType.parse(
@@ -305,7 +305,7 @@ class FindPetsByStatusResponse200 extends FindPetsByStatusResponse
   Map<String, Object?> propertiesToString() => {
     'status': status,
     'body': body,
-    'bodyJson': bodyJson,
+    'bodyJsonValue': bodyJsonValue,
     'contentType': contentType,
   };
 }
@@ -361,7 +361,7 @@ sealed class FindPetsByStatusResponse extends OpenApiResponse
     if (this is FindPetsByStatusResponse200) {
       return (this as FindPetsByStatusResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -387,11 +387,11 @@ extension FindPetsByStatusExt on FindPetsByStatus {
 }
 
 class FindPetsByTagsResponse200 extends FindPetsByTagsResponse
-    implements OpenApiResponseBodyJson {
+    implements OpenApiResponseBodyJsonValue {
   /// successful operation
   FindPetsByTagsResponse200.response200(this.body)
     : status = 200,
-      bodyJson = {};
+      bodyJsonValue = body;
 
   @override
   final int status;
@@ -399,7 +399,7 @@ class FindPetsByTagsResponse200 extends FindPetsByTagsResponse
   final List<Pet> body;
 
   @override
-  final Map<String, dynamic> bodyJson;
+  final Object? bodyJsonValue;
 
   @override
   final OpenApiContentType contentType = OpenApiContentType.parse(
@@ -410,7 +410,7 @@ class FindPetsByTagsResponse200 extends FindPetsByTagsResponse
   Map<String, Object?> propertiesToString() => {
     'status': status,
     'body': body,
-    'bodyJson': bodyJson,
+    'bodyJsonValue': bodyJsonValue,
     'contentType': contentType,
   };
 }
@@ -466,7 +466,7 @@ sealed class FindPetsByTagsResponse extends OpenApiResponse
     if (this is FindPetsByTagsResponse200) {
       return (this as FindPetsByTagsResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -575,7 +575,7 @@ sealed class GetPetByIdResponse extends OpenApiResponse
     if (this is GetPetByIdResponse200) {
       return (this as GetPetByIdResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -752,7 +752,7 @@ sealed class UploadFileResponse extends OpenApiResponse
     if (this is UploadFileResponse200) {
       return (this as UploadFileResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -843,7 +843,7 @@ sealed class GetInventoryResponse extends OpenApiResponse
     if (this is GetInventoryResponse200) {
       return (this as GetInventoryResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -928,7 +928,7 @@ sealed class PlaceOrderResponse extends OpenApiResponse
     if (this is PlaceOrderResponse200) {
       return (this as PlaceOrderResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -1037,7 +1037,7 @@ sealed class GetOrderByIdResponse extends OpenApiResponse
     if (this is GetOrderByIdResponse200) {
       return (this as GetOrderByIdResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -1148,7 +1148,7 @@ sealed class CreateUserResponse extends OpenApiResponse
     if (this is CreateUserResponseDefault) {
       return;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -1199,7 +1199,7 @@ sealed class CreateUsersWithArrayInputResponse extends OpenApiResponse
     if (this is CreateUsersWithArrayInputResponseDefault) {
       return;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -1250,15 +1250,17 @@ sealed class CreateUsersWithListInputResponse extends OpenApiResponse
     if (this is CreateUsersWithListInputResponseDefault) {
       return;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
 
 class LoginUserResponse200 extends LoginUserResponse
-    implements OpenApiResponseBodyJson {
+    implements OpenApiResponseBodyJsonValue {
   /// successful operation
-  LoginUserResponse200.response200(this.body) : status = 200, bodyJson = {};
+  LoginUserResponse200.response200(this.body)
+    : status = 200,
+      bodyJsonValue = body;
 
   @override
   final int status;
@@ -1266,7 +1268,7 @@ class LoginUserResponse200 extends LoginUserResponse
   final String body;
 
   @override
-  final Map<String, dynamic> bodyJson;
+  final Object? bodyJsonValue;
 
   @override
   final OpenApiContentType contentType = OpenApiContentType.parse(
@@ -1277,7 +1279,7 @@ class LoginUserResponse200 extends LoginUserResponse
   Map<String, Object?> propertiesToString() => {
     'status': status,
     'body': body,
-    'bodyJson': bodyJson,
+    'bodyJsonValue': bodyJsonValue,
     'contentType': contentType,
   };
 }
@@ -1332,7 +1334,7 @@ sealed class LoginUserResponse extends OpenApiResponse
     if (this is LoginUserResponse200) {
       return (this as LoginUserResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -1381,7 +1383,7 @@ sealed class LogoutUserResponse extends OpenApiResponse
     if (this is LogoutUserResponseDefault) {
       return;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -1490,7 +1492,7 @@ sealed class GetUserByNameResponse extends OpenApiResponse
     if (this is GetUserByNameResponse200) {
       return (this as GetUserByNameResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -1983,7 +1985,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
       '200': (OpenApiClientResponse response) async =>
           FindPetsByStatusResponse200.response200(
             (await response.responseBodyJsonDynamic() as List<dynamic>)
-                .map((item) => Pet.fromJson((item as Map<String, dynamic>)))
+                .map((e) => Pet.fromJson((e as Map<String, dynamic>)))
                 .toList(),
           ),
       '400': (OpenApiClientResponse response) async =>
@@ -2014,7 +2016,7 @@ class _PetstoreClientImpl extends OpenApiClientBase implements PetstoreClient {
       '200': (OpenApiClientResponse response) async =>
           FindPetsByTagsResponse200.response200(
             (await response.responseBodyJsonDynamic() as List<dynamic>)
-                .map((item) => Pet.fromJson((item as Map<String, dynamic>)))
+                .map((e) => Pet.fromJson((e as Map<String, dynamic>)))
                 .toList(),
           ),
       '400': (OpenApiClientResponse response) async =>
@@ -2812,7 +2814,9 @@ class PetstoreRouter extends OpenApiServerRouterBase {
       return await impl.invoke(
         request,
         (Petstore impl) async => impl.createUsersWithArrayInput(
-          (await request.readJsonBodyDynamic() as List<User>),
+          (await request.readJsonBodyDynamic() as List<dynamic>)
+              .map((e) => User.fromJson((e as Map<String, dynamic>)))
+              .toList(),
         ),
       );
     }, security: []);
@@ -2820,7 +2824,9 @@ class PetstoreRouter extends OpenApiServerRouterBase {
       return await impl.invoke(
         request,
         (Petstore impl) async => impl.createUsersWithListInput(
-          (await request.readJsonBodyDynamic() as List<User>),
+          (await request.readJsonBodyDynamic() as List<dynamic>)
+              .map((e) => User.fromJson((e as Map<String, dynamic>)))
+              .toList(),
         ),
       );
     }, security: []);
@@ -2888,5 +2894,3 @@ class PetstoreRouter extends OpenApiServerRouterBase {
 }
 
 class SecuritySchemes {}
-
-T _throwStateError<T>(String message) => throw StateError(message);

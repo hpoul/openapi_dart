@@ -39,6 +39,13 @@ abstract class OpenApiResponseBodyJson extends OpenApiResponseWithBody {
   Map<String, dynamic> get bodyJson;
 }
 
+/// A json response whose body is not a json object, e.g. a list or a
+/// primitive value.
+abstract class OpenApiResponseBodyJsonValue extends OpenApiResponseWithBody {
+  /// The body, encodable by `json.encode`.
+  Object? get bodyJsonValue;
+}
+
 abstract class OpenApiResponseBodyString extends OpenApiResponseWithBody {
   String get body;
 }

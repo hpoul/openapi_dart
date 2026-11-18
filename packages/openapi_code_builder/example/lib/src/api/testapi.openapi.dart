@@ -188,8 +188,12 @@ class TypedAdditionalProperties implements OpenApiContent {
               .map(
                 (e) => MapEntry(
                   e.key,
-                  (e.value as Iterable<dynamic>)
-                      .map((e) => TypedAdditionalPropertiesAddProp.fromJson(e))
+                  (e.value as List<dynamic>)
+                      .map(
+                        (e) => TypedAdditionalPropertiesAddProp.fromJson(
+                          (e as Map<String, dynamic>),
+                        ),
+                      )
                       .toList(),
                 ),
               ),
@@ -265,7 +269,7 @@ sealed class UserRegisterPostResponse extends OpenApiResponse
     if (this is UserRegisterPostResponse200) {
       return;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -319,7 +323,7 @@ sealed class HelloNameHtmlGetResponse extends OpenApiResponse
     if (this is HelloNameHtmlGetResponse200) {
       return (this as HelloNameHtmlGetResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -380,7 +384,7 @@ sealed class HelloNameGetResponse extends OpenApiResponse
     if (this is HelloNameGetResponse200) {
       return (this as HelloNameGetResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -441,7 +445,7 @@ sealed class HelloNamePutResponse extends OpenApiResponse
     if (this is HelloNamePutResponse200) {
       return (this as HelloNamePutResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -523,7 +527,7 @@ sealed class UuidExampleMessageIdGetResponse extends OpenApiResponse
     if (this is UuidExampleMessageIdGetResponse200) {
       return (this as UuidExampleMessageIdGetResponse200).body;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -572,7 +576,7 @@ sealed class HelloArrayqueryGetResponse extends OpenApiResponse
     if (this is HelloArrayqueryGetResponse200) {
       return;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -621,7 +625,7 @@ sealed class HelloIntegerPutResponse extends OpenApiResponse
     if (this is HelloIntegerPutResponse200) {
       return;
     } else {
-      throw StateError('Expected success response, but got $this');
+      throw OpenApiRequireSuccessException(this);
     }
   }
 }
@@ -1071,5 +1075,3 @@ class TestApiRouter extends OpenApiServerRouterBase {
 }
 
 class SecuritySchemes {}
-
-T _throwStateError<T>(String message) => throw StateError(message);
