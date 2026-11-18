@@ -13,6 +13,14 @@ Map<String, dynamic> _$BagToJson(Bag instance) => <String, dynamic>{
   'label': ?instance.label,
 };
 
+Schedule _$ScheduleFromJson(Map<String, dynamic> json) => Schedule();
+
+Map<String, dynamic> _$ScheduleToJson(Schedule instance) => <String, dynamic>{};
+
+Palette _$PaletteFromJson(Map<String, dynamic> json) => Palette();
+
+Map<String, dynamic> _$PaletteToJson(Palette instance) => <String, dynamic>{};
+
 _Item _$ItemFromJson(Map<String, dynamic> json) =>
     _Item(name: json['name'] as String);
 

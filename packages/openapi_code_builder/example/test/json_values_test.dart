@@ -15,11 +15,13 @@ void main() {
   late JsonValuesApiClient client;
 
   setUpAll(() async {
-    final port = await _freePort();
-    server = await OpenApiShelfServer(
-      JsonValuesApiRouter(ApiEndpointProvider.static(_JsonValuesApiImpl())),
-    ).startServer(port: port);
-    baseUri = Uri.parse('http://localhost:$port');
+    final (:process, :port) = await _startServer(
+      OpenApiShelfServer(
+        JsonValuesApiRouter(ApiEndpointProvider.static(_JsonValuesApiImpl())),
+      ),
+    );
+    server = process;
+    baseUri = Uri.parse('http://${InternetAddress.loopbackIPv4.address}:$port');
     requestSender = HttpRequestSender();
     client = JsonValuesApiClient(baseUri, requestSender);
   });
@@ -101,15 +103,48 @@ void main() {
     expect(bag.label, 'bag');
     expect(bag.additionalProperties, {'a': 1, 'b': null});
   });
+
+  test('date-time additionalProperties are sent as iso 8601', () async {
+    expect(await getJson('/schedule'), {'start': '2020-01-02T00:00:00.000Z'});
+    final schedule = (await client.getSchedule()).requireSuccess();
+    expect(schedule.additionalProperties, {'start': DateTime.utc(2020, 1, 2)});
+  });
+
+  test('enum array additionalProperties are sent as json values', () async {
+    expect(await getJson('/palette'), {
+      'warm': ['red', 'light-green'],
+    });
+    final palette = (await client.getPalette()).requireSuccess();
+    expect(palette.additionalProperties, {
+      'warm': [Color.red, Color.lightGreen],
+    });
+  });
 }
 
 const _uuid = '0b0e2c8e-7f3a-4b5c-9d6e-1f2a3b4c5d6e';
 
-Future<int> _freePort() async {
-  final socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
-  final port = socket.port;
-  await socket.close();
-  return port;
+/// Starts [server] on a free loopback port.
+///
+/// `startServer` does not report the port it bound, so a free port is looked
+/// up first. Another process can take it before the server binds, so that is
+/// retried.
+Future<({StoppableProcessBase process, int port})> _startServer(
+  OpenApiShelfServer server,
+) async {
+  final address = InternetAddress.loopbackIPv4.address;
+  for (var attempt = 1; ; attempt++) {
+    final socket = await ServerSocket.bind(address, 0);
+    final port = socket.port;
+    await socket.close();
+    try {
+      final process = await server.startServer(address: address, port: port);
+      return (process: process, port: port);
+    } on SocketException {
+      if (attempt == 5) {
+        rethrow;
+      }
+    }
+  }
 }
 
 class _JsonValuesApiImpl extends JsonValuesApi {
@@ -156,4 +191,16 @@ class _JsonValuesApiImpl extends JsonValuesApi {
       ..['a'] = 1
       ..['b'] = null,
   );
+
+  @override
+  Future<GetScheduleResponse> getSchedule() async =>
+      GetScheduleResponse.response200(
+        Schedule()..['start'] = DateTime.utc(2020, 1, 2),
+      );
+
+  @override
+  Future<GetPaletteResponse> getPalette() async =>
+      GetPaletteResponse.response200(
+        Palette()..['warm'] = [Color.red, Color.lightGreen],
+      );
 }

@@ -76,6 +76,78 @@ class Bag implements OpenApiContent {
   int? operator [](String key) => _additionalProperties[key];
 }
 
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class Schedule implements OpenApiContent {
+  Schedule();
+
+  factory Schedule.fromJson(Map<String, dynamic> jsonMap) =>
+      _$ScheduleFromJson(jsonMap)
+        .._additionalProperties.addEntries(
+          jsonMap.entries
+              .where((e) => !const <String>{}.contains(e.key))
+              .map((e) => MapEntry(e.key, DateTime.parse((e.value as String)))),
+        );
+
+  final Map<String, DateTime> _additionalProperties = <String, DateTime>{};
+
+  Map<String, dynamic> toJson() => Map.from(
+    _additionalProperties.map(
+      (key, value) => MapEntry(key, value.toIso8601String()),
+    ),
+  )..addAll(_$ScheduleToJson(this));
+
+  @override
+  String toString() => toJson().toString();
+
+  Map<String, DateTime> get additionalProperties => _additionalProperties;
+
+  void operator []=(String key, DateTime value) =>
+      _additionalProperties[key] = value;
+
+  DateTime? operator [](String key) => _additionalProperties[key];
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class Palette implements OpenApiContent {
+  Palette();
+
+  factory Palette.fromJson(Map<String, dynamic> jsonMap) =>
+      _$PaletteFromJson(jsonMap)
+        .._additionalProperties.addEntries(
+          jsonMap.entries
+              .where((e) => !const <String>{}.contains(e.key))
+              .map(
+                (e) => MapEntry(
+                  e.key,
+                  (e.value as List<dynamic>)
+                      .map((e) => ColorExt.fromName((e as String)))
+                      .toList(),
+                ),
+              ),
+        );
+
+  final Map<String, List<Color>> _additionalProperties =
+      <String, List<Color>>{};
+
+  Map<String, dynamic> toJson() => Map.from(
+    _additionalProperties.map(
+      (key, value) => MapEntry(key, value.map((e) => e.jsonValue).toList()),
+    ),
+  )..addAll(_$PaletteToJson(this));
+
+  @override
+  String toString() => toJson().toString();
+
+  Map<String, List<Color>> get additionalProperties => _additionalProperties;
+
+  void operator []=(String key, List<Color> value) =>
+      _additionalProperties[key] = value;
+
+  List<Color>? operator [](String key) => _additionalProperties[key];
+}
+
 class GetCountResponse200 extends GetCountResponse
     implements OpenApiResponseBodyJsonValue {
   /// OK
@@ -684,6 +756,128 @@ sealed class GetBagResponse extends OpenApiResponse
   }
 }
 
+class GetScheduleResponse200 extends GetScheduleResponse
+    implements OpenApiResponseBodyJson {
+  /// OK
+  GetScheduleResponse200.response200(this.body)
+    : status = 200,
+      bodyJson = body.toJson();
+
+  @override
+  final int status;
+
+  final Schedule body;
+
+  @override
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final OpenApiContentType contentType = OpenApiContentType.parse(
+    'application/json',
+  );
+
+  @override
+  Map<String, Object?> propertiesToString() => {
+    'status': status,
+    'body': body,
+    'bodyJson': bodyJson,
+    'contentType': contentType,
+  };
+}
+
+sealed class GetScheduleResponse extends OpenApiResponse
+    implements HasSuccessResponse<Schedule> {
+  GetScheduleResponse();
+
+  /// OK
+  factory GetScheduleResponse.response200(Schedule body) =>
+      GetScheduleResponse200.response200(body);
+
+  R map<R>({
+    required ResponseMap<GetScheduleResponse200, R> on200,
+    ResponseMap<GetScheduleResponse, R>? onElse,
+  }) {
+    if (this is GetScheduleResponse200) {
+      return on200((this as GetScheduleResponse200));
+    } else if (onElse != null) {
+      return onElse(this);
+    } else {
+      throw StateError('Invalid instance of type $this');
+    }
+  }
+
+  /// status 200:  OK
+  @override
+  Schedule requireSuccess() {
+    if (this is GetScheduleResponse200) {
+      return (this as GetScheduleResponse200).body;
+    } else {
+      throw OpenApiRequireSuccessException(this);
+    }
+  }
+}
+
+class GetPaletteResponse200 extends GetPaletteResponse
+    implements OpenApiResponseBodyJson {
+  /// OK
+  GetPaletteResponse200.response200(this.body)
+    : status = 200,
+      bodyJson = body.toJson();
+
+  @override
+  final int status;
+
+  final Palette body;
+
+  @override
+  final Map<String, dynamic> bodyJson;
+
+  @override
+  final OpenApiContentType contentType = OpenApiContentType.parse(
+    'application/json',
+  );
+
+  @override
+  Map<String, Object?> propertiesToString() => {
+    'status': status,
+    'body': body,
+    'bodyJson': bodyJson,
+    'contentType': contentType,
+  };
+}
+
+sealed class GetPaletteResponse extends OpenApiResponse
+    implements HasSuccessResponse<Palette> {
+  GetPaletteResponse();
+
+  /// OK
+  factory GetPaletteResponse.response200(Palette body) =>
+      GetPaletteResponse200.response200(body);
+
+  R map<R>({
+    required ResponseMap<GetPaletteResponse200, R> on200,
+    ResponseMap<GetPaletteResponse, R>? onElse,
+  }) {
+    if (this is GetPaletteResponse200) {
+      return on200((this as GetPaletteResponse200));
+    } else if (onElse != null) {
+      return onElse(this);
+    } else {
+      throw StateError('Invalid instance of type $this');
+    }
+  }
+
+  /// status 200:  OK
+  @override
+  Palette requireSuccess() {
+    if (this is GetPaletteResponse200) {
+      return (this as GetPaletteResponse200).body;
+    } else {
+      throw OpenApiRequireSuccessException(this);
+    }
+  }
+}
+
 abstract class JsonValuesApi implements ApiEndpoint {
   /// get: /count
   Future<GetCountResponse> getCount();
@@ -714,6 +908,12 @@ abstract class JsonValuesApi implements ApiEndpoint {
 
   /// get: /bag
   Future<GetBagResponse> getBag();
+
+  /// get: /schedule
+  Future<GetScheduleResponse> getSchedule();
+
+  /// get: /palette
+  Future<GetPaletteResponse> getPalette();
 }
 
 abstract class JsonValuesApiClient implements OpenApiClient {
@@ -772,6 +972,16 @@ abstract class JsonValuesApiClient implements OpenApiClient {
   /// get: /bag
   ///
   Future<GetBagResponse> getBag();
+  OpenApiClientRequest createGetScheduleRequest();
+
+  /// get: /schedule
+  ///
+  Future<GetScheduleResponse> getSchedule();
+  OpenApiClientRequest createGetPaletteRequest();
+
+  /// get: /palette
+  ///
+  Future<GetPaletteResponse> getPalette();
 }
 
 class _JsonValuesApiClientImpl extends OpenApiClientBase
@@ -1004,6 +1214,44 @@ class _JsonValuesApiClientImpl extends OpenApiClientBase
           ),
     });
   }
+
+  @override
+  OpenApiClientRequest createGetScheduleRequest() {
+    final request = OpenApiClientRequest('get', '/schedule', []);
+    return request;
+  }
+
+  /// get: /schedule
+  ///
+  @override
+  Future<GetScheduleResponse> getSchedule() async {
+    final request = createGetScheduleRequest();
+    return await sendRequest(request, {
+      '200': (OpenApiClientResponse response) async =>
+          GetScheduleResponse200.response200(
+            Schedule.fromJson(await response.responseBodyJson()),
+          ),
+    });
+  }
+
+  @override
+  OpenApiClientRequest createGetPaletteRequest() {
+    final request = OpenApiClientRequest('get', '/palette', []);
+    return request;
+  }
+
+  /// get: /palette
+  ///
+  @override
+  Future<GetPaletteResponse> getPalette() async {
+    final request = createGetPaletteRequest();
+    return await sendRequest(request, {
+      '200': (OpenApiClientResponse response) async =>
+          GetPaletteResponse200.response200(
+            Palette.fromJson(await response.responseBodyJson()),
+          ),
+    });
+  }
 }
 
 class JsonValuesApiUrlResolve with OpenApiUrlEncodeMixin {
@@ -1075,6 +1323,20 @@ class JsonValuesApiUrlResolve with OpenApiUrlEncodeMixin {
   ///
   OpenApiClientRequest getBag() {
     final request = OpenApiClientRequest('get', '/bag', []);
+    return request;
+  }
+
+  /// get: /schedule
+  ///
+  OpenApiClientRequest getSchedule() {
+    final request = OpenApiClientRequest('get', '/schedule', []);
+    return request;
+  }
+
+  /// get: /palette
+  ///
+  OpenApiClientRequest getPalette() {
+    final request = OpenApiClientRequest('get', '/palette', []);
     return request;
   }
 }
@@ -1162,6 +1424,18 @@ class JsonValuesApiRouter extends OpenApiServerRouterBase {
       return await impl.invoke(
         request,
         (JsonValuesApi impl) async => impl.getBag(),
+      );
+    }, security: []);
+    addRoute('/schedule', 'get', (OpenApiRequest request) async {
+      return await impl.invoke(
+        request,
+        (JsonValuesApi impl) async => impl.getSchedule(),
+      );
+    }, security: []);
+    addRoute('/palette', 'get', (OpenApiRequest request) async {
+      return await impl.invoke(
+        request,
+        (JsonValuesApi impl) async => impl.getPalette(),
       );
     }, security: []);
   }

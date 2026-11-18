@@ -9,10 +9,18 @@
   `OpenApiResponseBodyJsonValue` with a `bodyJsonValue` instead of
   `OpenApiResponseBodyJson` with an always empty `bodyJson`. The server now
   sends the actual body instead of `{}`.
+* **Breaking**: `nullable` json bodies, array items and
+  `additionalProperties` get nullable types, e.g. `List<int?>` or
+  `Map<String, int?>`.
 * Server request bodies which are arrays of objects are decoded instead of
   cast, which always failed.
-* `format: binary` in a json body fails generation with a clear error. Use
-  `format: byte`, or a binary content type.
+* `toJson()` encodes enum and date-time `additionalProperties`, which
+  `json.encode` could not handle.
+* An inline enum response body no longer reuses the enum of another status
+  code of the same operation; it gets its own, named with the status code.
+* `format: binary` in a json body, and an array without `items`, fail
+  generation with a clear error. Use `format: byte`, or a binary content
+  type.
 
 ## 1.8.2-dev.7
 

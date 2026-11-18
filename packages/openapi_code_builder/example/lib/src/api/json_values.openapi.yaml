@@ -160,6 +160,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Bag'
+  /schedule:
+    get:
+      operationId: getSchedule
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+  /palette:
+    get:
+      operationId: getPalette
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palette'
 
 components:
   schemas:
@@ -180,3 +200,14 @@ components:
       additionalProperties:
         type: integer
         nullable: true
+    Schedule:
+      type: object
+      additionalProperties:
+        type: string
+        format: date-time
+    Palette:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/Color'

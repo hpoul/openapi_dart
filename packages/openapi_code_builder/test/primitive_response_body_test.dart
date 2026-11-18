@@ -187,6 +187,59 @@ components:
         nullable: true
 ''';
 
+/// Inline enum bodies at two status codes of one operation, which used to
+/// share one enum.
+const String _enumBodiesSpec = '''
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: Enum Bodies
+  x-dart-name: EnumBodiesTestApi
+paths:
+  /status:
+    get:
+      operationId: getStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: [ok, done]
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: string
+                enum: [missing, gone]
+components:
+  schemas: {}
+''';
+
+/// A json array body without the required `items`.
+const String _arrayWithoutItemsSpec = '''
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: No Items
+  x-dart-name: NoItemsTestApi
+paths:
+  /list:
+    get:
+      operationId: getList
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+components:
+  schemas: {}
+''';
+
 /// A json body of `format: binary` strings, which has no json encoding.
 const String _binarySpec = '''
 openapi: 3.0.0
@@ -491,6 +544,34 @@ void main() {
           contains('format: binary'),
         ),
       ),
+    );
+  });
+
+  test('array without items fails generation naming the body', () {
+    expect(
+      () => _generate(_arrayWithoutItemsSpec),
+      throwsA(
+        isA<ArgumentError>().having(
+          (e) => e.message,
+          'message',
+          'GetListResponseBody200: `type: array` requires `items`.',
+        ),
+      ),
+    );
+  });
+
+  test('inline enum bodies of different status codes get own enums', () {
+    final generated = _generate(_enumBodiesSpec);
+    // The first keeps the name it always had.
+    expect(generated, contains(_normalize('enum GetStatusResponseBody {')));
+    expect(generated, contains(_normalize('enum GetStatusResponseBody404 {')));
+    expect(
+      generated,
+      contains(_normalize('final GetStatusResponseBody404 body;')),
+    );
+    expect(
+      generated,
+      contains(_normalize('GetStatusResponseBody404Ext.fromName(')),
     );
   });
 }
