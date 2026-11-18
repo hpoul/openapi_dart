@@ -442,10 +442,7 @@ class OpenApiLibraryGenerator {
                     ])
                     .code;
                 final responseSchema = content.schema!;
-                if (responseSchema.type == APIType.string ||
-                    responseSchema.type == APIType.number ||
-                    responseSchema.type == APIType.integer ||
-                    responseSchema.type == APIType.boolean) {
+                if (_isPrimitive(responseSchema)) {
                   // TODO add server side support for primitive types.
                   bodyType = _toDartType(
                     '${responseClass.name}Body',
@@ -462,26 +459,27 @@ class OpenApiLibraryGenerator {
                         ..toThis = true,
                     ),
                   );
-                  final dynamicBody = refer(
-                    'response',
-                  ).property('responseBodyJsonDynamic')([]).awaited;
                   clientResponseParseParams.add(
-                    switch (responseSchema.type) {
-                      APIType.number => dynamicBody.asA(refer('num')),
-                      APIType.integer => dynamicBody.asA(_typeInteger),
-                      APIType.boolean => dynamicBody.asA(refer('bool')),
-                      _ => _decodeStringType(
-                        schema: responseSchema,
-                        asString: dynamicBody.asA(_typeString),
-                        type: bodyType,
-                      ),
-                    },
+                    _decodePrimitiveJson(
+                      schema: responseSchema,
+                      json: refer(
+                        'response',
+                      ).property('responseBodyJsonDynamic')([]).awaited,
+                      type: bodyType,
+                    ),
                   );
                 } else if (responseSchema.type == APIType.array) {
-                  final bodyItemType = _schemaReference(
-                    '${responseClass.name}Body$codeName',
-                    responseSchema.items!,
-                  );
+                  final itemSchema = responseSchema.items!;
+                  final primitiveItems = _isPrimitive(itemSchema);
+                  final bodyItemType = primitiveItems
+                      ? _toDartType(
+                          '${responseClass.name}Body$codeName',
+                          itemSchema,
+                        )
+                      : _schemaReference(
+                          '${responseClass.name}Body$codeName',
+                          itemSchema,
+                        );
                   bodyType = _referType('List', generics: [bodyItemType]);
                   cb.requiredParameters.add(
                     Parameter(
@@ -509,20 +507,23 @@ class OpenApiLibraryGenerator {
                               Parameter((pb) => pb..name = 'item'),
                             );
                             mb.lambda = true;
-                            mb.body = bodyItemType.newInstanceNamed(
-                              'fromJson',
-                              [
-                                refer('item').asA(
-                                  _referType(
-                                    'Map',
-                                    generics: [
-                                      refer('String'),
-                                      refer('dynamic'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ).code;
+                            mb.body = primitiveItems
+                                ? _decodePrimitiveJson(
+                                    schema: itemSchema,
+                                    json: refer('item'),
+                                    type: bodyItemType,
+                                  ).code
+                                : bodyItemType.newInstanceNamed('fromJson', [
+                                    refer('item').asA(
+                                      _referType(
+                                        'Map',
+                                        generics: [
+                                          refer('String'),
+                                          refer('dynamic'),
+                                        ],
+                                      ),
+                                    ),
+                                  ]).code;
                           }).closure,
                         ])
                         .property('toList')([]),
@@ -2139,6 +2140,28 @@ class OpenApiLibraryGenerator {
       APIType.object => type.property('fromJson')([expression]),
     };
   }
+
+  bool _isPrimitive(APISchemaObject schema) => const [
+    APIType.string,
+    APIType.number,
+    APIType.integer,
+    APIType.boolean,
+  ].contains(schema.type);
+
+  Expression _decodePrimitiveJson({
+    required APISchemaObject schema,
+    required Expression json,
+    required Reference type,
+  }) => switch (schema.type) {
+    APIType.number => json.asA(refer('num')),
+    APIType.integer => json.asA(_typeInteger),
+    APIType.boolean => json.asA(refer('bool')),
+    _ => _decodeStringType(
+      schema: schema,
+      asString: json.asA(_typeString),
+      type: type,
+    ),
+  };
 
   Expression _decodeStringType({
     required APISchemaObject schema,
