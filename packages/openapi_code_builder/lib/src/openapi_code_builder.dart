@@ -1482,7 +1482,7 @@ class OpenApiLibraryGenerator {
         APISchemaAdditionalPropertyPolicy.restricted,
         final additionalPropertySchema?,
       ) =>
-        _toDartType('${className}AddProp', additionalPropertySchema),
+        _jsonValueType('${className}AddProp', additionalPropertySchema),
       (APISchemaAdditionalPropertyPolicy.restricted, null) =>
         throw UnimplementedError(
           '$obj has restricted `additionalProperties` but no schema assigned.',
@@ -2039,10 +2039,7 @@ class OpenApiLibraryGenerator {
       ),
       _ => _toDartType(parent, schema),
     };
-    if (schema.isNullable != true) {
-      return type;
-    }
-    return (type.type as TypeReference).rebuild((b) => b..isNullable = true);
+    return type.asNullable(schema.isNullable == true);
   }
 
   /// Decodes [expression], a value as returned by `json.decode`, into the

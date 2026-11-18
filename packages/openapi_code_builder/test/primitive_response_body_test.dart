@@ -180,6 +180,11 @@ components:
       properties:
         name:
           type: string
+    Bag:
+      type: object
+      additionalProperties:
+        type: integer
+        nullable: true
 ''';
 
 /// A json body of `format: binary` strings, which has no json encoding.
@@ -423,9 +428,42 @@ void main() {
       );
     });
 
-    test('server never sends an empty object for json values', () {
-      expect(generated, isNot(contains('bodyJson = {}')));
-      expect(generated, isNot(contains('bodyJson = const {}')));
+    test('server sends json values as the body', () {
+      expect(
+        generated,
+        contains(
+          _normalize(
+            'class GetNamesResponse200 extends GetNamesResponse'
+            ' implements OpenApiResponseBodyJsonValue {',
+          ),
+        ),
+      );
+      expect(
+        generated,
+        contains(
+          _normalize(
+            'GetNamesResponse200.response200(this.body)'
+            ' : status = 200, bodyJsonValue = body;',
+          ),
+        ),
+      );
+      expect(generated, isNot(contains('bodyJson =')));
+    });
+
+    test('nullable additionalProperties are typed and decoded nullable', () {
+      expect(
+        generated,
+        contains(_normalize('final Map<String, int?> _additionalProperties')),
+      );
+      expect(
+        generated,
+        contains(
+          _normalize(
+            'MapEntry( e.key,'
+            ' ((v) => v == null ? null : (v as int))(e.value), )',
+          ),
+        ),
+      );
     });
 
     test('enum array request bodies are decoded on the server', () {

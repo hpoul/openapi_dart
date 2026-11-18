@@ -1,3 +1,19 @@
+## 1.8.2-dev.8
+
+* Requires openapi_base 2.1.0.
+* Decode and encode json bodies which are not objects by their schema:
+  arrays of primitives, enums, date-times, objects and nested arrays, and
+  `nullable` values, for responses, request bodies and
+  `additionalProperties`.
+* **Breaking**: list and primitive json responses implement
+  `OpenApiResponseBodyJsonValue` with a `bodyJsonValue` instead of
+  `OpenApiResponseBodyJson` with an always empty `bodyJson`. The server now
+  sends the actual body instead of `{}`.
+* Server request bodies which are arrays of objects are decoded instead of
+  cast, which always failed.
+* `format: binary` in a json body fails generation with a clear error. Use
+  `format: byte`, or a binary content type.
+
 ## 1.8.2-dev.7
 
 * Decode `number`, `integer` and `boolean` response bodies in the generated
