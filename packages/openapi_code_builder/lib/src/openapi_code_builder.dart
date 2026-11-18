@@ -470,7 +470,9 @@ class OpenApiLibraryGenerator {
                   );
                 } else if (responseSchema.type == APIType.array) {
                   final itemSchema = responseSchema.items!;
-                  final primitiveItems = _isPrimitive(itemSchema);
+                  // binary would need a Uint8List decoder
+                  final primitiveItems =
+                      _isPrimitive(itemSchema) && itemSchema.format != 'binary';
                   final bodyItemType = primitiveItems
                       ? _toDartType(
                           '${responseClass.name}Body$codeName',
