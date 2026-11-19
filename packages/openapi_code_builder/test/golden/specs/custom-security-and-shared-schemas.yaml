@@ -1,0 +1,85 @@
+# Hand-written spec for cases the public specs don't cover:
+# - apiKey and http bearer security schemes (generated, not ignored)
+# - security inheritance: document-level security, an operation that
+#   overrides it, an operation that opts out with `security: []`, and an
+#   operation that inherits it (absent vs empty must stay distinct)
+# - an inline object inside a component schema that is referenced twice
+#   (the generator keys created classes by schema object identity)
+openapi: 3.0.3
+info:
+  title: Custom security and shared schemas
+  version: 1.0.0
+security:
+  - bearerAuth: []
+paths:
+  /inherited:
+    get:
+      operationId: getInherited
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+  /overridden:
+    get:
+      operationId: getOverridden
+      security:
+        - apiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+  /public:
+    get:
+      operationId: getPublic
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    Address:
+      type: object
+      required: [street]
+      properties:
+        street:
+          type: string
+        geo:
+          type: object
+          properties:
+            lat:
+              type: number
+            lng:
+              type: number
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        billing:
+          $ref: '#/components/schemas/Address'
+        shipping:
+          $ref: '#/components/schemas/Address'
+    Shipment:
+      type: object
+      properties:
+        destination:
+          $ref: '#/components/schemas/Address'
