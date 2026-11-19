@@ -235,15 +235,15 @@ class OpenApiLibraryGenerator {
 
     // create class for each schema..
     final components = api.components;
-    for (final schemaEntry
-        in components?.schemas?.entries ??
-            const <MapEntry<String, APISchemaObject?>>[]) {
-      _schemaReference(schemaEntry.key, schemaEntry.value!);
+    for (final MapEntry(:key, :value)
+        in components?.schemas.entries ??
+            <MapEntry<String, APISchemaObject>>[]) {
+      _schemaReference(key, value);
     }
     final securitySchemes = components?.securitySchemes;
     if (securitySchemes != null && !ignoreSecuritySchemes) {
       for (final securityScheme in securitySchemes.entries) {
-        _securitySchemeReference(securityScheme.key, securityScheme.value!);
+        _securitySchemeReference(securityScheme.key, securityScheme.value);
       }
     }
 
@@ -335,786 +335,782 @@ class OpenApiLibraryGenerator {
       //        ..symbol = 'T'
       //        ..bound = _openApiRequest));
       cb.abstract = true;
-      for (final path in api.paths!.entries) {
-        for (final operation in path.value!.operations.entries) {
-          final pathName = path.key
-              .replaceAll(
-                // language=RegExp
-                RegExp(r'[{}]'),
-                '',
-              )
-              .camelCase;
-          final operationName = operation.value!.id == null
-              ? '$pathName'
-                    '${operation.key.pascalCase}'
-              : operation.value!.id!.camelCase;
+      for (final (path: pathKey, :pathItem, :method, :operation)
+          in api.operations) {
+        final pathName = pathKey
+            .replaceAll(
+              // language=RegExp
+              RegExp(r'[{}]'),
+              '',
+            )
+            .camelCase;
+        final operationName = operation.id == null
+            ? '$pathName'
+                  '${method.pascalCase}'
+            : operation.id!.camelCase;
 
-          final responseClass = ClassBuilder();
-          responseClass
-            ..name = '${operationName.pascalCase}Response'
-            ..sealed = true
-            ..extend = _openApiResponse
-            ..constructors.add(Constructor());
-          //            ..constructors.add(Constructor((cb) => cb
-          //              ..name = '_'
-          //              ..requiredParameters.add(Parameter((pb) => pb
-          //                ..name = 'status'
-          //                ..toThis = true))))
-          final mapMethod = MethodBuilder()
-            ..name = 'map'
-            ..types.add(const Reference('R'))
-            ..returns = const Reference('R');
-          final mapCode = <Code>[];
-          Reference? successResponseBodyType;
-          Reference? successResponseCodeType;
-          MapEntry<String, APIResponse?>? successApiResponse;
-          final clientResponseParse = <String, Expression>{};
-          for (final response in operation.value!.responses!.entries) {
-            final statusAsParameter = response.key == 'default';
-            final codeName = response.key.pascalCase;
-            final responseCodeClass = ClassBuilder()
-              ..extend = refer(responseClass.name!)
-              ..name = '${responseClass.name}$codeName'
-              ..fields.add(
-                Field(
-                  (fb) => fb
-                    ..name = 'status'
-                    ..annotations.add(_override)
-                    ..modifier = FieldModifier.final$
-                    ..type = refer('int'),
-                ),
-              );
-            mapMethod.optionalParameters.add(
-              Parameter(
-                (pb) => pb
-                  ..name = 'on$codeName'
-                  ..asRequired(this, true)
-                  ..named = true
-                  ..type = _responseMapType
-                      .addGenerics(refer(responseCodeClass.name!))
-                      .addGenerics(const Reference('R')),
+        final responseClass = ClassBuilder();
+        responseClass
+          ..name = '${operationName.pascalCase}Response'
+          ..sealed = true
+          ..extend = _openApiResponse
+          ..constructors.add(Constructor());
+        //            ..constructors.add(Constructor((cb) => cb
+        //              ..name = '_'
+        //              ..requiredParameters.add(Parameter((pb) => pb
+        //                ..name = 'status'
+        //                ..toThis = true))))
+        final mapMethod = MethodBuilder()
+          ..name = 'map'
+          ..types.add(const Reference('R'))
+          ..returns = const Reference('R');
+        final mapCode = <Code>[];
+        Reference? successResponseBodyType;
+        Reference? successResponseCodeType;
+        MapEntry<String, APIResponse?>? successApiResponse;
+        final clientResponseParse = <String, Expression>{};
+        for (final response in operation.responses.entries) {
+          final statusAsParameter = response.key == 'default';
+          final codeName = response.key.pascalCase;
+          final responseCodeClass = ClassBuilder()
+            ..extend = refer(responseClass.name!)
+            ..name = '${responseClass.name}$codeName'
+            ..fields.add(
+              Field(
+                (fb) => fb
+                  ..name = 'status'
+                  ..annotations.add(_override)
+                  ..modifier = FieldModifier.final$
+                  ..type = refer('int'),
               ),
             );
-            if (mapCode.isNotEmpty) {
-              mapCode.add(const Code(' else '));
-            }
-            mapCode.add(const Code('if (this is '));
-            mapCode.add(refer(responseCodeClass.name!).code);
-            mapCode.add(const Code(') {'));
-            mapCode.add(
-              refer('on$codeName')([
-                refer('this').asA(refer(responseCodeClass.name!)),
-              ]).returned.statement,
-            );
-            mapCode.add(const Code('}'));
-            final clientResponseParseParams = <Expression>[];
-            final constructor = Constructor((cb) {
-              cb
-                ..name = 'response$codeName'
-                ..docs.addDartDoc(response.value!.description);
+          mapMethod.optionalParameters.add(
+            Parameter(
+              (pb) => pb
+                ..name = 'on$codeName'
+                ..asRequired(this, true)
+                ..named = true
+                ..type = _responseMapType
+                    .addGenerics(refer(responseCodeClass.name!))
+                    .addGenerics(const Reference('R')),
+            ),
+          );
+          if (mapCode.isNotEmpty) {
+            mapCode.add(const Code(' else '));
+          }
+          mapCode.add(const Code('if (this is '));
+          mapCode.add(refer(responseCodeClass.name!).code);
+          mapCode.add(const Code(') {'));
+          mapCode.add(
+            refer('on$codeName')([
+              refer('this').asA(refer(responseCodeClass.name!)),
+            ]).returned.statement,
+          );
+          mapCode.add(const Code('}'));
+          final clientResponseParseParams = <Expression>[];
+          final constructor = Constructor((cb) {
+            cb
+              ..name = 'response$codeName'
+              ..docs.addDartDoc(response.value.description);
 
-              refer(cb.name!);
-              if (statusAsParameter) {
-                cb
-                  ..requiredParameters.add(
-                    Parameter(
-                      (pb) => pb
-                        ..name = 'status'
-                        ..type = refer('int'),
-                    ),
-                  )
-                  ..initializers.add(
-                    refer('status').assign(refer('status')).code,
-                  );
-                clientResponseParseParams.add(
-                  refer('response').property('status'),
+            refer(cb.name!);
+            if (statusAsParameter) {
+              cb
+                ..requiredParameters.add(
+                  Parameter(
+                    (pb) => pb
+                      ..name = 'status'
+                      ..type = refer('int'),
+                  ),
+                )
+                ..initializers.add(
+                  refer('status').assign(refer('status')).code,
                 );
+              clientResponseParseParams.add(
+                refer('response').property('status'),
+              );
+            } else {
+              cb.initializers.add(
+                refer(
+                  'status',
+                ).assign(literalNum(int.parse(response.key))).code,
+              );
+            }
+            final content = response.value.content[mediaTypeJson.contentType];
+            //              OpenApiContentType responseContentType;
+            Code? responseContentTypeAssignment = _literalNullCode;
+            Reference? bodyType;
+            if (content != null) {
+              const responseContentType = OpenApiContentType.json;
+              responseContentTypeAssignment = _openApiContentType
+                  .newInstanceNamed('parse', [
+                    literalString(responseContentType.toString()),
+                  ])
+                  .code;
+              final responseSchema = content.schema!;
+              final bodyIsObject =
+                  (responseSchema.type ?? APIType.object) == APIType.object;
+              final parentName = _responseBodyTypeName(
+                responseClass.name!,
+                codeName,
+                responseSchema,
+              );
+              final type = bodyIsObject
+                  ? _schemaReference(parentName, responseSchema)
+                  : _jsonValueType(parentName, responseSchema);
+              bodyType = type;
+              cb.requiredParameters.add(
+                Parameter(
+                  (pb) => pb
+                    ..name = 'body'
+                    ..type = type
+                    ..toThis = true,
+                ),
+              );
+              responseCodeClass.fields.add(
+                Field(
+                  (fb) => fb
+                    ..name = 'body'
+                    ..type = type
+                    ..modifier = FieldModifier.final$,
+                ),
+              );
+              if (bodyIsObject) {
+                cb.initializers.add(
+                  refer(
+                    'bodyJson',
+                  ).assign(refer('body').property('toJson')([])).code,
+                );
+
+                clientResponseParseParams.add(
+                  type.newInstanceNamed('fromJson', [
+                    refer(
+                      'response',
+                    ).property('responseBodyJson')([]).awaited,
+                  ]),
+                );
+                responseCodeClass.fields.add(
+                  Field(
+                    (fb) => fb
+                      ..name = 'bodyJson'
+                      ..annotations.add(_override)
+                      ..type = _referType(
+                        'Map',
+                        generics: [_typeString, refer('dynamic')],
+                      )
+                      ..modifier = FieldModifier.final$,
+                  ),
+                );
+                responseCodeClass.implements.add(_openApiResponseBodyJson);
               } else {
                 cb.initializers.add(
                   refer(
-                    'status',
-                  ).assign(literalNum(int.parse(response.key))).code,
+                    'bodyJsonValue',
+                  ).assign(_encodeJson(responseSchema, refer('body'))).code,
                 );
-              }
-              final content =
-                  (response.value!.content ?? {})[mediaTypeJson.contentType];
-              //              OpenApiContentType responseContentType;
-              Code? responseContentTypeAssignment = _literalNullCode;
-              Reference? bodyType;
-              if (content != null) {
-                const responseContentType = OpenApiContentType.json;
-                responseContentTypeAssignment = _openApiContentType
-                    .newInstanceNamed('parse', [
-                      literalString(responseContentType.toString()),
-                    ])
-                    .code;
-                final responseSchema = content.schema!;
-                final bodyIsObject =
-                    (responseSchema.type ?? APIType.object) == APIType.object;
-                final parentName = _responseBodyTypeName(
-                  responseClass.name!,
-                  codeName,
-                  responseSchema,
-                );
-                final type = bodyIsObject
-                    ? _schemaReference(parentName, responseSchema)
-                    : _jsonValueType(parentName, responseSchema);
-                bodyType = type;
-                cb.requiredParameters.add(
-                  Parameter(
-                    (pb) => pb
-                      ..name = 'body'
-                      ..type = type
-                      ..toThis = true,
+                clientResponseParseParams.add(
+                  _parseJson(
+                    parentName: parentName,
+                    schema: responseSchema,
+                    expression: refer(
+                      'response',
+                    ).property('responseBodyJsonDynamic')([]).awaited,
                   ),
                 );
                 responseCodeClass.fields.add(
                   Field(
                     (fb) => fb
-                      ..name = 'body'
-                      ..type = type
+                      ..name = 'bodyJsonValue'
+                      ..annotations.add(_override)
+                      ..type = _referType('Object', isNullable: true)
                       ..modifier = FieldModifier.final$,
                   ),
                 );
-                if (bodyIsObject) {
-                  cb.initializers.add(
-                    refer(
-                      'bodyJson',
-                    ).assign(refer('body').property('toJson')([])).code,
-                  );
-
-                  clientResponseParseParams.add(
-                    type.newInstanceNamed('fromJson', [
-                      refer(
-                        'response',
-                      ).property('responseBodyJson')([]).awaited,
-                    ]),
-                  );
-                  responseCodeClass.fields.add(
-                    Field(
-                      (fb) => fb
-                        ..name = 'bodyJson'
-                        ..annotations.add(_override)
-                        ..type = _referType(
-                          'Map',
-                          generics: [_typeString, refer('dynamic')],
-                        )
-                        ..modifier = FieldModifier.final$,
-                    ),
-                  );
-                  responseCodeClass.implements.add(_openApiResponseBodyJson);
-                } else {
-                  cb.initializers.add(
-                    refer(
-                      'bodyJsonValue',
-                    ).assign(_encodeJson(responseSchema, refer('body'))).code,
-                  );
-                  clientResponseParseParams.add(
-                    _parseJson(
-                      parentName: parentName,
-                      schema: responseSchema,
-                      expression: refer(
-                        'response',
-                      ).property('responseBodyJsonDynamic')([]).awaited,
-                    ),
-                  );
-                  responseCodeClass.fields.add(
-                    Field(
-                      (fb) => fb
-                        ..name = 'bodyJsonValue'
-                        ..annotations.add(_override)
-                        ..type = _referType('Object', isNullable: true)
-                        ..modifier = FieldModifier.final$,
-                    ),
-                  );
-                  responseCodeClass.implements.add(
-                    _openApiResponseBodyJsonValue,
-                  );
-                }
-              } else {
-                if (response.value!.content?.length == 1) {
-                  final responseContent =
-                      response.value!.content!.entries.first;
-                  final responseContentType = OpenApiContentType.parse(
-                    responseContent.key,
-                  );
-                  responseContentTypeAssignment = _openApiContentType
-                      .newInstanceNamed('parse', [
-                        literalString(responseContentType.toString()),
-                      ])
-                      .code;
-                  bodyType = _toDartType(
-                    '${responseCodeClass}Content',
-                    responseContent.value!.schema!,
-                  );
-                  checkState(
-                    responseContent.value!.schema!.type == APIType.string,
-                    message:
-                        'schema type not supported for content type '
-                        '${responseContent.key}: '
-                        '${responseContent.value!.schema!.type}',
-                  );
-                  responseCodeClass.fields.add(
-                    Field(
-                      (fb) => fb
-                        ..name = 'body'
-                        ..type = bodyType
-                        ..annotations.add(_override)
-                        ..modifier = FieldModifier.final$,
-                    ),
-                  );
-                  if (responseContent.key.contains('*')) {
-                    responseContentTypeAssignment = null;
-                    cb.requiredParameters.add(
-                      Parameter(
-                        (pb) => pb
-                          ..type = _openApiContentType
-                          ..name = 'contentType'
-                          ..toThis = true,
-                      ),
-                    );
-                    clientResponseParseParams.add(
-                      refer(
-                        'response',
-                      ).property('responseContentType')([]).nullChecked,
-                    );
-                  }
+                responseCodeClass.implements.add(
+                  _openApiResponseBodyJsonValue,
+                );
+              }
+            } else {
+              if (response.value.content.length == 1) {
+                final responseContent = response.value.content.entries.first;
+                final responseContentType = OpenApiContentType.parse(
+                  responseContent.key,
+                );
+                responseContentTypeAssignment = _openApiContentType
+                    .newInstanceNamed('parse', [
+                      literalString(responseContentType.toString()),
+                    ])
+                    .code;
+                bodyType = _toDartType(
+                  '${responseCodeClass}Content',
+                  responseContent.value.schema!,
+                );
+                checkState(
+                  responseContent.value.schema!.type == APIType.string,
+                  message:
+                      'schema type not supported for content type '
+                      '${responseContent.key}: '
+                      '${responseContent.value.schema!.type}',
+                );
+                responseCodeClass.fields.add(
+                  Field(
+                    (fb) => fb
+                      ..name = 'body'
+                      ..type = bodyType
+                      ..annotations.add(_override)
+                      ..modifier = FieldModifier.final$,
+                  ),
+                );
+                if (responseContent.key.contains('*')) {
+                  responseContentTypeAssignment = null;
                   cb.requiredParameters.add(
                     Parameter(
                       (pb) => pb
-                        ..name = 'body'
-                        ..type = bodyType
+                        ..type = _openApiContentType
+                        ..name = 'contentType'
                         ..toThis = true,
                     ),
                   );
-                  if (_typeString == bodyType) {
-                    responseCodeClass.implements.add(
-                      _openApiResponseBodyString,
-                    );
-                    clientResponseParseParams.add(
-                      refer(
-                        'response',
-                      ).property('responseBodyString')([]).awaited,
-                    );
-                  } else if (_uint8List == bodyType) {
-                    responseCodeClass.implements.add(
-                      _openApiResponseBodyBinary,
-                    );
-                    clientResponseParseParams.add(
-                      refer(
-                        'response',
-                      ).property('responseBodyBytes')([]).awaited,
-                    );
-                  } else {
-                    throw StateError(
-                      'Unsupported bodyType $bodyType for responses.',
-                    );
-                  }
+                  clientResponseParseParams.add(
+                    refer(
+                      'response',
+                    ).property('responseContentType')([]).nullChecked,
+                  );
+                }
+                cb.requiredParameters.add(
+                  Parameter(
+                    (pb) => pb
+                      ..name = 'body'
+                      ..type = bodyType
+                      ..toThis = true,
+                  ),
+                );
+                if (_typeString == bodyType) {
+                  responseCodeClass.implements.add(
+                    _openApiResponseBodyString,
+                  );
+                  clientResponseParseParams.add(
+                    refer(
+                      'response',
+                    ).property('responseBodyString')([]).awaited,
+                  );
+                } else if (_uint8List == bodyType) {
+                  responseCodeClass.implements.add(
+                    _openApiResponseBodyBinary,
+                  );
+                  clientResponseParseParams.add(
+                    refer(
+                      'response',
+                    ).property('responseBodyBytes')([]).awaited,
+                  );
+                } else {
+                  throw StateError(
+                    'Unsupported bodyType $bodyType for responses.',
+                  );
                 }
               }
-              if (response.key.startsWith('2') ||
-                  (response.key == 'default' &&
-                      successResponseBodyType == null)) {
-                successResponseCodeType = refer(responseCodeClass.name!);
-                successResponseBodyType = bodyType;
-                successApiResponse = response;
-              }
-              responseCodeClass.fields.add(
-                Field(
-                  (fb) => fb
-                    ..name = 'contentType'
-                    ..type = responseContentTypeAssignment == _literalNullCode
-                        ? _openApiContentTypeNullable
-                        : _openApiContentType
-                    ..annotations.add(_override)
-                    ..modifier = FieldModifier.final$
-                    ..assignment = responseContentTypeAssignment,
+            }
+            if (response.key.startsWith('2') ||
+                (response.key == 'default' &&
+                    successResponseBodyType == null)) {
+              successResponseCodeType = refer(responseCodeClass.name!);
+              successResponseBodyType = bodyType;
+              successApiResponse = response;
+            }
+            responseCodeClass.fields.add(
+              Field(
+                (fb) => fb
+                  ..name = 'contentType'
+                  ..type = responseContentTypeAssignment == _literalNullCode
+                      ? _openApiContentTypeNullable
+                      : _openApiContentType
+                  ..annotations.add(_override)
+                  ..modifier = FieldModifier.final$
+                  ..assignment = responseContentTypeAssignment,
+              ),
+            );
+          });
+
+          responseCodeClass.constructors.add(
+            (constructor.toBuilder()
+                  ..requiredParameters.map(
+                    (pb) => (pb.toBuilder()..type = pb.toThis ? null : pb.type)
+                        .build(),
+                  ))
+                .build(),
+          );
+          responseCodeClass.methods.add(
+            Method(
+              (mb) => mb
+                ..name = 'propertiesToString'
+                ..annotations.add(_override)
+                ..returns = _referType(
+                  'Map',
+                  generics: [_typeString, refer('Object').asNullable(true)],
+                )
+                ..lambda = true
+                ..body = literalMap(
+                  Map.fromEntries(
+                    responseCodeClass.fields.build().map(
+                      (f) => MapEntry(literalString(f.name), refer(f.name)),
+                    ),
+                  ),
+                ).code,
+            ),
+          );
+          responseClass.constructors.add(
+            (constructor.toBuilder()
+                  ..factory = true
+                  ..initializers.clear()
+                  ..requiredParameters.map(
+                    (pb) => (pb.toBuilder()..toThis = false).build(),
+                  )
+                  ..body = refer(responseCodeClass.name!)
+                      .newInstanceNamed(
+                        constructor.name!,
+                        constructor.requiredParameters
+                            .map((e) => refer(e.name))
+                            .toList(),
+                      )
+                      .code)
+                .build(),
+          );
+          clientResponseParse[response.key] = Method(
+            (mb) => mb
+              ..modifier = MethodModifier.async
+              ..requiredParameters.add(
+                Parameter(
+                  (pb) => pb
+                    ..name = 'response'
+                    ..type = _openApiClientResponse,
+                ),
+              )
+              ..body = refer(responseCodeClass.name!)
+                  .newInstanceNamed(
+                    constructor.name!,
+                    clientResponseParseParams,
+                  )
+                  .code,
+          ).closure;
+          lb.body.add(responseCodeClass.build());
+        }
+        if (mapCode.isNotEmpty) {
+          mapMethod.optionalParameters.add(
+            Parameter(
+              (pb) => pb
+                ..name = 'onElse'
+                // ..asRequired(this, true)
+                ..named = true
+                ..type = _responseMapType
+                    .addGenerics(refer(responseClass.name!))
+                    .addGenerics(const Reference('R'))
+                    .asNullable(true),
+            ),
+          );
+          mapCode.add(const Code('else '));
+          mapCode.add(
+            ifStatement(
+              refer('onElse').notEqualTo(literalNull),
+              refer('onElse')([refer('this')]).returned.statement,
+              elseCode: refer('StateError')
+                  .newInstance([
+                    literalString(r'Invalid instance of type $this'),
+                  ])
+                  .thrown
+                  .statement,
+            ),
+          );
+          // mapCode.add(const Code(r'''
+          //     if (onElse != null) {
+          //       return onElse();
+          //     } else {
+          //       throw StateError('Invalid instance type $this');
+          //     }'''));
+          // mapCode.add(const Code('}'));
+        }
+        mapMethod.body = Block.of(mapCode);
+        responseClass.methods.add(mapMethod.build());
+
+        if (successApiResponse != null) {
+          ArgumentError.checkNotNull(
+            successResponseCodeType,
+            'successResponseCodeType',
+          );
+          responseClass.implements.add(
+            _hasSuccessResponse.addGenerics(successResponseBodyType ?? _void),
+          );
+          responseClass.methods.add(
+            Method(
+              (mb) => mb
+                ..name = 'requireSuccess'
+                ..addDartDoc(
+                  successApiResponse!.value!.description,
+                  prefix: 'status ${successApiResponse!.key}: ',
+                )
+                ..annotations.add(_override)
+                ..returns = successResponseBodyType ?? _void
+                ..body = Block.of([
+                  const Code('if (this is '),
+                  successResponseCodeType!.code,
+                  const Code(') {'),
+                  successResponseBodyType == null
+                      // success, but no body.
+                      ? const Code('return;')
+                      : refer('this')
+                            .asA(successResponseCodeType!)
+                            .property('body')
+                            .returned
+                            .statement,
+                  const Code('} else {'),
+                  _requireSuccessException
+                      .newInstance([refer('this')])
+                      .thrown
+                      .statement,
+                  const Code('}'),
+                ]),
+            ),
+          );
+        }
+
+        lb.body.add(responseClass.build());
+
+        final clientDataClass = ClassBuilder()
+          ..name = operationName.pascalCase
+          ..sealed = true
+          ..mixins.add(refer('_\$${operationName.pascalCase}'))
+          ..annotations.add(_freezed);
+        final clientDataConstructor = ConstructorBuilder()
+          ..factory = true
+          ..redirect = refer('_${operationName.pascalCase}');
+
+        final clientMethod = MethodBuilder()
+          ..name = operationName
+          ..addDartDoc(operation.summary)
+          ..addDartDoc(operation.description)
+          ..docs.add('/// $method: $pathKey')
+          ..docs.add('///')
+          ..returns = _referType(
+            'Future',
+            generics: [refer(responseClass.name!)],
+          )
+          ..modifier = MethodModifier.async;
+        final createClientRequestCode = <Code>[
+          declareFinal('request')
+              .assign(
+                _openApiClientRequest.newInstance([
+                  literalString(method),
+                  literalString(pathKey),
+                  _operationSecurityRequirements(
+                    operation.security ?? api.security,
+                  ),
+                ]),
+              )
+              .statement,
+        ];
+        final clientCodeRequest = refer('request');
+
+        cb.methods.add(
+          Method((mb) {
+            mb
+              ..name = operationName
+              ..addDartDoc(operation.summary)
+              ..addDartDoc(operation.description)
+              ..docs.add('/// $method: $pathKey')
+              ..returns = _referType(
+                'Future',
+                generics: [refer(responseClass.name!)],
+              );
+
+            final routerParams = <Expression>[];
+            final routerParamsNamed = <String, Expression>{};
+
+            if (apiMethodsWithRequest) {
+              mb.requiredParameters.add(
+                Parameter(
+                  (pb) => pb
+                    ..name = 'request'
+                    ..type = _openApiRequest,
                 ),
               );
-            });
+              routerParams.add(refer('request'));
+            }
 
-            responseCodeClass.constructors.add(
-              (constructor.toBuilder()
-                    ..requiredParameters.map(
-                      (pb) =>
-                          (pb.toBuilder()..type = pb.toThis ? null : pb.type)
-                              .build(),
-                    ))
-                  .build(),
-            );
-            responseCodeClass.methods.add(
-              Method(
-                (mb) => mb
-                  ..name = 'propertiesToString'
-                  ..annotations.add(_override)
-                  ..returns = _referType(
-                    'Map',
-                    generics: [_typeString, refer('Object').asNullable(true)],
-                  )
-                  ..lambda = true
-                  ..body = literalMap(
-                    Map.fromEntries(
-                      responseCodeClass.fields.build().map(
-                        (f) => MapEntry(literalString(f.name), refer(f.name)),
-                      ),
-                    ),
-                  ).code,
-              ),
-            );
-            responseClass.constructors.add(
-              (constructor.toBuilder()
-                    ..factory = true
-                    ..initializers.clear()
-                    ..requiredParameters.map(
-                      (pb) => (pb.toBuilder()..toThis = false).build(),
-                    )
-                    ..body = refer(responseCodeClass.name!)
-                        .newInstanceNamed(
-                          constructor.name!,
-                          constructor.requiredParameters
-                              .map((e) => refer(e.name))
-                              .toList(),
-                        )
-                        .code)
-                  .build(),
-            );
-            clientResponseParse[response.key] = Method(
-              (mb) => mb
-                ..modifier = MethodModifier.async
-                ..requiredParameters.add(
-                  Parameter(
-                    (pb) => pb
-                      ..name = 'response'
-                      ..type = _openApiClientResponse,
-                  ),
-                )
-                ..body = refer(responseCodeClass.name!)
-                    .newInstanceNamed(
-                      constructor.name!,
-                      clientResponseParseParams,
-                    )
-                    .code,
-            ).closure;
-            lb.body.add(responseCodeClass.build());
-          }
-          if (mapCode.isNotEmpty) {
-            mapMethod.optionalParameters.add(
-              Parameter(
+            // ignore: avoid_function_literals_in_foreach_calls
+            final allParameters = [
+              ...pathItem.parameters,
+              ...operation.parameters,
+            ];
+            for (final param in allParameters) {
+              final paramType = _toDartType(operationName, param.schema!);
+              final paramNameCamelCase = param.name!.camelCase;
+              clientMethod.addDartDoc(
+                param.description,
+                prefix: '* [$paramNameCamelCase]:',
+              );
+              final p = Parameter(
                 (pb) => pb
-                  ..name = 'onElse'
-                  // ..asRequired(this, true)
-                  ..named = true
-                  ..type = _responseMapType
-                      .addGenerics(refer(responseClass.name!))
-                      .addGenerics(const Reference('R'))
-                      .asNullable(true),
-              ),
-            );
-            mapCode.add(const Code('else '));
-            mapCode.add(
-              ifStatement(
-                refer('onElse').notEqualTo(literalNull),
-                refer('onElse')([refer('this')]).returned.statement,
-                elseCode: refer('StateError')
-                    .newInstance([
-                      literalString(r'Invalid instance of type $this'),
-                    ])
-                    .thrown
-                    .statement,
-              ),
-            );
-            // mapCode.add(const Code(r'''
-            //     if (onElse != null) {
-            //       return onElse();
-            //     } else {
-            //       throw StateError('Invalid instance type $this');
-            //     }'''));
-            // mapCode.add(const Code('}'));
-          }
-          mapMethod.body = Block.of(mapCode);
-          responseClass.methods.add(mapMethod.build());
+                  ..name = paramNameCamelCase
+                  ..type = paramType.asNullable(!param.isRequired)
+                  ..asRequired(this, param.isRequired)
+                  ..named = true,
+              );
+              mb.optionalParameters.add(p);
+              clientMethod.optionalParameters.add(p);
+              clientDataConstructor.optionalParameters.add(
+                p.rebuild(
+                  (pb) => pb,
+                  // ..toThis = true
+                ),
+              );
+              // clientDataClass.fields.add(Field((fb) => fb
+              //   ..name = paramNameCamelCase
+              //   ..modifier = FieldModifier.final$
+              //   ..type = paramType.asNullable(!param.isRequired)));
 
-          if (successApiResponse != null) {
-            ArgumentError.checkNotNull(
-              successResponseCodeType,
-              'successResponseCodeType',
-            );
-            responseClass.implements.add(
-              _hasSuccessResponse.addGenerics(successResponseBodyType ?? _void),
-            );
-            responseClass.methods.add(
-              Method(
-                (mb) => mb
-                  ..name = 'requireSuccess'
-                  ..addDartDoc(
-                    successApiResponse!.value!.description,
-                    prefix: 'status ${successApiResponse!.key}: ',
-                  )
-                  ..annotations.add(_override)
-                  ..returns = successResponseBodyType ?? _void
-                  ..body = Block.of([
-                    const Code('if (this is '),
-                    successResponseCodeType!.code,
-                    const Code(') {'),
-                    successResponseBodyType == null
-                        // success, but no body.
-                        ? const Code('return;')
-                        : refer('this')
-                              .asA(successResponseCodeType!)
-                              .property('body')
-                              .returned
-                              .statement,
-                    const Code('} else {'),
-                    _requireSuccessException
-                        .newInstance([refer('this')])
-                        .thrown
-                        .statement,
-                    const Code('}'),
-                  ]),
-              ),
-            );
-          }
-
-          lb.body.add(responseClass.build());
-
-          final clientDataClass = ClassBuilder()
-            ..name = operationName.pascalCase
-            ..sealed = true
-            ..mixins.add(refer('_\$${operationName.pascalCase}'))
-            ..annotations.add(_freezed);
-          final clientDataConstructor = ConstructorBuilder()
-            ..factory = true
-            ..redirect = refer('_${operationName.pascalCase}');
-
-          final clientMethod = MethodBuilder()
-            ..name = operationName
-            ..addDartDoc(operation.value!.summary)
-            ..addDartDoc(operation.value!.description)
-            ..docs.add('/// ${operation.key}: ${path.key}')
-            ..docs.add('///')
-            ..returns = _referType(
-              'Future',
-              generics: [refer(responseClass.name!)],
-            )
-            ..modifier = MethodModifier.async;
-          final createClientRequestCode = <Code>[
-            declareFinal('request')
-                .assign(
-                  _openApiClientRequest.newInstance([
-                    literalString(operation.key),
-                    literalString(path.key),
-                    _operationSecurityRequirements(
-                      operation.value!.security ?? api.security,
-                    ),
-                  ]),
-                )
-                .statement,
-          ];
-          final clientCodeRequest = refer('request');
-
-          cb.methods.add(
-            Method((mb) {
-              mb
-                ..name = operationName
-                ..addDartDoc(operation.value!.summary)
-                ..addDartDoc(operation.value!.description)
-                ..docs.add('/// ${operation.key}: ${path.key}')
-                ..returns = _referType(
-                  'Future',
-                  generics: [refer(responseClass.name!)],
-                );
-
-              final routerParams = <Expression>[];
-              final routerParamsNamed = <String, Expression>{};
-
-              if (apiMethodsWithRequest) {
-                mb.requiredParameters.add(
-                  Parameter(
-                    (pb) => pb
-                      ..name = 'request'
-                      ..type = _openApiRequest,
-                  ),
-                );
-                routerParams.add(refer('request'));
-              }
-
-              // ignore: avoid_function_literals_in_foreach_calls
-              final allParameters = [
-                ...?path.value!.parameters,
-                ...?operation.value!.parameters,
-              ];
-              for (final param in allParameters) {
-                final paramType = _toDartType(operationName, param!.schema!);
-                final paramNameCamelCase = param.name!.camelCase;
-                clientMethod.addDartDoc(
-                  param.description,
-                  prefix: '* [$paramNameCamelCase]:',
-                );
-                final p = Parameter(
-                  (pb) => pb
-                    ..name = paramNameCamelCase
-                    ..type = paramType.asNullable(!param.isRequired)
-                    ..asRequired(this, param.isRequired)
-                    ..named = true,
-                );
-                mb.optionalParameters.add(p);
-                clientMethod.optionalParameters.add(p);
-                clientDataConstructor.optionalParameters.add(
-                  p.rebuild(
-                    (pb) => pb,
-                    // ..toThis = true
-                  ),
-                );
-                // clientDataClass.fields.add(Field((fb) => fb
-                //   ..name = paramNameCamelCase
-                //   ..modifier = FieldModifier.final$
-                //   ..type = paramType.asNullable(!param.isRequired)));
-
-                Expression decodeParameter(Expression? expression) {
-                  return refer(
-                    param.isRequired ? 'paramRequired' : 'paramOpt',
-                  )([], {
-                    'name': literalString(param.name!),
-                    'value': expression!,
-                    'decode': Method(
-                      (mb) => mb
-                        ..lambda = true
-                        ..requiredParameters.add(
-                          Parameter((pb) => pb..name = 'value'),
-                        )
-                        ..body = _decodeParameterFrom(
-                          parentName: operationName,
-                          schema: param.schema,
-                          type: paramType,
-                          expression: refer('value'),
-                        ).code,
-                    ).closure,
-                  });
-                }
-
-                final paramLocation = ArgumentError.checkNotNull(
-                  param.location,
-                );
-                final paramName = ArgumentError.checkNotNull(param.name);
-                routerParamsNamed[paramNameCamelCase] = decodeParameter(
-                  _readFromRequest(paramLocation, paramName),
-                );
-                createClientRequestCode.add(
-                  _writeToRequest(
-                    clientCodeRequest,
-                    paramLocation,
-                    paramName,
-                    _encodeParameter(
-                      schema: param.schema,
-                      type: paramType,
-                      expression: refer(paramNameCamelCase),
-                      isRequired: param.isRequired,
-                      explode: param.explodeOrDefault,
-                    ),
-                  ).statement,
-                );
-              }
-              final urlResolverMethod = clientMethod.build().toBuilder()
-                ..returns = _openApiClientRequest
-                ..modifier = null
-                ..body = Block.of(
-                  createClientRequestCode +
-                      [clientCodeRequest.returned.statement],
-                );
-              urlResolveClass.methods.add(urlResolverMethod.build());
-
-              final body = operation.value!.requestBody;
-              if (body != null && body.content!.isNotEmpty) {
-                final entry = body.content!.entries.first;
-
-                if (body.content!.length > 1) {
-                  _logger.warning(
-                    'Right now we only support one request body, '
-                    'but found: ${body.content!.keys}, only using $entry',
-                  );
-                }
-
-                Map.fromEntries([entry]).forEach((key, reqBody) {
-                  final contentType = OpenApiContentType.parse(key);
-                  //                final ct = OpenApiContentType.allKnown
-                  //                    .firstWhere((element) => element.matches(contentType));
-                  _createRequestBody(
-                    contentType,
-                    reqBody!,
-                    operationName,
-                    mb,
-                    routerParams,
-                    clientMethod,
-                    createClientRequestCode,
-                  );
+              Expression decodeParameter(Expression? expression) {
+                return refer(
+                  param.isRequired ? 'paramRequired' : 'paramOpt',
+                )([], {
+                  'name': literalString(param.name!),
+                  'value': expression!,
+                  'decode': Method(
+                    (mb) => mb
+                      ..lambda = true
+                      ..requiredParameters.add(
+                        Parameter((pb) => pb..name = 'value'),
+                      )
+                      ..body = _decodeParameterFrom(
+                        parentName: operationName,
+                        schema: param.schema,
+                        type: paramType,
+                        expression: refer('value'),
+                      ).code,
+                  ).closure,
                 });
               }
 
-              _routerConfig(
-                path.key,
-                operation.key,
-                refer('impl').property('invoke')([
-                  refer('request'),
-                  Method(
-                    (m) => m
-                      ..requiredParameters.add(
-                        Parameter(
-                          (pb) => pb
-                            ..type = refer(baseName)
-                            ..name = 'impl',
-                        ),
-                      )
-                      ..lambda = true
-                      ..body = refer('impl')
-                          .property(operationName)(
-                            routerParams,
-                            routerParamsNamed,
-                          )
-                          //                        .returned
-                          .code
-                      ..modifier = MethodModifier.async,
-                  ).closure,
-                ]),
-                operation.value!.security ?? api.security,
-              ); //.property(operationName)(parameters));
-            }),
-          );
-
-          final clientMethodCreateRequest = MethodBuilder()
-            ..name = 'create${operationName.pascalCase}Request'
-            ..requiredParameters = clientMethod.requiredParameters
-            ..optionalParameters = clientMethod.optionalParameters
-            ..returns = _openApiClientRequest
-            ..body = Block.of([
-              ...createClientRequestCode,
-              refer('request').returned.statement,
-            ]);
-          final x = clientMethodCreateRequest.build();
-
-          clientMethod.body = Block.of([
-            declareFinal(
-                  'request',
-                )
-                .assign(
-                  refer(clientMethodCreateRequest.name ?? '')(
-                    [
-                      ...x.requiredParameters,
-                      ...x.optionalParameters,
-                    ].where((p) => !p.named).map((p) => refer(p.name)).toList(),
-                    Map.fromEntries(
-                      [...x.requiredParameters, ...x.optionalParameters]
-                          .where((p) => p.named)
-                          .map((p) => MapEntry(p.name, refer(p.name))),
-                    ),
+              final paramLocation = ArgumentError.checkNotNull(
+                param.location,
+              );
+              final paramName = ArgumentError.checkNotNull(param.name);
+              routerParamsNamed[paramNameCamelCase] = decodeParameter(
+                _readFromRequest(paramLocation, paramName),
+              );
+              createClientRequestCode.add(
+                _writeToRequest(
+                  clientCodeRequest,
+                  paramLocation,
+                  paramName,
+                  _encodeParameter(
+                    schema: param.schema,
+                    type: paramType,
+                    expression: refer(paramNameCamelCase),
+                    isRequired: param.isRequired,
+                    explode: param.effectiveExplode,
                   ),
-                )
-                .statement,
-            refer('sendRequest')([
-              refer('request'),
-              literalMap(clientResponseParse),
-            ]).awaited.returned.statement,
-          ]);
-          clientClass.methods.add(
-            (clientMethodCreateRequest..annotations.add(_override)).build(),
-          );
-          clientClass.methods.add(
-            (clientMethod..annotations.add(_override)).build(),
-          );
-          clientInterface.methods.add(
-            (clientMethodCreateRequest.build().toBuilder()
-                  ..annotations.clear()
-                  ..body = null)
-                .build(),
-          );
-          clientInterface.methods.add(
-            (clientMethod.build().toBuilder()
-                  ..annotations.clear()
-                  ..body = null)
-                .build(),
-          );
-          if (generateProvider && operation.key.toLowerCase() == 'get') {
-            final params = clientDataConstructor.build().optionalParameters;
-            clientDataClass.constructors.add(clientDataConstructor.build());
-            // clientDataClass.build().fields.
-            if (params.length > 1) {
-              lb.body.add(clientDataClass.build());
-              requireFreezed();
+                ).statement,
+              );
+            }
+            final urlResolverMethod = clientMethod.build().toBuilder()
+              ..returns = _openApiClientRequest
+              ..modifier = null
+              ..body = Block.of(
+                createClientRequestCode +
+                    [clientCodeRequest.returned.statement],
+              );
+            urlResolveClass.methods.add(urlResolverMethod.build());
+
+            final body = operation.requestBody;
+            if (body != null && body.content.isNotEmpty) {
+              final entry = body.content.entries.first;
+
+              if (body.content.length > 1) {
+                _logger.warning(
+                  'Right now we only support one request body, '
+                  'but found: ${body.content.keys}, only using $entry',
+                );
+              }
+
+              Map.fromEntries([entry]).forEach((key, reqBody) {
+                final contentType = OpenApiContentType.parse(key);
+                //                final ct = OpenApiContentType.allKnown
+                //                    .firstWhere((element) => element.matches(contentType));
+                _createRequestBody(
+                  contentType,
+                  reqBody,
+                  operationName,
+                  mb,
+                  routerParams,
+                  clientMethod,
+                  createClientRequestCode,
+                );
+              });
             }
 
-            // final baseBaseIdGet = _i1.StreamProvider.family<BaseBaseIdGetResponse, BaseBaseIdGet>((ref, arg) {
-            //   final client = ref.watch(mywarmApiClientProvider);
-            //   return Stream.fromFuture(client.baseBaseIdGet(baseId: arg.baseId));
-            // });
-            final m = Method((mb) {
-              mb.requiredParameters.add(Parameter((pb) => pb..name = 'ref'));
-              if (params.isNotEmpty) {
-                mb.requiredParameters.add(Parameter((pb) => pb..name = 'arg'));
-              }
-              mb.body = Block.of([
-                declareFinal('client')
-                    .assign(
-                      refer('ref').property('watch')([
-                        refer(clientProviderName),
-                      ]),
+            _routerConfig(
+              pathKey,
+              method,
+              refer('impl').property('invoke')([
+                refer('request'),
+                Method(
+                  (m) => m
+                    ..requiredParameters.add(
+                      Parameter(
+                        (pb) => pb
+                          ..type = refer(baseName)
+                          ..name = 'impl',
+                      ),
                     )
-                    .statement,
-                refer('Stream')
-                    .property('fromFuture')([
-                      refer('client').property(operationName)(
-                        [],
-                        params.isEmpty
-                            ? {}
-                            : params.length == 1
-                            ? {params.first.name: refer('arg')}
-                            : Map.fromEntries(
-                                params.map(
-                                  (f) => MapEntry(
-                                    f.name,
-                                    refer('arg').property(f.name),
-                                  ),
+                    ..lambda = true
+                    ..body = refer('impl')
+                        .property(operationName)(
+                          routerParams,
+                          routerParamsNamed,
+                        )
+                        //                        .returned
+                        .code
+                    ..modifier = MethodModifier.async,
+                ).closure,
+              ]),
+              operation.security ?? api.security,
+            ); //.property(operationName)(parameters));
+          }),
+        );
+
+        final clientMethodCreateRequest = MethodBuilder()
+          ..name = 'create${operationName.pascalCase}Request'
+          ..requiredParameters = clientMethod.requiredParameters
+          ..optionalParameters = clientMethod.optionalParameters
+          ..returns = _openApiClientRequest
+          ..body = Block.of([
+            ...createClientRequestCode,
+            refer('request').returned.statement,
+          ]);
+        final x = clientMethodCreateRequest.build();
+
+        clientMethod.body = Block.of([
+          declareFinal(
+                'request',
+              )
+              .assign(
+                refer(clientMethodCreateRequest.name ?? '')(
+                  [
+                    ...x.requiredParameters,
+                    ...x.optionalParameters,
+                  ].where((p) => !p.named).map((p) => refer(p.name)).toList(),
+                  Map.fromEntries(
+                    [...x.requiredParameters, ...x.optionalParameters]
+                        .where((p) => p.named)
+                        .map((p) => MapEntry(p.name, refer(p.name))),
+                  ),
+                ),
+              )
+              .statement,
+          refer('sendRequest')([
+            refer('request'),
+            literalMap(clientResponseParse),
+          ]).awaited.returned.statement,
+        ]);
+        clientClass.methods.add(
+          (clientMethodCreateRequest..annotations.add(_override)).build(),
+        );
+        clientClass.methods.add(
+          (clientMethod..annotations.add(_override)).build(),
+        );
+        clientInterface.methods.add(
+          (clientMethodCreateRequest.build().toBuilder()
+                ..annotations.clear()
+                ..body = null)
+              .build(),
+        );
+        clientInterface.methods.add(
+          (clientMethod.build().toBuilder()
+                ..annotations.clear()
+                ..body = null)
+              .build(),
+        );
+        if (generateProvider && method.toLowerCase() == 'get') {
+          final params = clientDataConstructor.build().optionalParameters;
+          clientDataClass.constructors.add(clientDataConstructor.build());
+          // clientDataClass.build().fields.
+          if (params.length > 1) {
+            lb.body.add(clientDataClass.build());
+            requireFreezed();
+          }
+
+          // final baseBaseIdGet = _i1.StreamProvider.family<BaseBaseIdGetResponse, BaseBaseIdGet>((ref, arg) {
+          //   final client = ref.watch(mywarmApiClientProvider);
+          //   return Stream.fromFuture(client.baseBaseIdGet(baseId: arg.baseId));
+          // });
+          final m = Method((mb) {
+            mb.requiredParameters.add(Parameter((pb) => pb..name = 'ref'));
+            if (params.isNotEmpty) {
+              mb.requiredParameters.add(Parameter((pb) => pb..name = 'arg'));
+            }
+            mb.body = Block.of([
+              declareFinal('client')
+                  .assign(
+                    refer('ref').property('watch')([
+                      refer(clientProviderName),
+                    ]),
+                  )
+                  .statement,
+              refer('Stream')
+                  .property('fromFuture')([
+                    refer('client').property(operationName)(
+                      [],
+                      params.isEmpty
+                          ? {}
+                          : params.length == 1
+                          ? {params.first.name: refer('arg')}
+                          : Map.fromEntries(
+                              params.map(
+                                (f) => MapEntry(
+                                  f.name,
+                                  refer('arg').property(f.name),
                                 ),
                               ),
-                      ),
-                    ])
-                    .returned
-                    .statement,
-              ]);
-            });
-            final providerName =
-                '${providerNamePrefix.isEmpty ? operationName.camelCase : '$providerNamePrefix${operationName.pascalCase}'}Provider';
-            final Expression createProvider;
-            if (params.isEmpty) {
-              createProvider = _streamProvider.property('autoDispose')(
-                [m.closure],
-                {},
-                [refer(responseClass.name!)],
-              );
-            } else {
-              createProvider = _streamProvider
-                  .property('autoDispose')
-                  .property('family')
-                  .call(
-                    [m.closure],
-                    {},
-                    [
-                      refer(responseClass.name!),
-                      params.length > 1
-                          ? refer(clientDataClass.name!)
-                          : params.first.type!,
-                    ],
-                  );
-            }
-            lb.body.add(
-              Field(
-                (fb) => fb
-                  ..name = providerName
-                  ..modifier = FieldModifier.final$
-                  ..addDartDoc(operation.value!.summary)
-                  ..addDartDoc(operation.value!.description)
-                  ..assignment = createProvider.code,
-              ),
+                            ),
+                    ),
+                  ])
+                  .returned
+                  .statement,
+            ]);
+          });
+          final providerName =
+              '${providerNamePrefix.isEmpty ? operationName.camelCase : '$providerNamePrefix${operationName.pascalCase}'}Provider';
+          final Expression createProvider;
+          if (params.isEmpty) {
+            createProvider = _streamProvider.property('autoDispose')(
+              [m.closure],
+              {},
+              [refer(responseClass.name!)],
             );
+          } else {
+            createProvider = _streamProvider
+                .property('autoDispose')
+                .property('family')
+                .call(
+                  [m.closure],
+                  {},
+                  [
+                    refer(responseClass.name!),
+                    params.length > 1
+                        ? refer(clientDataClass.name!)
+                        : params.first.type!,
+                  ],
+                );
           }
+          lb.body.add(
+            Field(
+              (fb) => fb
+                ..name = providerName
+                ..modifier = FieldModifier.final$
+                ..addDartDoc(operation.summary)
+                ..addDartDoc(operation.description)
+                ..assignment = createProvider.code,
+            ),
+          );
         }
       }
     });
@@ -1444,9 +1440,11 @@ class OpenApiLibraryGenerator {
     APISchemaObject obj, {
     bool isBaseClass = false,
   }) {
-    var properties = obj.properties ?? {};
+    var properties = obj.properties;
     final override = <String>{};
-    final required = obj.required ?? [];
+    // A copy: the base classes' required fields are added below, and the
+    // model must not change.
+    final required = [...obj.required];
     final implements = <Reference>[];
 
     // check for inheritance
@@ -1457,21 +1455,19 @@ class OpenApiLibraryGenerator {
         obj.additionalPropertyPolicy ??
         APISchemaAdditionalPropertyPolicy.restricted;
     var additionalPropertySchema = obj.additionalPropertySchema;
-    if (obj.allOf != null) {
-      for (final baseObj in obj.allOf!) {
-        implements.add(
-          _schemaReference('${className}Base', baseObj!, isBaseClass: true),
-        );
-        properties = {...baseObj.properties!, ...properties};
-        override.addAll(baseObj.properties!.entries.map((e) => e.key));
-        required.addAll(baseObj.required ?? []);
-        // if the base object as "freeForm" property policy we need to expand it.
-        if (baseObj.additionalPropertyPolicy ==
-            APISchemaAdditionalPropertyPolicy.freeForm) {
-          additionalPropertyPolicy = baseObj.additionalPropertyPolicy;
-        } else {
-          additionalPropertySchema ??= baseObj.additionalPropertySchema;
-        }
+    for (final baseObj in obj.allOf) {
+      implements.add(
+        _schemaReference('${className}Base', baseObj, isBaseClass: true),
+      );
+      properties = {...baseObj.properties, ...properties};
+      override.addAll(baseObj.properties.entries.map((e) => e.key));
+      required.addAll(baseObj.required);
+      // if the base object as "freeForm" property policy we need to expand it.
+      if (baseObj.additionalPropertyPolicy ==
+          APISchemaAdditionalPropertyPolicy.freeForm) {
+        additionalPropertyPolicy = baseObj.additionalPropertyPolicy;
+      } else {
+        additionalPropertySchema ??= baseObj.additionalPropertySchema;
       }
     }
     // imho this is a bug.. if policy is "restricted" there has to be a schema.
@@ -1505,7 +1501,7 @@ class OpenApiLibraryGenerator {
       (key, e) => MapEntry(
         key,
         Field((fb) {
-          final fieldType = _toDartType('$className${key.pascalCase}', e!);
+          final fieldType = _toDartType('$className${key.pascalCase}', e);
           fb
             ..addDartDoc(e.description)
             ..annotations.add(
@@ -1638,9 +1634,8 @@ class OpenApiLibraryGenerator {
 
       final isBaseClassX =
           isBaseClass ||
-          (api.components?.schemas?.values.nonNulls
-                  .expand((obj) => obj.allOf ?? <APISchemaObject?>[])
-                  .nonNulls
+          (api.components?.schemas.values
+                  .expand((obj) => obj.allOf)
                   .map(
                     (obj) => _componentNameFromReferenceUri(obj.referenceURI),
                   )
@@ -2052,9 +2047,7 @@ class OpenApiLibraryGenerator {
           ),
         );
         return refer(securitySchemesClass.name!).property(name.camelCase);
-      // oauth2 and openIdConnect (and the legacy `openID`, which
-      // open_api_forked 4.0 removes). A `default` keeps this compiling
-      // against both 3.x and 4.x.
+      // oauth2 and openIdConnect, and a missing or unknown type.
       default:
         throw StateError('Unsupported security scheme ${value.type}');
     }
@@ -2444,18 +2437,6 @@ class OpenApiLibraryGenerator {
         return expression;
     }
   }
-}
-
-extension on APIParameter {
-  bool get explodeOrDefault =>
-      explode ??
-      switch (location) {
-        null => throw UnimplementedError(),
-        APIParameterLocation.query => true,
-        APIParameterLocation.header => false,
-        APIParameterLocation.path => false,
-        APIParameterLocation.cookie => true,
-      };
 }
 
 class OpenApiCodeBuilderUtils {
