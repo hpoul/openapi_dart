@@ -115670,7 +115670,7 @@ m.gaA()
 m=m.at
 m.toString
 return new A.ai(new A.D(n,m),new A.aY(A.ep(a).lV()),".",!1,!1)
-case 2:case 3:case 4:throw A.e(A.ac("Unsupported security scheme "+A.m(m)))}},
+default:throw A.e(A.ac("Unsupported security scheme "+A.m(m)))}},
 DU(a,b){var s,r
 switch(b.cy){case B.fD:s=A.lt("List",A.a([this.DU(a,this.NB(a,b))],t.S4),null)
 break
