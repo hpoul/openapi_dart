@@ -5,20 +5,29 @@
 ///
 ///     UPDATE_GOLDENS=1 dart test test/golden_test.dart
 ///
-/// and review the diff.
+/// and review the diff. Run it from the package root (`dart test` does).
 library;
 
 import 'dart:io';
 
+import 'package:open_api_forked/v3.dart';
 import 'package:openapi_code_builder/openapi_code_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:test/test.dart';
 
-/// Specs the generator cannot handle yet, with the reason.
-const _knownFailures = <String, String>{
-  'oai-api-with-examples.yaml': 'document without components',
-  'oai-callback-example.yaml': 'callbacks',
+enum _Stage { parse, generate }
+
+/// Specs that crash today: the stage that fails, and the reason.
+///
+/// The test checks that the spec still fails in exactly that stage, so a
+/// change (a fix, or a crash moving elsewhere) shows up.
+const _knownFailures = <String, (_Stage, String)>{
+  'oai-api-with-examples.yaml': (
+    _Stage.generate,
+    'document without components',
+  ),
+  'oai-callback-example.yaml': (_Stage.parse, 'callbacks'),
 };
 
 /// Specs that use security schemes the generator does not support (oauth2).
@@ -26,15 +35,16 @@ const _ignoreSecuritySchemes = {'swagger-petstore-v3.yaml'};
 
 final _updateGoldens = Platform.environment['UPDATE_GOLDENS'] == '1';
 
-String _generate(File specFile) {
-  final api = OpenApiCodeBuilderUtils.loadApiFromYaml(
-    specFile.readAsStringSync(),
-  );
+APIDocument _parse(File specFile) =>
+    OpenApiCodeBuilderUtils.loadApiFromYaml(specFile.readAsStringSync());
+
+String _generate(File specFile, [APIDocument? parsed]) {
+  final api = parsed ?? _parse(specFile);
   // Same naming as the build_runner builder (`OpenApiCodeBuilder`).
   final name = p.basename(specFile.path).replaceAll(RegExp(r'\.yaml$'), '');
   final outputBase = name.endsWith('.openapi') ? name : '$name.openapi';
   final baseName =
-      api.info?.extensions['x-dart-name'] as String? ??
+      api.info!.extensions['x-dart-name'] as String? ??
       p.basenameWithoutExtension(outputBase).pascalCase;
   final library = OpenApiLibraryGenerator(
     api,
@@ -81,14 +91,26 @@ void main() {
     final specName = p.basename(spec.path);
     final knownFailure = _knownFailures[specName];
     if (knownFailure != null) {
-      test('$specName fails to generate (known: $knownFailure)', () {
-        expect(
-          () => _generate(spec),
-          throwsA(anything),
-          reason:
-              'This spec generates now. Remove it from _knownFailures and '
-              'run with UPDATE_GOLDENS=1 to add its golden file.',
-        );
+      final (stage, reason) = knownFailure;
+      test('$specName fails to ${stage.name} (known: $reason)', () {
+        const fixed =
+            'Remove it from _knownFailures and run with UPDATE_GOLDENS=1 '
+            'to add its golden file.';
+        switch (stage) {
+          case _Stage.parse:
+            expect(
+              () => _parse(spec),
+              throwsA(anything),
+              reason: 'This spec parses now. $fixed',
+            );
+          case _Stage.generate:
+            final api = _parse(spec);
+            expect(
+              () => _generate(spec, api),
+              throwsA(anything),
+              reason: 'This spec generates now. $fixed',
+            );
+        }
       });
       continue;
     }
@@ -119,9 +141,6 @@ void main() {
   }
 
   test('no stale golden files', () {
-    if (_updateGoldens) {
-      return;
-    }
     final expectedNames = specs
         .where((s) => !_knownFailures.containsKey(p.basename(s.path)))
         .map(_goldenName)
@@ -132,6 +151,12 @@ void main() {
         .map((f) => p.basename(f.path))
         .where((n) => !expectedNames.contains(n))
         .toList();
+    if (_updateGoldens) {
+      for (final name in stale) {
+        File(p.join(expectedDir.path, name)).deleteSync();
+      }
+      return;
+    }
     expect(stale, isEmpty, reason: 'Golden files without a spec.');
   });
 }
