@@ -4,19 +4,30 @@ on:
   push:
     branches: [master]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # deps/open-api-dart is the open_api_forked revision under test.
           submodules: true
 
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: stable
+          # Pinned so a new SDK's formatter or lints can't turn unrelated
+          # PRs red. Bump on purpose.
+          sdk: 3.14.1
 
       - name: Use local open_api_forked and openapi_base
         # Same as the gitignored pubspec_overrides.yaml used locally, so
@@ -51,6 +62,9 @@ jobs:
         run: |
           dart pub get --enforce-lockfile
           dart run build_runner build --delete-conflicting-outputs
+          # Also fail on new untracked outputs (e.g. a spec added without
+          # its generated files).
+          git add --intent-to-add .
           git diff --exit-code -- .
           dart analyze --fatal-warnings
           dart test
