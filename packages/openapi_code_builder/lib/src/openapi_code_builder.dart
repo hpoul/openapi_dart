@@ -451,6 +451,7 @@ class OpenApiLibraryGenerator {
                   .code;
               final responseSchema = content.schema!;
               final bodyIsObject =
+                  responseSchema.types.length <= 1 &&
                   (responseSchema.type ?? APIType.object) == APIType.object;
               final parentName = _responseBodyTypeName(
                 responseClass.name!,
@@ -1282,7 +1283,9 @@ class OpenApiLibraryGenerator {
       // final reference = _schemaReference(
       //     '${operationName.pascalCase}Schema', reqBody.schema!);
       final schema = reqBody.schema!;
-      final bodyIsObject = schema.type == null || schema.type == APIType.object;
+      final bodyIsObject =
+          schema.types.length <= 1 &&
+          (schema.type == null || schema.type == APIType.object);
       // Only json values are decoded by their schema, other content types
       // (e.g. `image/png` with `format: binary`) keep the plain cast.
       final bodyIsJsonValue =
@@ -2113,7 +2116,8 @@ class OpenApiLibraryGenerator {
     required APISchemaObject schema,
     required Expression expression,
   }) {
-    if (schema.isNullable != true) {
+    if (schema.isNullable != true || schema.types.length > 1) {
+      // Several json types are kept as decoded, null included.
       return _parseJsonNonNull(parentName, schema, expression);
     }
     if (expression is Reference) {
@@ -2142,6 +2146,10 @@ class OpenApiLibraryGenerator {
     APISchemaObject schema,
     Expression expression,
   ) {
+    // Several json types (OpenAPI 3.1): kept as the decoded json value.
+    if (schema.types.length > 1) {
+      return expression;
+    }
     return switch (schema.type ?? APIType.object) {
       APIType.number => expression.asA(refer('num')),
       APIType.integer => expression.asA(_typeInteger),
@@ -2253,6 +2261,13 @@ class OpenApiLibraryGenerator {
     if (schema == null) {
       throw ArgumentError('schema must not be null');
     }
+    if (schema.types.length > 1) {
+      throw UnsupportedError(
+        'Parameters with several types '
+        '(${schema.types.map((t) => t.jsonValue).join(', ')}) '
+        'are not supported.',
+      );
+    }
     final schemaType = ArgumentError.checkNotNull(
       schema.type,
       'param.schema.type',
@@ -2363,6 +2378,13 @@ class OpenApiLibraryGenerator {
   }) {
     if (schema == null) {
       throw ArgumentError('schema');
+    }
+    if (schema.types.length > 1) {
+      throw UnsupportedError(
+        'Parameters with several types '
+        '(${schema.types.map((t) => t.jsonValue).join(', ')}) '
+        'are not supported.',
+      );
     }
     final schemaType = ArgumentError.checkNotNull(
       schema.type,

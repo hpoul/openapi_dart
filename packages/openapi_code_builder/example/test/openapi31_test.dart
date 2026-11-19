@@ -43,4 +43,20 @@ void main() {
     final json = jsonDecode(jsonEncode(pet)) as Map<String, dynamic>;
     expect(Pet.fromJson(json), pet);
   });
+
+  test('nullable unions through refs, and kept defaults', () {
+    final adoption = Adoption.fromJson({
+      'pet': {'id': 1, 'name': 'Rex', 'kind': 'pet'},
+      'adopter': null,
+    });
+    expect(adoption.adopter, isNull);
+    expect(adoption.pet.status, 'available');
+    expect(
+      Adoption.fromJson({
+        'pet': {'id': 1, 'name': 'Rex', 'kind': 'pet', 'status': 'sold'},
+        'adopter': {'name': 'Ann'},
+      }).adopter?.name,
+      'Ann',
+    );
+  });
 }

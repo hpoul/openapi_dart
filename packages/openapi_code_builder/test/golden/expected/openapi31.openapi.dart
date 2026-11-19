@@ -38,10 +38,28 @@ sealed class Pet with _$Pet implements OpenApiContent {
     @JsonKey(name: 'owner') Owner? owner,
     @JsonKey(name: 'previousOwner') Owner? previousOwner,
     @JsonKey(name: 'nicknames') List<String>? nicknames,
+    @JsonKey(name: 'status') @Default('available') String status,
     @JsonKey(name: 'idOrName', includeIfNull: false) Object? idOrName,
   }) = _Pet;
 
   factory Pet.fromJson(Map<String, dynamic> jsonMap) => _$PetFromJson(jsonMap);
+
+  @override
+  String toString() => toJson().toString();
+}
+
+/// Refers to Pet before Pet is defined, so Pet is first built from this $ref.
+@freezed
+sealed class Adoption with _$Adoption implements OpenApiContent {
+  const Adoption._();
+
+  const factory Adoption({
+    @JsonKey(name: 'pet', includeIfNull: false) required Pet pet,
+    @JsonKey(name: 'adopter') Owner? adopter,
+  }) = _Adoption;
+
+  factory Adoption.fromJson(Map<String, dynamic> jsonMap) =>
+      _$AdoptionFromJson(jsonMap);
 
   @override
   String toString() => toJson().toString();
@@ -169,12 +187,77 @@ sealed class GetPetResponse extends OpenApiResponse
   }
 }
 
+class EchoLabelResponse200 extends EchoLabelResponse
+    implements OpenApiResponseBodyJsonValue {
+  /// The label, or null.
+  EchoLabelResponse200.response200(this.body)
+    : status = 200,
+      bodyJsonValue = body;
+
+  @override
+  final int status;
+
+  final Object? body;
+
+  @override
+  final Object? bodyJsonValue;
+
+  @override
+  final OpenApiContentType contentType = OpenApiContentType.parse(
+    'application/json',
+  );
+
+  @override
+  Map<String, Object?> propertiesToString() => {
+    'status': status,
+    'body': body,
+    'bodyJsonValue': bodyJsonValue,
+    'contentType': contentType,
+  };
+}
+
+sealed class EchoLabelResponse extends OpenApiResponse
+    implements HasSuccessResponse<Object?> {
+  EchoLabelResponse();
+
+  /// The label, or null.
+  factory EchoLabelResponse.response200(Object? body) =>
+      EchoLabelResponse200.response200(body);
+
+  R map<R>({
+    required ResponseMap<EchoLabelResponse200, R> on200,
+    ResponseMap<EchoLabelResponse, R>? onElse,
+  }) {
+    if (this is EchoLabelResponse200) {
+      return on200((this as EchoLabelResponse200));
+    } else if (onElse != null) {
+      return onElse(this);
+    } else {
+      throw StateError('Invalid instance of type $this');
+    }
+  }
+
+  /// status 200:  The label, or null.
+  @override
+  Object? requireSuccess() {
+    if (this is EchoLabelResponse200) {
+      return (this as EchoLabelResponse200).body;
+    } else {
+      throw OpenApiRequireSuccessException(this);
+    }
+  }
+}
+
 abstract class OpenApi31Api implements ApiEndpoint {
   /// get: /pets
   Future<ListPetsResponse> listPets({String? tag});
 
   /// get: /pets/{petId}
   Future<GetPetResponse> getPet({required int petId});
+
+  /// post: /labels
+  /// [body]: A label, a number or a string.
+  Future<EchoLabelResponse> echoLabel(Object body);
 }
 
 abstract class OpenApi31ApiClient implements OpenApiClient {
@@ -191,6 +274,12 @@ abstract class OpenApi31ApiClient implements OpenApiClient {
   /// get: /pets/{petId}
   ///
   Future<GetPetResponse> getPet({required int petId});
+  OpenApiClientRequest createEchoLabelRequest(Object body);
+
+  /// post: /labels
+  ///
+  /// [body]: A label, a number or a string.
+  Future<EchoLabelResponse> echoLabel(Object body);
 }
 
 class _OpenApi31ApiClientImpl extends OpenApiClientBase
@@ -244,6 +333,28 @@ class _OpenApi31ApiClientImpl extends OpenApiClientBase
           ),
     });
   }
+
+  @override
+  OpenApiClientRequest createEchoLabelRequest(Object body) {
+    final request = OpenApiClientRequest('post', '/labels', []);
+    request.setHeader('content-type', 'application/json');
+    request.setBody(OpenApiClientRequestBodyJson(body));
+    return request;
+  }
+
+  /// post: /labels
+  ///
+  /// [body]: A label, a number or a string.
+  @override
+  Future<EchoLabelResponse> echoLabel(Object body) async {
+    final request = createEchoLabelRequest(body);
+    return await sendRequest(request, {
+      '200': (OpenApiClientResponse response) async =>
+          EchoLabelResponse200.response200(
+            await response.responseBodyJsonDynamic(),
+          ),
+    });
+  }
 }
 
 class OpenApi31ApiUrlResolve with OpenApiUrlEncodeMixin {
@@ -260,6 +371,13 @@ class OpenApi31ApiUrlResolve with OpenApiUrlEncodeMixin {
   OpenApiClientRequest getPet({required int petId}) {
     final request = OpenApiClientRequest('get', '/pets/{petId}', []);
     request.addPathParameter('petId', encodeInt(petId));
+    return request;
+  }
+
+  /// post: /labels
+  ///
+  OpenApiClientRequest echoLabel() {
+    final request = OpenApiClientRequest('post', '/labels', []);
     return request;
   }
 }
@@ -293,6 +411,13 @@ class OpenApi31ApiRouter extends OpenApiServerRouterBase {
             decode: (value) => paramToInt(value),
           ),
         ),
+      );
+    }, security: []);
+    addRoute('/labels', 'post', (OpenApiRequest request) async {
+      return await impl.invoke(
+        request,
+        (OpenApi31Api impl) async =>
+            impl.echoLabel(await request.readJsonBodyDynamic()),
       );
     }, security: []);
   }

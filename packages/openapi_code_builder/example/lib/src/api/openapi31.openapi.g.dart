@@ -29,6 +29,7 @@ _Pet _$PetFromJson(Map<String, dynamic> json) => _Pet(
   nicknames: (json['nicknames'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
+  status: json['status'] as String? ?? 'available',
   idOrName: json['idOrName'],
 );
 
@@ -41,5 +42,18 @@ Map<String, dynamic> _$PetToJson(_Pet instance) => <String, dynamic>{
   'owner': instance.owner,
   'previousOwner': instance.previousOwner,
   'nicknames': instance.nicknames,
+  'status': instance.status,
   'idOrName': ?instance.idOrName,
+};
+
+_Adoption _$AdoptionFromJson(Map<String, dynamic> json) => _Adoption(
+  pet: Pet.fromJson(json['pet'] as Map<String, dynamic>),
+  adopter: json['adopter'] == null
+      ? null
+      : Owner.fromJson(json['adopter'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$AdoptionToJson(_Adoption instance) => <String, dynamic>{
+  'pet': instance.pet,
+  'adopter': instance.adopter,
 };

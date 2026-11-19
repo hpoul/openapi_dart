@@ -15,6 +15,8 @@ import 'package:open_api_forked/v3.dart';
 ///
 /// The generator does not support `anyOf`/`oneOf` otherwise, so without this
 /// such a property would become an empty class.
+///
+/// Callbacks and webhooks are not walked, as the generator ignores them.
 void simplifyNullableUnions(APIDocument api) => _Simplifier().document(api);
 
 final class _Simplifier {
@@ -80,7 +82,10 @@ final class _Simplifier {
   /// schemas inside it.
   APISchemaObject _schema(APISchemaObject schema) {
     final simplified = _nullableUnion(schema) ?? schema;
-    if (simplified.referenceURI == null && _seen.add(simplified)) {
+    // `$ref`s are walked too: a `$ref` has its own maps of properties
+    // (holding the same schemas as its target's), and the generator may
+    // build a class from it before reaching the target.
+    if (_seen.add(simplified)) {
       simplified.properties.updateAll((_, s) => _schema(s));
       final items = simplified.items;
       if (items != null) {
@@ -105,9 +110,12 @@ final class _Simplifier {
 
   /// The non-null member of `anyOf: [X, {type: 'null'}]` (or `oneOf`),
   /// made nullable, or null if [schema] is not such a union.
+  ///
+  /// [schema] may be a `$ref` to such a union. Its `description`,
+  /// `default`, `deprecated`, `readOnly` and `writeOnly` are kept, unless the
+  /// member has its own.
   static APISchemaObject? _nullableUnion(APISchemaObject schema) {
-    if (schema.referenceURI != null ||
-        schema.types.isNotEmpty ||
+    if (schema.types.isNotEmpty ||
         schema.properties.isNotEmpty ||
         schema.allOf.isNotEmpty ||
         (schema.anyOf.isEmpty == schema.oneOf.isEmpty)) {
@@ -126,11 +134,37 @@ final class _Simplifier {
       return null;
     }
     other.isNullable = true;
-    if (other.description == null && schema.description != null) {
-      other
-        ..description = schema.description
-        ..referenceSiblingKeys.add('description');
+    // A `$ref` member reads its target's fields; only keys next to the
+    // `$ref` are its own.
+    bool hasOwn(String key, Object? current) => other.referenceURI != null
+        ? other.referenceSiblingKeys.contains(key)
+        : current != null;
+    void keep(String key, Object? value, Object? current, void Function() set) {
+      if (value != null && !hasOwn(key, current)) {
+        set();
+        if (other.referenceURI != null) {
+          other.referenceSiblingKeys.add(key);
+        }
+      }
     }
+
+    bool? flag(bool? value) => (value ?? false) ? true : null;
+
+    keep('description', schema.description, other.description, () {
+      other.description = schema.description;
+    });
+    keep('default', schema.defaultValue, other.defaultValue, () {
+      other.defaultValue = schema.defaultValue;
+    });
+    keep('deprecated', flag(schema.isDeprecated), flag(other.isDeprecated), () {
+      other.isDeprecated = true;
+    });
+    keep('readOnly', flag(schema.isReadOnly), flag(other.isReadOnly), () {
+      other.isReadOnly = true;
+    });
+    keep('writeOnly', flag(schema.isWriteOnly), flag(other.isWriteOnly), () {
+      other.isWriteOnly = true;
+    });
     return other;
   }
 

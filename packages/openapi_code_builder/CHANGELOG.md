@@ -6,8 +6,14 @@
   * `anyOf`/`oneOf` of a schema and `type: 'null'`, the way 3.1 tools
     write a nullable reference, generate as that schema made nullable.
     Before, such a property became an empty class.
-  * A `type` array with several non-null types generates as `Object`.
-  * Path items from `components/pathItems` generate; webhooks are ignored.
+    This also works for a component schema that is such a union, and keeps
+    the union's `description`, `default`, `deprecated`, `readOnly` and
+    `writeOnly`.
+  * A `type` array with several non-null types generates as `Object`, for
+    properties and json bodies. Parameters with several types throw an
+    `UnsupportedError`.
+  * Path items from `components/pathItems` that a path `$ref`s generate;
+    webhooks are ignored.
 * A path item that is a `$ref` now generates its operations (before, it
   generated none).
 * Example `openapi31.openapi.yaml` with a json round-trip test.

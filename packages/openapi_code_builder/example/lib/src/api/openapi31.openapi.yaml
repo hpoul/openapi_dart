@@ -34,6 +34,24 @@ paths:
                 $ref: '#/components/schemas/Pet'
                 description: The pet, with a description next to the $ref.
 
+  /labels:
+    post:
+      operationId: echoLabel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: A label, a number or a string.
+              type: [integer, string]
+      responses:
+        '200':
+          description: The label, or null.
+          content:
+            application/json:
+              schema:
+                type: [integer, string, 'null']
+
 webhooks:
   newPet:
     post:
@@ -66,6 +84,20 @@ components:
                   items:
                     $ref: '#/components/schemas/Pet'
   schemas:
+    Adoption:
+      description: Refers to Pet before Pet is defined, so Pet is first built
+        from this $ref.
+      type: object
+      required: [pet]
+      properties:
+        pet:
+          $ref: '#/components/schemas/Pet'
+        adopter:
+          $ref: '#/components/schemas/NullableOwner'
+    NullableOwner:
+      anyOf:
+        - $ref: '#/components/schemas/Owner'
+        - type: 'null'
     Pet:
       type: object
       required: [id, name, kind]
@@ -97,6 +129,11 @@ components:
           type: [array, 'null']
           items:
             type: string
+        status:
+          anyOf:
+            - type: string
+            - type: 'null'
+          default: available
         idOrName:
           description: Either json type; generated as `Object`.
           type: [integer, string]
