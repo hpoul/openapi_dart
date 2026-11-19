@@ -1282,10 +1282,14 @@ class OpenApiLibraryGenerator {
       //     '${operationName.pascalCase}Schema', reqBody.schema!);
       final schema = reqBody.schema!;
       final bodyIsObject = schema.type == null || schema.type == APIType.object;
+      // Only json values are decoded by their schema, other content types
+      // (e.g. `image/png` with `format: binary`) keep the plain cast.
+      final bodyIsJsonValue =
+          !bodyIsObject && contentType.matches(OpenApiContentType.json);
       final parentName = '${operationName.pascalCase}Schema';
-      final reference = bodyIsObject
-          ? _toDartType(parentName, schema)
-          : _jsonValueType(parentName, schema);
+      final reference = bodyIsJsonValue
+          ? _jsonValueType(parentName, schema)
+          : _toDartType(parentName, schema);
 
       final readJsonBodyMethodName = bodyIsObject
           ? 'readJsonBody'
@@ -1301,14 +1305,15 @@ class OpenApiLibraryGenerator {
         true => refer('body').property('toJson')([]),
         false => _encodeJson(schema, refer('body')),
       };
-      final decodeExpression = switch (bodyIsObject) {
-        true => reference.property('fromJson')([mapExpression]),
-        false => _parseJson(
-          parentName: parentName,
-          schema: schema,
-          expression: mapExpression,
-        ),
-      };
+      final decodeExpression = bodyIsObject
+          ? reference.property('fromJson')([mapExpression])
+          : bodyIsJsonValue
+          ? _parseJson(
+              parentName: parentName,
+              schema: schema,
+              expression: mapExpression,
+            )
+          : mapExpression.asA(reference);
 
       addRequestBody(
         reference,

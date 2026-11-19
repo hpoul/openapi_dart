@@ -12,15 +12,20 @@
 * **Breaking**: `nullable` json bodies, array items and
   `additionalProperties` get nullable types, e.g. `List<int?>` or
   `Map<String, int?>`.
+* **Breaking**: when several status codes of one operation have an inline
+  enum response body, only the first keeps the name `<Operation>ResponseBody`.
+  The others get their own enum named with the status code, e.g.
+  `<Operation>ResponseBody404`, instead of reusing the first one, which lost
+  their values.
 * Server request bodies which are arrays of objects are decoded instead of
   cast, which always failed.
 * `toJson()` encodes enum and date-time `additionalProperties`, which
   `json.encode` could not handle.
-* An inline enum response body no longer reuses the enum of another status
-  code of the same operation; it gets its own, named with the status code.
+* `number` `additionalProperties` are decoded as `num` instead of `double`,
+  which failed for integer json values.
 * `format: binary` in a json body, and an array without `items`, fail
   generation with a clear error. Use `format: byte`, or a binary content
-  type.
+  type. Bodies of other content types, e.g. `image/png`, are not affected.
 
 ## 1.8.2-dev.7
 

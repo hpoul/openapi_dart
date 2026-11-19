@@ -240,6 +240,31 @@ components:
   schemas: {}
 ''';
 
+/// A binary request body of a non-json content type, which is not decoded as
+/// json.
+const String _imageUploadSpec = '''
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: Image Upload
+  x-dart-name: ImageUploadTestApi
+paths:
+  /upload:
+    post:
+      operationId: upload
+      requestBody:
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: OK
+components:
+  schemas: {}
+''';
+
 /// A json body of `format: binary` strings, which has no json encoding.
 const String _binarySpec = '''
 openapi: 3.0.0
@@ -542,6 +567,20 @@ void main() {
           (e) => e.message,
           'message',
           contains('format: binary'),
+        ),
+      ),
+    );
+  });
+
+  test('binary request bodies of other content types still generate', () {
+    final generated = _generate(_imageUploadSpec);
+    expect(generated, contains(_normalize('Future<UploadResponse> upload(')));
+    // The server keeps the plain cast it had before json value decoding.
+    expect(
+      generated,
+      matches(
+        RegExp(
+          r'impl\.upload\(\(const <String, dynamic>\{\} as \w+\.Uint8List\)\)',
         ),
       ),
     );
