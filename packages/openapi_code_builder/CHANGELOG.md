@@ -4,6 +4,14 @@
 * Fix multi-line parameter descriptions breaking the generated doc comment.
 * Specs with callbacks generate now (callbacks themselves are ignored), with
   the fixed open_api_forked from `deps/open-api-dart`.
+* Requires open_api_forked 4.0.0-dev.1 (`deps/open-api-dart`; not yet on
+  pub.dev). Generated code is unchanged for the golden specs. Uses
+  `APIDocument.operations` and the spec default `effectiveExplode` (the
+  generator does not use `explode` yet, so output is unchanged).
+* `x-` extension keys under `paths` no longer generate bogus operations.
+* An `allOf` member without `properties` no longer crashes the generator.
+* Merging `allOf` no longer adds the base classes' `required` fields to the
+  parsed schema itself (only matters if you reuse the `APIDocument`).
 
 ## 1.8.2-dev.8
 
