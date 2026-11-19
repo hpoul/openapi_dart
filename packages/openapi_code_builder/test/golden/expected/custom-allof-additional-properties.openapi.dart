@@ -6,7 +6,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:openapi_base/openapi_base.dart';
 part 'custom-allof-additional-properties.openapi.g.dart';
-part 'custom-allof-additional-properties.openapi.freezed.dart';
 
 @JsonSerializable()
 @ApiUuidJsonConverter()
@@ -144,18 +143,152 @@ class FreeChild implements OpenApiContent, FreeBase {
   Object? operator [](String key) => _additionalProperties[key];
 }
 
-@freezed
-sealed class Plain with _$Plain implements OpenApiContent {
-  const Plain._();
-
-  const factory Plain({@JsonKey(name: 'e', includeIfNull: false) String? e}) =
-      _Plain;
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class Plain implements OpenApiContent {
+  const Plain({this.e});
 
   factory Plain.fromJson(Map<String, dynamic> jsonMap) =>
       _$PlainFromJson(jsonMap);
 
+  @JsonKey(name: 'e', includeIfNull: false)
+  final String? e;
+
+  Map<String, dynamic> toJson() => _$PlainToJson(this);
+
   @override
   String toString() => toJson().toString();
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class ClosedBase implements OpenApiContent {
+  const ClosedBase({this.f});
+
+  factory ClosedBase.fromJson(Map<String, dynamic> jsonMap) =>
+      _$ClosedBaseFromJson(jsonMap);
+
+  @JsonKey(name: 'f', includeIfNull: false)
+  final String? f;
+
+  Map<String, dynamic> toJson() => _$ClosedBaseToJson(this);
+
+  @override
+  String toString() => toJson().toString();
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class ClosedThenMap implements OpenApiContent, ClosedBase, Base {
+  ClosedThenMap({this.a, this.f});
+
+  factory ClosedThenMap.fromJson(Map<String, dynamic> jsonMap) =>
+      _$ClosedThenMapFromJson(jsonMap)
+        .._additionalProperties.addEntries(
+          jsonMap.entries
+              .where((e) => !const <String>{'a', 'f'}.contains(e.key))
+              .map((e) => MapEntry(e.key, (e.value as int))),
+        );
+
+  @JsonKey(name: 'a', includeIfNull: false)
+  @override
+  final String? a;
+
+  @JsonKey(name: 'f', includeIfNull: false)
+  @override
+  final String? f;
+
+  final Map<String, int> _additionalProperties = <String, int>{};
+
+  @override
+  Map<String, dynamic> toJson() =>
+      Map.from(_additionalProperties)..addAll(_$ClosedThenMapToJson(this));
+
+  @override
+  String toString() => toJson().toString();
+
+  Map<String, int> get additionalProperties => _additionalProperties;
+
+  void operator []=(String key, int value) =>
+      _additionalProperties[key] = value;
+
+  int? operator [](String key) => _additionalProperties[key];
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class MapThenClosed implements OpenApiContent, Base, ClosedBase {
+  MapThenClosed({this.f, this.a});
+
+  factory MapThenClosed.fromJson(Map<String, dynamic> jsonMap) =>
+      _$MapThenClosedFromJson(jsonMap)
+        .._additionalProperties.addEntries(
+          jsonMap.entries
+              .where((e) => !const <String>{'f', 'a'}.contains(e.key))
+              .map((e) => MapEntry(e.key, (e.value as int))),
+        );
+
+  @JsonKey(name: 'f', includeIfNull: false)
+  @override
+  final String? f;
+
+  @JsonKey(name: 'a', includeIfNull: false)
+  @override
+  final String? a;
+
+  final Map<String, int> _additionalProperties = <String, int>{};
+
+  @override
+  Map<String, dynamic> toJson() =>
+      Map.from(_additionalProperties)..addAll(_$MapThenClosedToJson(this));
+
+  @override
+  String toString() => toJson().toString();
+
+  Map<String, int> get additionalProperties => _additionalProperties;
+
+  void operator []=(String key, int value) =>
+      _additionalProperties[key] = value;
+
+  int? operator [](String key) => _additionalProperties[key];
+}
+
+@JsonSerializable()
+@ApiUuidJsonConverter()
+class PlainThenMap implements OpenApiContent, Plain, Base {
+  PlainThenMap({this.a, this.e});
+
+  factory PlainThenMap.fromJson(Map<String, dynamic> jsonMap) =>
+      _$PlainThenMapFromJson(jsonMap)
+        .._additionalProperties.addEntries(
+          jsonMap.entries
+              .where((e) => !const <String>{'a', 'e'}.contains(e.key))
+              .map((e) => MapEntry(e.key, (e.value as int))),
+        );
+
+  @JsonKey(name: 'a', includeIfNull: false)
+  @override
+  final String? a;
+
+  @JsonKey(name: 'e', includeIfNull: false)
+  @override
+  final String? e;
+
+  final Map<String, int> _additionalProperties = <String, int>{};
+
+  @override
+  Map<String, dynamic> toJson() =>
+      Map.from(_additionalProperties)..addAll(_$PlainThenMapToJson(this));
+
+  @override
+  String toString() => toJson().toString();
+
+  Map<String, int> get additionalProperties => _additionalProperties;
+
+  void operator []=(String key, int value) =>
+      _additionalProperties[key] = value;
+
+  int? operator [](String key) => _additionalProperties[key];
 }
 
 class ThingsGetResponse200 extends ThingsGetResponse
