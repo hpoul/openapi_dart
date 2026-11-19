@@ -1,3 +1,10 @@
+## Unreleased
+
+* Fix crash on specs without a `components` section.
+* Fix multi-line parameter descriptions breaking the generated doc comment.
+* Specs with callbacks generate now (callbacks themselves are ignored), with
+  the fixed open_api_forked from `deps/open-api-dart`.
+
 ## 1.8.2-dev.8
 
 * Requires openapi_base 2.1.0.

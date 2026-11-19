@@ -27,7 +27,6 @@ const _knownFailures = <String, (_Stage, String)>{
     _Stage.generate,
     'json content without schema',
   ),
-  'oai-callback-example.yaml': (_Stage.parse, 'callbacks'),
 };
 
 /// Specs that use security schemes the generator does not support (oauth2).

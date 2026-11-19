@@ -846,11 +846,10 @@ class OpenApiLibraryGenerator {
               for (final param in allParameters) {
                 final paramType = _toDartType(operationName, param!.schema!);
                 final paramNameCamelCase = param.name!.camelCase;
-                if (param.description != null) {
-                  clientMethod.docs.add(
-                    '/// * [$paramNameCamelCase]: ${param.description}',
-                  );
-                }
+                clientMethod.addDartDoc(
+                  param.description,
+                  prefix: '* [$paramNameCamelCase]:',
+                );
                 final p = Parameter(
                   (pb) => pb
                     ..name = paramNameCamelCase
