@@ -4,6 +4,9 @@
 include: package:lints/recommended.yaml
 
 analyzer:
+  exclude:
+    # Generated code, compared verbatim by test/golden_test.dart.
+    - test/golden/expected/**
 #  enable-experiment:
 #    - non-nullable
   strong-mode:
