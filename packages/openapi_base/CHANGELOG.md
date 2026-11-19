@@ -1,3 +1,10 @@
+## 2.1.0
+
+* Add `OpenApiResponseBodyJsonValue` for json responses which are not an
+  object (lists, primitives). `OpenApiShelfServer` encodes its
+  `bodyJsonValue`. Required by code generated with openapi_code_builder
+  1.8.2-dev.8.
+
 ## 2.0.0+4
 
 * Fix `HttpRequestSender` sending the HTTP method in whatever case the

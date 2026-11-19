@@ -1,0 +1,213 @@
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: Json Values
+  description: |
+    Json bodies which are not objects. Used by test/json_values_test.dart
+    to round trip them through the generated server and client.
+  x-dart-name: JsonValuesApi
+
+paths:
+  /count:
+    get:
+      operationId: getCount
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+  /names:
+    get:
+      operationId: getNames
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /ids:
+    get:
+      operationId: getIds
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+  /colors:
+    post:
+      operationId: echoColors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Color'
+      responses:
+        '200':
+          description: The request body.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Color'
+  /dates:
+    post:
+      operationId: echoDates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: date-time
+      responses:
+        '200':
+          description: The request body.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: date-time
+  /items:
+    post:
+      operationId: echoItems
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Item'
+      responses:
+        '200':
+          description: The request body.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+  /sparse:
+    get:
+      operationId: getSparse
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  nullable: true
+  /matrix:
+    get:
+      operationId: getMatrix
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+  /maybe:
+    get:
+      operationId: getMaybe
+      parameters:
+        - name: empty
+          in: query
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: A date, or null if `empty`.
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
+                nullable: true
+  /bag:
+    get:
+      operationId: getBag
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bag'
+  /schedule:
+    get:
+      operationId: getSchedule
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+  /palette:
+    get:
+      operationId: getPalette
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palette'
+
+components:
+  schemas:
+    Color:
+      type: string
+      enum: [red, light-green]
+    Item:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+    Bag:
+      type: object
+      properties:
+        label:
+          type: string
+      additionalProperties:
+        type: integer
+        nullable: true
+    Schedule:
+      type: object
+      additionalProperties:
+        type: string
+        format: date-time
+    Palette:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/Color'

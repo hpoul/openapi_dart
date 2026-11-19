@@ -77,6 +77,10 @@ class OpenApiLibraryGenerator {
     'OpenApiResponseBodyJson',
     'package:openapi_base/openapi_base.dart',
   );
+  final _openApiResponseBodyJsonValue = refer(
+    'OpenApiResponseBodyJsonValue',
+    'package:openapi_base/openapi_base.dart',
+  );
   final _openApiResponseBodyString = refer(
     'OpenApiResponseBodyString',
     'package:openapi_base/openapi_base.dart',
@@ -198,7 +202,6 @@ class OpenApiLibraryGenerator {
   final _void = refer('void');
   final _uint8List = refer('Uint8List', 'dart:typed_data');
   final _typeString = refer('String');
-  final _typeDouble = refer('double');
   final _typeInteger = refer('int');
   final _typeDateTime = refer('DateTime');
   final _literalNullCode = literalNull.code;
@@ -442,104 +445,34 @@ class OpenApiLibraryGenerator {
                     ])
                     .code;
                 final responseSchema = content.schema!;
-                if (responseSchema.type == APIType.string ||
-                    responseSchema.type == APIType.number ||
-                    responseSchema.type == APIType.integer ||
-                    responseSchema.type == APIType.boolean) {
-                  // TODO add server side support for primitive types.
-                  bodyType = _toDartType(
-                    '${responseClass.name}Body',
-                    responseSchema,
-                  );
-                  cb.initializers.add(
-                    refer('bodyJson').assign(literalMap({})).code,
-                  );
-                  cb.requiredParameters.add(
-                    Parameter(
-                      (pb) => pb
-                        ..name = 'body'
-                        ..type = bodyType
-                        ..toThis = true,
-                    ),
-                  );
-                  final dynamicBody = refer(
-                    'response',
-                  ).property('responseBodyJsonDynamic')([]).awaited;
-                  clientResponseParseParams.add(
-                    switch (responseSchema.type) {
-                      APIType.number => dynamicBody.asA(refer('num')),
-                      APIType.integer => dynamicBody.asA(_typeInteger),
-                      APIType.boolean => dynamicBody.asA(refer('bool')),
-                      _ => _decodeStringType(
-                        schema: responseSchema,
-                        asString: dynamicBody.asA(_typeString),
-                        type: bodyType,
-                      ),
-                    },
-                  );
-                } else if (responseSchema.type == APIType.array) {
-                  final bodyItemType = _schemaReference(
-                    '${responseClass.name}Body$codeName',
-                    responseSchema.items!,
-                  );
-                  bodyType = _referType('List', generics: [bodyItemType]);
-                  cb.requiredParameters.add(
-                    Parameter(
-                      (pb) => pb
-                        ..name = 'body'
-                        ..type = bodyType
-                        ..toThis = true,
-                    ),
-                  );
-                  // TODO add server side support for arrays.
-                  // cb.initializers.add(refer('bodyJson')
-                  //     .assign(refer('body').property('toJson')([]))
-                  //     .code);
-                  cb.initializers.add(
-                    refer('bodyJson').assign(literalMap({})).code,
-                  );
-                  clientResponseParseParams.add(
-                    refer('response')
-                        .property('responseBodyJsonDynamic')([])
-                        .awaited
-                        .asA(_referType('List', generics: [refer('dynamic')]))
-                        .property('map')([
-                          Method((mb) {
-                            mb.requiredParameters.add(
-                              Parameter((pb) => pb..name = 'item'),
-                            );
-                            mb.lambda = true;
-                            mb.body = bodyItemType.newInstanceNamed(
-                              'fromJson',
-                              [
-                                refer('item').asA(
-                                  _referType(
-                                    'Map',
-                                    generics: [
-                                      refer('String'),
-                                      refer('dynamic'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ).code;
-                          }).closure,
-                        ])
-                        .property('toList')([]),
-                  );
-                } else {
-                  bodyType = _schemaReference(
-                    '${responseClass.name}Body$codeName',
-                    content.schema!,
-                  );
-                  cb.requiredParameters.add(
-                    Parameter(
-                      (pb) => pb
-                        ..name = 'body'
-                        ..type = bodyType
-                        ..toThis = true,
-                    ),
-                  );
+                final bodyIsObject =
+                    (responseSchema.type ?? APIType.object) == APIType.object;
+                final parentName = _responseBodyTypeName(
+                  responseClass.name!,
+                  codeName,
+                  responseSchema,
+                );
+                final type = bodyIsObject
+                    ? _schemaReference(parentName, responseSchema)
+                    : _jsonValueType(parentName, responseSchema);
+                bodyType = type;
+                cb.requiredParameters.add(
+                  Parameter(
+                    (pb) => pb
+                      ..name = 'body'
+                      ..type = type
+                      ..toThis = true,
+                  ),
+                );
+                responseCodeClass.fields.add(
+                  Field(
+                    (fb) => fb
+                      ..name = 'body'
+                      ..type = type
+                      ..modifier = FieldModifier.final$,
+                  ),
+                );
+                if (bodyIsObject) {
                   cb.initializers.add(
                     refer(
                       'bodyJson',
@@ -547,34 +480,53 @@ class OpenApiLibraryGenerator {
                   );
 
                   clientResponseParseParams.add(
-                    bodyType.newInstanceNamed('fromJson', [
+                    type.newInstanceNamed('fromJson', [
                       refer(
                         'response',
                       ).property('responseBodyJson')([]).awaited,
                     ]),
                   );
+                  responseCodeClass.fields.add(
+                    Field(
+                      (fb) => fb
+                        ..name = 'bodyJson'
+                        ..annotations.add(_override)
+                        ..type = _referType(
+                          'Map',
+                          generics: [_typeString, refer('dynamic')],
+                        )
+                        ..modifier = FieldModifier.final$,
+                    ),
+                  );
+                  responseCodeClass.implements.add(_openApiResponseBodyJson);
+                } else {
+                  cb.initializers.add(
+                    refer(
+                      'bodyJsonValue',
+                    ).assign(_encodeJson(responseSchema, refer('body'))).code,
+                  );
+                  clientResponseParseParams.add(
+                    _parseJson(
+                      parentName: parentName,
+                      schema: responseSchema,
+                      expression: refer(
+                        'response',
+                      ).property('responseBodyJsonDynamic')([]).awaited,
+                    ),
+                  );
+                  responseCodeClass.fields.add(
+                    Field(
+                      (fb) => fb
+                        ..name = 'bodyJsonValue'
+                        ..annotations.add(_override)
+                        ..type = _referType('Object', isNullable: true)
+                        ..modifier = FieldModifier.final$,
+                    ),
+                  );
+                  responseCodeClass.implements.add(
+                    _openApiResponseBodyJsonValue,
+                  );
                 }
-                responseCodeClass.fields.add(
-                  Field(
-                    (fb) => fb
-                      ..name = 'body'
-                      ..type = bodyType
-                      ..modifier = FieldModifier.final$,
-                  ),
-                );
-                responseCodeClass.fields.add(
-                  Field(
-                    (fb) => fb
-                      ..name = 'bodyJson'
-                      ..annotations.add(_override)
-                      ..type = _referType(
-                        'Map',
-                        generics: [_typeString, refer('dynamic')],
-                      )
-                      ..modifier = FieldModifier.final$,
-                  ),
-                );
-                responseCodeClass.implements.add(_openApiResponseBodyJson);
               } else {
                 if (response.value!.content?.length == 1) {
                   final responseContent =
@@ -1329,12 +1281,15 @@ class OpenApiLibraryGenerator {
       // final reference = _schemaReference(
       //     '${operationName.pascalCase}Schema', reqBody.schema!);
       final schema = reqBody.schema!;
-      final reference = _toDartType(
-        '${operationName.pascalCase}Schema',
-        schema,
-      );
-
       final bodyIsObject = schema.type == null || schema.type == APIType.object;
+      // Only json values are decoded by their schema, other content types
+      // (e.g. `image/png` with `format: binary`) keep the plain cast.
+      final bodyIsJsonValue =
+          !bodyIsObject && contentType.matches(OpenApiContentType.json);
+      final parentName = '${operationName.pascalCase}Schema';
+      final reference = bodyIsJsonValue
+          ? _jsonValueType(parentName, schema)
+          : _toDartType(parentName, schema);
 
       final readJsonBodyMethodName = bodyIsObject
           ? 'readJsonBody'
@@ -1348,12 +1303,17 @@ class OpenApiLibraryGenerator {
                 : literalConstMap({}, refer('String'), refer('dynamic')));
       final jsonReference = switch (bodyIsObject) {
         true => refer('body').property('toJson')([]),
-        false => _encodeJsonRequestBody(schema, refer('body')),
+        false => _encodeJson(schema, refer('body')),
       };
-      final decodeExpression = switch (bodyIsObject) {
-        true => reference.property('fromJson')([mapExpression]),
-        false => mapExpression.asA(reference),
-      };
+      final decodeExpression = bodyIsObject
+          ? reference.property('fromJson')([mapExpression])
+          : bodyIsJsonValue
+          ? _parseJson(
+              parentName: parentName,
+              schema: schema,
+              expression: mapExpression,
+            )
+          : mapExpression.asA(reference);
 
       addRequestBody(
         reference,
@@ -1361,33 +1321,6 @@ class OpenApiLibraryGenerator {
         decodeExpression,
       );
     }
-  }
-
-  /// Makes a non object request body encodable by `json.encode`.
-  ///
-  /// Lists of generated objects work as they are, since json encoding falls
-  /// back to their `toJson()`. Enums have no such method, so a list of them
-  /// has to be mapped to the json values explicitly.
-  Expression _encodeJsonRequestBody(
-    APISchemaObject schema,
-    Expression body,
-  ) {
-    final items = schema.items;
-    if (schema.type != APIType.array ||
-        items == null ||
-        items.enumerated?.isNotEmpty != true) {
-      return body;
-    }
-    return body
-        .property('map')([
-          Method(
-            (mb) => mb
-              ..lambda = true
-              ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
-              ..body = refer('e').property('jsonValue').code,
-          ).closure,
-        ])
-        .property('toList')([]);
   }
 
   void _routerConfig(
@@ -1553,7 +1486,7 @@ class OpenApiLibraryGenerator {
         APISchemaAdditionalPropertyPolicy.restricted,
         final additionalPropertySchema?,
       ) =>
-        _toDartType('${className}AddProp', additionalPropertySchema),
+        _jsonValueType('${className}AddProp', additionalPropertySchema),
       (APISchemaAdditionalPropertyPolicy.restricted, null) =>
         throw UnimplementedError(
           '$obj has restricted `additionalProperties` but no schema assigned.',
@@ -1608,8 +1541,30 @@ class OpenApiLibraryGenerator {
       ).call([refer('jsonMap')]);
 
       if (additionalPropertyType != null) {
+        final encodeValue = switch ((
+          additionalPropertyPolicy,
+          additionalPropertySchema,
+        )) {
+          (APISchemaAdditionalPropertyPolicy.restricted, final schema?) =>
+            _encodeJsonOrNull(schema, refer('value')),
+          _ => null,
+        };
+        final additionalPropertiesJson = switch (encodeValue) {
+          null => refer('_additionalProperties'),
+          _ => refer('_additionalProperties').property('map')([
+            Method(
+              (mb) => mb
+                ..lambda = true
+                ..requiredParameters.addAll([
+                  Parameter((pb) => pb..name = 'key'),
+                  Parameter((pb) => pb..name = 'value'),
+                ])
+                ..body = refer('MapEntry')([refer('key'), encodeValue]).code,
+            ).closure,
+          ]),
+        };
         toJsonExpression = refer('Map')
-            .property('from')([refer('_additionalProperties')])
+            .property('from')([additionalPropertiesJson])
             .cascade('addAll')([toJsonExpression]);
         fromJsonExpression =
             fromJsonExpression
@@ -1654,8 +1609,7 @@ class OpenApiLibraryGenerator {
                             refer('e').property('key'),
                             _parseJson(
                               parentName: '${className}AddProp',
-                              schema: additionalPropertySchema,
-                              type: additionalPropertyType,
+                              schema: additionalPropertySchema!,
                               expression: refer('e').property('value'),
                             ),
                           ]).code,
@@ -2014,7 +1968,7 @@ class OpenApiLibraryGenerator {
       case APIType.boolean:
         return refer('bool');
       case APIType.array:
-        final type = _toDartType(parent, schema.items!);
+        final type = _toDartType(parent, _arrayItems(parent, schema));
         return _referType('List', generics: [type]);
       case APIType.object:
         return _schemaReference(parent, schema);
@@ -2099,45 +2053,166 @@ class OpenApiLibraryGenerator {
     //     'Should not happen - unsupported security scheme ${value.type}');
   }
 
+  /// The dart type of a json value described by [schema].
+  ///
+  /// Unlike [_toDartType] this honors `nullable`, which a json value can be on
+  /// its own, outside of an object property.
+  Reference _jsonValueType(String parent, APISchemaObject schema) {
+    final type = switch (schema.type) {
+      APIType.array => _referType(
+        'List',
+        generics: [_jsonValueType(parent, _arrayItems(parent, schema))],
+      ),
+      _ => _toDartType(parent, schema),
+    };
+    return type.asNullable(schema.isNullable == true);
+  }
+
+  /// The name for types created inline for a response body [schema].
+  ///
+  /// Primitive bodies (inline enums) have always been named without the
+  /// status code. The code is only added if another response of the operation
+  /// already took that name, so existing names stay stable.
+  String _responseBodyTypeName(
+    String responseClassName,
+    String codeName,
+    APISchemaObject schema,
+  ) {
+    final withCode = '${responseClassName}Body$codeName';
+    final type = schema.type ?? APIType.object;
+    if (type == APIType.object || type == APIType.array) {
+      return withCode;
+    }
+    final name = '${responseClassName}Body';
+    final taken = createdSchema.entries.any(
+      (e) => e.value.symbol == name && !identical(e.key, schema),
+    );
+    return taken ? withCode : name;
+  }
+
+  /// The `items` of the array [schema], which the spec requires.
+  APISchemaObject _arrayItems(String parent, APISchemaObject schema) =>
+      schema.items ??
+      (throw ArgumentError('$parent: `type: array` requires `items`.'));
+
+  /// Decodes [expression], a value as returned by `json.decode`, into the
+  /// [_jsonValueType] of [schema].
+  ///
+  /// [parentName] must be the name the type was created with, so inline enums
+  /// and classes resolve to the same reference.
   Expression _parseJson({
     required String parentName,
-    required APISchemaObject? schema,
-    required Reference type,
+    required APISchemaObject schema,
     required Expression expression,
   }) {
-    if (schema == null) {
-      throw ArgumentError('schema must not be null');
+    if (schema.isNullable != true) {
+      return _parseJsonNonNull(parentName, schema, expression);
     }
-    final schemaType =
-        schema.type ?? APIType.object; /*ArgumentError.checkNotNull(
-        schema.type, 'param.schema.type $parentName $type');*/
-    return switch (schemaType) {
-      APIType.string => expression.asA(_typeString),
-      APIType.number => expression.asA(_typeDouble),
+    if (expression is Reference) {
+      return expression
+          .equalTo(literalNull)
+          .conditional(
+            literalNull,
+            _parseJsonNonNull(parentName, schema, expression),
+          );
+    }
+    // Bind the value to a parameter, so it is not evaluated twice.
+    return Method(
+      (mb) => mb
+        ..lambda = true
+        ..requiredParameters.add(Parameter((pb) => pb..name = 'v'))
+        ..body = _parseJson(
+          parentName: parentName,
+          schema: schema,
+          expression: refer('v'),
+        ).code,
+    ).closure.parenthesized.call([expression]);
+  }
+
+  Expression _parseJsonNonNull(
+    String parentName,
+    APISchemaObject schema,
+    Expression expression,
+  ) {
+    return switch (schema.type ?? APIType.object) {
+      APIType.number => expression.asA(refer('num')),
       APIType.integer => expression.asA(_typeInteger),
       APIType.boolean => expression.asA(refer('bool')),
-      APIType.array => switch (schema.items) {
-        final itemSchema? =>
-          expression
-              .asA(_referType('Iterable', generics: [refer('dynamic')]))
-              .property('map')([
-                Method(
-                  (mb) => mb
-                    ..lambda = true
-                    ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
-                    ..body = _parseJson(
-                      parentName: '${parentName}ListItem',
-                      schema: itemSchema,
-                      type: _toDartType('${parentName}ListItem', itemSchema),
-                      expression: refer('e'),
-                    ).code,
-                ).closure,
-              ])
-              .property('toList')([]),
-        null => throw UnimplementedError(),
-      },
-      APIType.object => type.property('fromJson')([expression]),
+      APIType.string when schema.format == 'binary' => throw UnsupportedError(
+        '$parentName: `format: binary` is not supported in json bodies. '
+        'Use `format: byte` for base64 encoded data, '
+        'or a binary content type like application/octet-stream.',
+      ),
+      APIType.string => _decodeStringType(
+        schema: schema,
+        asString: expression.asA(_typeString),
+        type: _toDartType(parentName, schema),
+      ),
+      APIType.array =>
+        expression
+            .asA(_referType('List', generics: [refer('dynamic')]))
+            .property('map')([
+              Method(
+                (mb) => mb
+                  ..lambda = true
+                  ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+                  ..body = _parseJson(
+                    parentName: parentName,
+                    schema: _arrayItems(parentName, schema),
+                    expression: refer('e'),
+                  ).code,
+              ).closure,
+            ])
+            .property('toList')([]),
+      APIType.object => _toDartType(parentName, schema).newInstanceNamed(
+        'fromJson',
+        [
+          expression.asA(
+            _referType('Map', generics: [_typeString, refer('dynamic')]),
+          ),
+        ],
+      ),
     };
+  }
+
+  /// Makes [value], of the [_jsonValueType] of [schema], encodable by
+  /// `json.encode`.
+  ///
+  /// Generated classes and `ApiUuid` work as they are, since json encoding
+  /// falls back to their `toJson()`. Enums and `DateTime` have no such method,
+  /// so they have to be converted explicitly, also inside lists.
+  Expression _encodeJson(APISchemaObject schema, Expression value) =>
+      _encodeJsonOrNull(schema, value) ?? value;
+
+  /// Like [_encodeJson], but returns `null` if [value] needs no conversion.
+  Expression? _encodeJsonOrNull(APISchemaObject schema, Expression value) {
+    final property = schema.isNullable == true
+        ? value.nullSafeProperty
+        : value.property;
+    switch (schema.type) {
+      case APIType.string when schema.enumerated?.isNotEmpty == true:
+        return property('jsonValue');
+      case APIType.string when schema.format == 'date-time':
+        return property('toIso8601String')([]);
+      case APIType.array:
+        final item = switch (schema.items) {
+          final itemSchema? => _encodeJsonOrNull(itemSchema, refer('e')),
+          null => null,
+        };
+        if (item == null) {
+          return null;
+        }
+        return property('map')([
+          Method(
+            (mb) => mb
+              ..lambda = true
+              ..requiredParameters.add(Parameter((pb) => pb..name = 'e'))
+              ..body = item.code,
+          ).closure,
+        ]).property('toList')([]);
+      default:
+        return null;
+    }
   }
 
   Expression _decodeStringType({
