@@ -10,6 +10,7 @@ import 'package:logging/logging.dart';
 import 'package:open_api_forked/v3.dart';
 import 'package:openapi_base/openapi_base.dart';
 import 'package:openapi_code_builder/src/custom_allocator.dart';
+import 'package:openapi_code_builder/src/nullable_unions.dart';
 import 'package:quiver/check.dart';
 import 'package:recase/recase.dart';
 import 'package:yaml/yaml.dart';
@@ -232,6 +233,7 @@ class OpenApiLibraryGenerator {
 
   Library generate() {
     lb.body.add(Directive.part(partFileName));
+    simplifyNullableUnions(api);
 
     // create class for each schema..
     final components = api.components;
@@ -1949,6 +1951,10 @@ class OpenApiLibraryGenerator {
   }
 
   Reference _toDartType(String parent, APISchemaObject schema) {
+    // OpenAPI 3.1 `type: [string, integer]`: any of those json values.
+    if (schema.types.length > 1) {
+      return refer('Object');
+    }
     switch (schema.type ?? APIType.object) {
       case APIType.string:
         if (schema.enumerated != null && schema.enumerated!.isNotEmpty) {
