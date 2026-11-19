@@ -1,0 +1,25 @@
+# Hand-written: a document without `components` at all, with only inline
+# schemas.
+openapi: 3.0.3
+info:
+  title: No components
+  version: 1.0.0
+paths:
+  /ping:
+    get:
+      operationId: ping
+      parameters:
+        - name: echo
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
