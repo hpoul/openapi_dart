@@ -1,4 +1,4 @@
-## Unreleased
+## 1.9.0-dev.1
 
 * Fix crash on specs without a `components` section.
 * Fix multi-line parameter descriptions breaking the generated doc comment.
