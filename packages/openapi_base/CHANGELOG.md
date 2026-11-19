@@ -1,3 +1,8 @@
+## 2.1.1
+
+* Remove the unused dependency on `open_api_forked`, so the generator can
+  move to open_api_forked 4.0.
+
 ## 2.1.0
 
 * Add `OpenApiResponseBodyJsonValue` for json responses which are not an
