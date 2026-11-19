@@ -4,12 +4,17 @@ on:
   push:
     branches:
       - master
+  # Build (without deploying) on pull requests, so a change that breaks the
+  # web app shows up before it is merged.
+  pull_request:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -24,6 +29,7 @@ jobs:
         run: cd packages/openapi_generator_flutter && flutter build web --base-href /openapi_dart/
 
       - name: Deploy
+        if: github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

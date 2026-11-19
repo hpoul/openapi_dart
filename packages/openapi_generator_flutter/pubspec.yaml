@@ -39,6 +39,10 @@ dev_dependencies:
 dependency_overrides:
   openapi_base:
     path: ../openapi_base
+  # The generator needs the open_api_forked in the repository, which can be
+  # ahead of pub.dev (the workflow checks out submodules).
+  open_api_forked:
+    path: ../../deps/open-api-dart
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
