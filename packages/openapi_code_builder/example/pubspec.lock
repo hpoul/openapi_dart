@@ -382,7 +382,7 @@ packages:
       path: "../../openapi_base"
       relative: true
     source: path
-    version: "2.1.0"
+    version: "2.1.1"
   openapi_code_builder:
     dependency: "direct dev"
     description:
