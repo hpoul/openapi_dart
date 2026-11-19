@@ -1,0 +1,148 @@
+openapi: 3.1.0
+info:
+  version: 0.1.0
+  title: OpenAPI 3.1
+  summary: OpenAPI 3.1 features the generator supports.
+  description: |
+    Nullable type arrays, nullable references written as `anyOf` with
+    `type: 'null'`, numeric exclusive limits, `const`, `examples`, a path
+    item from `components/pathItems`, and webhooks (which are ignored).
+  license:
+    name: MIT
+    identifier: MIT
+  x-dart-name: OpenApi31Api
+
+paths:
+  /pets:
+    $ref: '#/components/pathItems/Pets'
+  /pets/{petId}:
+    get:
+      operationId: getPet
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: integer
+            exclusiveMinimum: 0
+      responses:
+        '200':
+          description: The pet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+                description: The pet, with a description next to the $ref.
+
+  /labels:
+    post:
+      operationId: echoLabel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: A label, a number or a string.
+              type: [integer, string]
+      responses:
+        '200':
+          description: The label, or null.
+          content:
+            application/json:
+              schema:
+                type: [integer, string, 'null']
+
+webhooks:
+  newPet:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: Received.
+
+components:
+  pathItems:
+    Pets:
+      get:
+        operationId: listPets
+        parameters:
+          - name: tag
+            in: query
+            schema:
+              type: [string, 'null']
+        responses:
+          '200':
+            description: All pets.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Pet'
+  schemas:
+    Adoption:
+      description: Refers to Pet before Pet is defined, so Pet is first built
+        from this $ref.
+      type: object
+      required: [pet]
+      properties:
+        pet:
+          $ref: '#/components/schemas/Pet'
+        adopter:
+          $ref: '#/components/schemas/NullableOwner'
+    NullableOwner:
+      anyOf:
+        - $ref: '#/components/schemas/Owner'
+        - type: 'null'
+    Pet:
+      type: object
+      required: [id, name, kind]
+      properties:
+        id:
+          type: integer
+          exclusiveMinimum: 0
+        name:
+          type: string
+          examples: [Rex, Tom]
+        kind:
+          type: string
+          const: pet
+        tag:
+          type: [string, 'null']
+        weight:
+          type: [number, 'null']
+          exclusiveMinimum: 0
+        owner:
+          description: Who owns the pet, if anyone.
+          anyOf:
+            - $ref: '#/components/schemas/Owner'
+            - type: 'null'
+        previousOwner:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Owner'
+        nicknames:
+          type: [array, 'null']
+          items:
+            type: string
+        status:
+          anyOf:
+            - type: string
+            - type: 'null'
+          default: available
+        idOrName:
+          description: Either json type; generated as `Object`.
+          type: [integer, string]
+    Owner:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        email:
+          type: [string, 'null']
+          format: email

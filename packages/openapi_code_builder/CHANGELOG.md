@@ -1,3 +1,24 @@
+## Unreleased
+
+* OpenAPI 3.1 documents generate, with open_api_forked from master
+  (`deps/open-api-dart`, after 4.0.0-dev.1):
+  * `type: [X, 'null']` makes a field nullable, like `nullable: true`.
+  * `anyOf`/`oneOf` of a schema and `type: 'null'`, the way 3.1 tools
+    write a nullable reference, generate as that schema made nullable.
+    Before, such a property became an empty class.
+    This also works for a component schema that is such a union. The
+    union's `default`, `deprecated`, `readOnly` and `writeOnly` are kept,
+    and its `description` unless the member is a `$ref`. Keywords next to
+    a `$ref` to such a union component are dropped.
+  * A `type` array with several non-null types generates as `Object`, for
+    properties and json bodies. Parameters with several types throw an
+    `UnsupportedError`.
+  * Path items from `components/pathItems` that a path `$ref`s generate;
+    webhooks are ignored.
+* A path item that is a `$ref` now generates its operations (before, it
+  generated none).
+* Example `openapi31.openapi.yaml` with a json round-trip test.
+
 ## 2.0.0-dev.1
 
 * Requires open_api_forked 4.0.0-dev.1 and openapi_base 2.1.1. The major
