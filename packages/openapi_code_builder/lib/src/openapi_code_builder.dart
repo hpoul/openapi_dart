@@ -1465,6 +1465,9 @@ class OpenApiLibraryGenerator {
             APISchemaAdditionalPropertyPolicy.freeForm) {
           additionalPropertyPolicy = baseObj.additionalPropertyPolicy;
         } else {
+          // open_api_forked 4 leaves the policy null when the schema has no
+          // `additionalProperties`; inherit the base's policy then.
+          additionalPropertyPolicy ??= baseObj.additionalPropertyPolicy;
           additionalPropertySchema ??= baseObj.additionalPropertySchema;
         }
       }

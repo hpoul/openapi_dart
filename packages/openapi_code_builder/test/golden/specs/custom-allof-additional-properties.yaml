@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  title: allOf with additionalProperties
+  version: '1'
+paths:
+  /things:
+    get:
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Child'
+components:
+  schemas:
+    Base:
+      type: object
+      properties:
+        a:
+          type: string
+      additionalProperties:
+        type: integer
+    Child:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+      type: object
+      properties:
+        b:
+          type: string
+    FreeBase:
+      type: object
+      properties:
+        c:
+          type: string
+      additionalProperties: true
+    FreeChild:
+      allOf:
+        - $ref: '#/components/schemas/FreeBase'
+      type: object
+      properties:
+        d:
+          type: string
+    Plain:
+      type: object
+      properties:
+        e:
+          type: string
