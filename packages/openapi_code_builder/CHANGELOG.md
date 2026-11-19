@@ -7,9 +7,9 @@
 * Fix multi-line parameter descriptions breaking the generated doc comment.
 * Specs with callbacks generate now (callbacks themselves are ignored).
 * The move to open_api_forked 4 leaves generated code unchanged for the
-  golden specs. Uses
-  `APIDocument.operations` and the spec default `effectiveExplode` (the
-  generator does not use `explode` yet, so output is unchanged).
+  golden specs. Uses `APIDocument.operations` and the spec default
+  `effectiveExplode` (the generator does not use `explode` yet, so output
+  is unchanged).
 * `x-` extension keys under `paths` no longer generate bogus operations.
 * An `allOf` member without `properties` no longer crashes the generator.
 * Merging `allOf` no longer adds the base classes' `required` fields to the
