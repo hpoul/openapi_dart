@@ -2047,9 +2047,10 @@ class OpenApiLibraryGenerator {
           ),
         );
         return refer(securitySchemesClass.name!).property(name.camelCase);
-      case APISecuritySchemeType.oauth2:
-      case APISecuritySchemeType.openID:
-      case APISecuritySchemeType.openIdConnect:
+      // oauth2 and openIdConnect (and the legacy `openID`, which
+      // open_api_forked 4.0 removes). A `default` keeps this compiling
+      // against both 3.x and 4.x.
+      default:
         throw StateError('Unsupported security scheme ${value.type}');
     }
     // throw StateError(
