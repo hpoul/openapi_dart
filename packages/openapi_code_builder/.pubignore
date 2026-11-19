@@ -31,3 +31,4 @@
 # Golden outputs import packages this package does not depend on, which
 # pub publish flags. They are only needed by the tests in the repository.
 /test/golden/expected/
+/test/golden_test.dart

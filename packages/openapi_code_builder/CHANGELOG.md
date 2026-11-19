@@ -1,11 +1,13 @@
-## 1.9.0-dev.1
+## 2.0.0-dev.1
 
+* Requires open_api_forked 4.0.0-dev.1 and openapi_base 2.1.1. The major
+  version bump also covers the breaking changes to generated code in the
+  1.8.2-dev prereleases.
 * Fix crash on specs without a `components` section.
 * Fix multi-line parameter descriptions breaking the generated doc comment.
-* Specs with callbacks generate now (callbacks themselves are ignored), with
-  the fixed open_api_forked from `deps/open-api-dart`.
-* Requires open_api_forked 4.0.0-dev.1 (`deps/open-api-dart`; not yet on
-  pub.dev). Generated code is unchanged for the golden specs. Uses
+* Specs with callbacks generate now (callbacks themselves are ignored).
+* The move to open_api_forked 4 leaves generated code unchanged for the
+  golden specs. Uses
   `APIDocument.operations` and the spec default `effectiveExplode` (the
   generator does not use `explode` yet, so output is unchanged).
 * `x-` extension keys under `paths` no longer generate bogus operations.
