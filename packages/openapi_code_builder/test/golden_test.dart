@@ -25,7 +25,7 @@ enum _Stage { parse, generate }
 const _knownFailures = <String, (_Stage, String)>{
   'oai-api-with-examples.yaml': (
     _Stage.generate,
-    'document without components',
+    'json content without schema',
   ),
   'oai-callback-example.yaml': (_Stage.parse, 'callbacks'),
 };

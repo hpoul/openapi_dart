@@ -234,11 +234,15 @@ class OpenApiLibraryGenerator {
     lb.body.add(Directive.part(partFileName));
 
     // create class for each schema..
-    for (final schemaEntry in api.components!.schemas!.entries) {
+    final components = api.components;
+    for (final schemaEntry
+        in components?.schemas?.entries ??
+            const <MapEntry<String, APISchemaObject?>>[]) {
       _schemaReference(schemaEntry.key, schemaEntry.value!);
     }
-    if (api.components!.securitySchemes != null && !ignoreSecuritySchemes) {
-      for (final securityScheme in api.components!.securitySchemes!.entries) {
+    final securitySchemes = components?.securitySchemes;
+    if (securitySchemes != null && !ignoreSecuritySchemes) {
+      for (final securityScheme in securitySchemes.entries) {
         _securitySchemeReference(securityScheme.key, securityScheme.value!);
       }
     }
