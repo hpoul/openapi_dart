@@ -1450,7 +1450,12 @@ class OpenApiLibraryGenerator {
     final implements = <Reference>[];
 
     // check for inheritance
-    var additionalPropertyPolicy = obj.additionalPropertyPolicy;
+    // open_api_forked 4 leaves the policy null when the schema has no
+    // `additionalProperties`; 3.x used `restricted` without a schema, which
+    // becomes `disallowed` below unless a base supplies a schema.
+    APISchemaAdditionalPropertyPolicy? additionalPropertyPolicy =
+        obj.additionalPropertyPolicy ??
+        APISchemaAdditionalPropertyPolicy.restricted;
     var additionalPropertySchema = obj.additionalPropertySchema;
     if (obj.allOf != null) {
       for (final baseObj in obj.allOf!) {
@@ -1465,9 +1470,6 @@ class OpenApiLibraryGenerator {
             APISchemaAdditionalPropertyPolicy.freeForm) {
           additionalPropertyPolicy = baseObj.additionalPropertyPolicy;
         } else {
-          // open_api_forked 4 leaves the policy null when the schema has no
-          // `additionalProperties`; inherit the base's policy then.
-          additionalPropertyPolicy ??= baseObj.additionalPropertyPolicy;
           additionalPropertySchema ??= baseObj.additionalPropertySchema;
         }
       }

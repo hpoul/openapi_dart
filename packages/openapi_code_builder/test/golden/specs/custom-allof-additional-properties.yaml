@@ -46,3 +46,24 @@ components:
       properties:
         e:
           type: string
+    ClosedBase:
+      type: object
+      properties:
+        f:
+          type: string
+      additionalProperties: false
+    ClosedThenMap:
+      allOf:
+        - $ref: '#/components/schemas/ClosedBase'
+        - $ref: '#/components/schemas/Base'
+      type: object
+    MapThenClosed:
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - $ref: '#/components/schemas/ClosedBase'
+      type: object
+    PlainThenMap:
+      allOf:
+        - $ref: '#/components/schemas/Plain'
+        - $ref: '#/components/schemas/Base'
+      type: object
