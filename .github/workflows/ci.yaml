@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # deps/open-api-dart is the open_api_forked revision under test.
+          submodules: true
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          # Pinned so a new SDK's formatter or lints can't turn unrelated
+          # PRs red. Bump on purpose.
+          sdk: 3.14.1
+
+      - name: Use local open_api_forked and openapi_base
+        # Same as the gitignored pubspec_overrides.yaml used locally, so
+        # the golden test runs against deps/open-api-dart, not pub.dev.
+        run: |
+          cat > packages/openapi_code_builder/pubspec_overrides.yaml <<'YAML'
+          dependency_overrides:
+            openapi_base:
+              path: ../openapi_base
+            open_api_forked:
+              path: ../../deps/open-api-dart
+          YAML
+
+      - name: openapi_base
+        working-directory: packages/openapi_base
+        run: |
+          dart pub get --enforce-lockfile
+          dart format --output=none --set-exit-if-changed .
+          dart analyze --fatal-warnings
+
+      - name: openapi_code_builder
+        working-directory: packages/openapi_code_builder
+        run: |
+          dart pub get --enforce-lockfile
+          # test/golden/expected holds generated code, compared verbatim.
+          dart format --output=none --set-exit-if-changed lib bin test/*.dart
+          dart analyze --fatal-warnings
+          dart test
+
+      - name: Example is up to date with the generator
+        working-directory: packages/openapi_code_builder/example
+        run: |
+          dart pub get --enforce-lockfile
+          dart run build_runner build --delete-conflicting-outputs
+          # Also fail on new untracked outputs (e.g. a spec added without
+          # its generated files).
+          git add --intent-to-add .
+          git diff --exit-code -- .
+          dart analyze --fatal-warnings
+          dart test
