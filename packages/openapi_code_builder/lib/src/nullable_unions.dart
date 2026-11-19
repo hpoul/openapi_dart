@@ -111,9 +111,13 @@ final class _Simplifier {
   /// The non-null member of `anyOf: [X, {type: 'null'}]` (or `oneOf`),
   /// made nullable, or null if [schema] is not such a union.
   ///
-  /// [schema] may be a `$ref` to such a union. Its `description`,
-  /// `default`, `deprecated`, `readOnly` and `writeOnly` are kept, unless the
-  /// member has its own.
+  /// [schema] may be a `$ref` to such a union; then only nullability is
+  /// carried over, as the member is shared by every use of the union.
+  ///
+  /// Otherwise the union's `default`, `deprecated`, `readOnly` and
+  /// `writeOnly` are copied to the member, unless it has its own, and its
+  /// `description` too, unless the member is a `$ref` (whose description
+  /// would become the doc comment of the referenced class).
   static APISchemaObject? _nullableUnion(APISchemaObject schema) {
     if (schema.types.isNotEmpty ||
         schema.properties.isNotEmpty ||
@@ -134,6 +138,9 @@ final class _Simplifier {
       return null;
     }
     other.isNullable = true;
+    if (schema.referenceURI != null) {
+      return other;
+    }
     // A `$ref` member reads its target's fields; only keys next to the
     // `$ref` are its own.
     bool hasOwn(String key, Object? current) => other.referenceURI != null
@@ -150,9 +157,11 @@ final class _Simplifier {
 
     bool? flag(bool? value) => (value ?? false) ? true : null;
 
-    keep('description', schema.description, other.description, () {
-      other.description = schema.description;
-    });
+    if (other.referenceURI == null) {
+      keep('description', schema.description, other.description, () {
+        other.description = schema.description;
+      });
+    }
     keep('default', schema.defaultValue, other.defaultValue, () {
       other.defaultValue = schema.defaultValue;
     });

@@ -59,4 +59,9 @@ void main() {
       'Ann',
     );
   });
+
+  test('a body with several json types', () {
+    expect(EchoLabelResponse.response200(7).requireSuccess(), 7);
+    expect(EchoLabelResponse.response200(null).requireSuccess(), isNull);
+  });
 }

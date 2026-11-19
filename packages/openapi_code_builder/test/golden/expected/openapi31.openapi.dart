@@ -8,7 +8,6 @@ import 'package:openapi_base/openapi_base.dart';
 part 'openapi31.openapi.g.dart';
 part 'openapi31.openapi.freezed.dart';
 
-/// Who owns the pet, if anyone.
 @freezed
 sealed class Owner with _$Owner implements OpenApiContent {
   const Owner._();

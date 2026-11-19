@@ -6,9 +6,10 @@
   * `anyOf`/`oneOf` of a schema and `type: 'null'`, the way 3.1 tools
     write a nullable reference, generate as that schema made nullable.
     Before, such a property became an empty class.
-    This also works for a component schema that is such a union, and keeps
-    the union's `description`, `default`, `deprecated`, `readOnly` and
-    `writeOnly`.
+    This also works for a component schema that is such a union. The
+    union's `default`, `deprecated`, `readOnly` and `writeOnly` are kept,
+    and its `description` unless the member is a `$ref`. Keywords next to
+    a `$ref` to such a union component are dropped.
   * A `type` array with several non-null types generates as `Object`, for
     properties and json bodies. Parameters with several types throw an
     `UnsupportedError`.
